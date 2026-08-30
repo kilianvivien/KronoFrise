@@ -13,7 +13,6 @@ export function AppearancePicker(): JSX.Element {
   return <>
     <button ref={trigger} className={styles.trigger} popoverTarget={id} aria-label={APPEARANCE.title} title={APPEARANCE.title}>
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.25" aria-hidden="true"><circle cx="8" cy="8" r="5.5" /><path d="M8 2.5v11a5.5 5.5 0 0 0 0-11" fill="currentColor" stroke="none" /></svg>
-      <span>{APPEARANCE.label} · {APPEARANCE[preference]}</span><span aria-hidden="true">⌃</span>
     </button>
     <div id={id} popover="auto" className={styles.popover} role="dialog" aria-labelledby={`${id}-title`}
       onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); close(event.currentTarget); } }}
