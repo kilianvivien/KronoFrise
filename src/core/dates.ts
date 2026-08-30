@@ -84,9 +84,20 @@ export function datesEqual(a: KDate, b: KDate): boolean {
 /* Formatage                                                           */
 /* ------------------------------------------------------------------ */
 
-/** « 1804 », « 52 av. J.-C. » — DESIGN.md §4. */
+/** « 1804 », « 52 av. J.-C. », « 3 000 000 av. J.-C. » — DESIGN.md §4. */
 export function formatYear(year: Year): string {
-  return isBc(year) ? `${historicalYear(year)} ${DATES.bcSuffix}` : String(year);
+  const value = groupThousands(historicalYear(year));
+  return isBc(year) ? `${value} ${DATES.bcSuffix}` : value;
+}
+
+/**
+ * Usage français : une année s'écrit sans séparateur jusqu'à quatre chiffres
+ * (1789), avec une espace fine insécable au-delà (10 000, 3 000 000).
+ */
+function groupThousands(value: number): string {
+  const text = String(value);
+  if (text.length <= 4) return text;
+  return text.replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
 }
 
 export interface FormatDateOptions {
@@ -287,6 +298,8 @@ function normalize(text: string): string {
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/\s+/g, ' ')
+    // « 3 000 000 » (espaces fines de groupement) redevient « 3000000 »
+    .replace(/(\d) (?=\d{3}(?!\d))/g, '$1')
     .trim();
 }
 

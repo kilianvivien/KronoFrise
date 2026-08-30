@@ -149,9 +149,23 @@ describe('parseDateInput', () => {
       { year: -51 },
       { year: 800, circa: true },
       { year: 1804, month: 1 },
+      { year: -2_999_999 },
+      { year: -9999 },
     ];
     for (const date of dates) {
       expect(parseDateInput(formatDate(date))).toEqual(date);
     }
+  });
+});
+
+describe('formatYear : typographie française des grands nombres', () => {
+  it('n’insère pas de séparateur jusqu’à quatre chiffres', () => {
+    expect(formatYear(1789)).toBe('1789');
+    expect(formatYear(-2999)).toBe('3000 av. J.-C.');
+  });
+
+  it('groupe par milliers au-delà, avec une espace fine insécable', () => {
+    expect(formatYear(-9999)).toBe('10 000 av. J.-C.');
+    expect(formatYear(-2_999_999)).toBe('3 000 000 av. J.-C.');
   });
 });

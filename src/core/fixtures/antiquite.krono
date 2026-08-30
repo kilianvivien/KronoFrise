@@ -1,0 +1,218 @@
+{
+  "schema": "krono/1",
+  "id": "fixture-antiquite",
+  "meta": {
+    "title": "L’Antiquité",
+    "createdAt": "2026-08-30T09:00:00.000Z",
+    "modifiedAt": "2026-08-30T09:00:00.000Z"
+  },
+  "axis": {
+    "start": {
+      "year": -800
+    },
+    "end": {
+      "year": 500
+    },
+    "segments": [
+      {
+        "until": {
+          "year": 500
+        },
+        "weight": 1
+      }
+    ]
+  },
+  "themeId": "manuel-scolaire",
+  "lanes": [
+    {
+      "id": "lane-grece",
+      "name": "Grèce"
+    },
+    {
+      "id": "lane-rome",
+      "name": "Rome"
+    }
+  ],
+  "items": [
+    {
+      "id": "ant-p1",
+      "kind": "period",
+      "laneId": "lane-grece",
+      "label": "Grèce archaïque",
+      "color": "canard",
+      "start": {
+        "year": -775
+      },
+      "end": {
+        "year": -509
+      },
+      "shape": "bar",
+      "fuzzyStart": true
+    },
+    {
+      "id": "ant-p2",
+      "kind": "period",
+      "laneId": "lane-grece",
+      "label": "Grèce classique",
+      "color": "canard",
+      "start": {
+        "year": -509
+      },
+      "end": {
+        "year": -322
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "ant-p3",
+      "kind": "period",
+      "laneId": "lane-grece",
+      "label": "Période hellénistique",
+      "color": "olive",
+      "start": {
+        "year": -322
+      },
+      "end": {
+        "year": -29
+      },
+      "shape": "bar",
+      "fuzzyEnd": true
+    },
+    {
+      "id": "ant-p4",
+      "kind": "period",
+      "laneId": "lane-rome",
+      "label": "République romaine",
+      "color": "ocre",
+      "start": {
+        "year": -508
+      },
+      "end": {
+        "year": -26
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "ant-p5",
+      "kind": "period",
+      "laneId": "lane-rome",
+      "label": "Empire romain",
+      "color": "brique",
+      "start": {
+        "year": -26
+      },
+      "end": {
+        "year": 476
+      },
+      "shape": "bar",
+      "fuzzyEnd": true
+    },
+    {
+      "id": "ant-p6",
+      "kind": "period",
+      "laneId": "lane-rome",
+      "label": "Pax Romana",
+      "color": "terre",
+      "start": {
+        "year": -26
+      },
+      "end": {
+        "year": 180
+      },
+      "shape": "bracket"
+    },
+    {
+      "id": "ant-e1",
+      "laneId": "lane-grece",
+      "label": "Premiers Jeux olympiques",
+      "date": {
+        "year": -775,
+        "circa": true
+      },
+      "color": "canard",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e2",
+      "laneId": "lane-rome",
+      "label": "Fondation de Rome",
+      "date": {
+        "year": -752,
+        "circa": true
+      },
+      "color": "ocre",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e3",
+      "laneId": "lane-grece",
+      "label": "Bataille de Marathon",
+      "date": {
+        "year": -489,
+        "month": 9
+      },
+      "color": "canard",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e4",
+      "laneId": "lane-grece",
+      "label": "Mort d’Alexandre le Grand",
+      "date": {
+        "year": -322,
+        "month": 6,
+        "day": 11
+      },
+      "color": "olive",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e5",
+      "laneId": "lane-rome",
+      "label": "Assassinat de Jules César",
+      "date": {
+        "year": -43,
+        "month": 3,
+        "day": 15
+      },
+      "color": "lie-de-vin",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e6",
+      "laneId": "lane-rome",
+      "label": "Naissance du christianisme",
+      "date": {
+        "year": 30,
+        "circa": true
+      },
+      "color": "prune",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e7",
+      "laneId": "lane-rome",
+      "label": "Édit de Milan",
+      "date": {
+        "year": 313
+      },
+      "color": "prune",
+      "kind": "event"
+    },
+    {
+      "id": "ant-e8",
+      "laneId": "lane-rome",
+      "label": "Chute de Rome",
+      "date": {
+        "year": 476,
+        "month": 9,
+        "day": 4
+      },
+      "color": "brique",
+      "kind": "event"
+    }
+  ],
+  "pedagogy": {
+    "maskedItems": []
+  }
+}

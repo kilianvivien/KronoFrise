@@ -1,0 +1,5849 @@
+{
+  "schema": "krono/1",
+  "id": "fixture-stress",
+  "meta": {
+    "title": "Charge — 500 éléments",
+    "createdAt": "2026-08-30T09:00:00.000Z",
+    "modifiedAt": "2026-08-30T09:00:00.000Z"
+  },
+  "axis": {
+    "start": {
+      "year": 1000
+    },
+    "end": {
+      "year": 2000
+    },
+    "segments": [
+      {
+        "until": {
+          "year": 2000
+        },
+        "weight": 1
+      }
+    ]
+  },
+  "themeId": "manuel-scolaire",
+  "lanes": [
+    {
+      "id": "stress-lane-0",
+      "name": "Politique"
+    },
+    {
+      "id": "stress-lane-1",
+      "name": "Arts"
+    },
+    {
+      "id": "stress-lane-2",
+      "name": "Sciences"
+    },
+    {
+      "id": "stress-lane-3",
+      "name": "Monde"
+    }
+  ],
+  "items": [
+    {
+      "id": "stress-p0",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 0",
+      "color": "brique",
+      "start": {
+        "year": 1660
+      },
+      "end": {
+        "year": 1670
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e1",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 1",
+      "color": "ocre",
+      "date": {
+        "year": 1648,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e2",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 2",
+      "color": "ble",
+      "date": {
+        "year": 1810,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e3",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 3",
+      "color": "olive",
+      "date": {
+        "year": 1024,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e4",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 4",
+      "color": "foret",
+      "date": {
+        "year": 1556,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p5",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 5",
+      "color": "canard",
+      "start": {
+        "year": 1917
+      },
+      "end": {
+        "year": 1933
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e6",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 6",
+      "color": "ardoise",
+      "date": {
+        "year": 1776,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e7",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 7",
+      "color": "encre",
+      "date": {
+        "year": 1789,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e8",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 8",
+      "color": "prune",
+      "date": {
+        "year": 1522,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e9",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 9",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1890,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p10",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 10",
+      "color": "terre",
+      "start": {
+        "year": 1676
+      },
+      "end": {
+        "year": 1711
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e11",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 11",
+      "color": "pierre",
+      "date": {
+        "year": 1028,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e12",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 12",
+      "color": "brique",
+      "date": {
+        "year": 1474,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e13",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 13",
+      "color": "ocre",
+      "date": {
+        "year": 1448,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e14",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 14",
+      "color": "ble",
+      "date": {
+        "year": 1807,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p15",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 15",
+      "color": "olive",
+      "start": {
+        "year": 1243
+      },
+      "end": {
+        "year": 1263
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e16",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 16",
+      "color": "foret",
+      "date": {
+        "year": 1180,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e17",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 17",
+      "color": "canard",
+      "date": {
+        "year": 1319,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e18",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 18",
+      "color": "ardoise",
+      "date": {
+        "year": 1895,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e19",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 19",
+      "color": "encre",
+      "date": {
+        "year": 1911,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p20",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 20",
+      "color": "prune",
+      "start": {
+        "year": 1973
+      },
+      "end": {
+        "year": 1991
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e21",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 21",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1388,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e22",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 22",
+      "color": "terre",
+      "date": {
+        "year": 1345,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e23",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 23",
+      "color": "pierre",
+      "date": {
+        "year": 1271,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e24",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 24",
+      "color": "brique",
+      "date": {
+        "year": 1795,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p25",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 25",
+      "color": "ocre",
+      "start": {
+        "year": 1759
+      },
+      "end": {
+        "year": 1769
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e26",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 26",
+      "color": "ble",
+      "date": {
+        "year": 1632,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e27",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 27",
+      "color": "olive",
+      "date": {
+        "year": 1315,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e28",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 28",
+      "color": "foret",
+      "date": {
+        "year": 1791,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e29",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 29",
+      "color": "canard",
+      "date": {
+        "year": 1062,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p30",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 30",
+      "color": "ardoise",
+      "start": {
+        "year": 1694
+      },
+      "end": {
+        "year": 1696
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e31",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 31",
+      "color": "encre",
+      "date": {
+        "year": 1521,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e32",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 32",
+      "color": "prune",
+      "date": {
+        "year": 1581,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e33",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 33",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1694,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e34",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 34",
+      "color": "terre",
+      "date": {
+        "year": 1801,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p35",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 35",
+      "color": "pierre",
+      "start": {
+        "year": 1082
+      },
+      "end": {
+        "year": 1092
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e36",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 36",
+      "color": "brique",
+      "date": {
+        "year": 1886,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e37",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 37",
+      "color": "ocre",
+      "date": {
+        "year": 1802,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e38",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 38",
+      "color": "ble",
+      "date": {
+        "year": 1878,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e39",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 39",
+      "color": "olive",
+      "date": {
+        "year": 1743,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-p40",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 40",
+      "color": "foret",
+      "start": {
+        "year": 1906
+      },
+      "end": {
+        "year": 1907
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e41",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 41",
+      "color": "canard",
+      "date": {
+        "year": 1443,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e42",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 42",
+      "color": "ardoise",
+      "date": {
+        "year": 1366,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e43",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 43",
+      "color": "encre",
+      "date": {
+        "year": 1161,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e44",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 44",
+      "color": "prune",
+      "date": {
+        "year": 1610,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p45",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 45",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1734
+      },
+      "end": {
+        "year": 1751
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e46",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 46",
+      "color": "terre",
+      "date": {
+        "year": 1548,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e47",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 47",
+      "color": "pierre",
+      "date": {
+        "year": 1642,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e48",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 48",
+      "color": "brique",
+      "date": {
+        "year": 1334,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e49",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 49",
+      "color": "ocre",
+      "date": {
+        "year": 1953,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p50",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 50",
+      "color": "ble",
+      "start": {
+        "year": 1018
+      },
+      "end": {
+        "year": 1034
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e51",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 51",
+      "color": "olive",
+      "date": {
+        "year": 1009,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e52",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 52",
+      "color": "foret",
+      "date": {
+        "year": 1211,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e53",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 53",
+      "color": "canard",
+      "date": {
+        "year": 1750,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e54",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 54",
+      "color": "ardoise",
+      "date": {
+        "year": 1215,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p55",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 55",
+      "color": "encre",
+      "start": {
+        "year": 1223
+      },
+      "end": {
+        "year": 1228
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e56",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 56",
+      "color": "prune",
+      "date": {
+        "year": 1983,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e57",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 57",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1658,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e58",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 58",
+      "color": "terre",
+      "date": {
+        "year": 1642,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e59",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 59",
+      "color": "pierre",
+      "date": {
+        "year": 1667,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p60",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 60",
+      "color": "brique",
+      "start": {
+        "year": 1330
+      },
+      "end": {
+        "year": 1338
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e61",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 61",
+      "color": "ocre",
+      "date": {
+        "year": 1491,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e62",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 62",
+      "color": "ble",
+      "date": {
+        "year": 1278,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e63",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 63",
+      "color": "olive",
+      "date": {
+        "year": 1048,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e64",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 64",
+      "color": "foret",
+      "date": {
+        "year": 1702,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p65",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 65",
+      "color": "canard",
+      "start": {
+        "year": 1025
+      },
+      "end": {
+        "year": 1029
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e66",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 66",
+      "color": "ardoise",
+      "date": {
+        "year": 1068,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e67",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 67",
+      "color": "encre",
+      "date": {
+        "year": 1499,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e68",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 68",
+      "color": "prune",
+      "date": {
+        "year": 1528,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e69",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 69",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1592,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p70",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 70",
+      "color": "terre",
+      "start": {
+        "year": 1020
+      },
+      "end": {
+        "year": 1051
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e71",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 71",
+      "color": "pierre",
+      "date": {
+        "year": 1897,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e72",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 72",
+      "color": "brique",
+      "date": {
+        "year": 1585,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e73",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 73",
+      "color": "ocre",
+      "date": {
+        "year": 1720,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e74",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 74",
+      "color": "ble",
+      "date": {
+        "year": 1781,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p75",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 75",
+      "color": "olive",
+      "start": {
+        "year": 1425
+      },
+      "end": {
+        "year": 1462
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e76",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 76",
+      "color": "foret",
+      "date": {
+        "year": 1840,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e77",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 77",
+      "color": "canard",
+      "date": {
+        "year": 1534,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e78",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 78",
+      "color": "ardoise",
+      "date": {
+        "year": 1494,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e79",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 79",
+      "color": "encre",
+      "date": {
+        "year": 1323,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p80",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 80",
+      "color": "prune",
+      "start": {
+        "year": 1055
+      },
+      "end": {
+        "year": 1069
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e81",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 81",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1082,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e82",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 82",
+      "color": "terre",
+      "date": {
+        "year": 1510,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e83",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 83",
+      "color": "pierre",
+      "date": {
+        "year": 1252,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e84",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 84",
+      "color": "brique",
+      "date": {
+        "year": 1289,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-p85",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 85",
+      "color": "ocre",
+      "start": {
+        "year": 1017
+      },
+      "end": {
+        "year": 1022
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e86",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 86",
+      "color": "ble",
+      "date": {
+        "year": 1108,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e87",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 87",
+      "color": "olive",
+      "date": {
+        "year": 1225,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e88",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 88",
+      "color": "foret",
+      "date": {
+        "year": 1047,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e89",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 89",
+      "color": "canard",
+      "date": {
+        "year": 1280,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-p90",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 90",
+      "color": "ardoise",
+      "start": {
+        "year": 1156
+      },
+      "end": {
+        "year": 1184
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e91",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 91",
+      "color": "encre",
+      "date": {
+        "year": 1558,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e92",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 92",
+      "color": "prune",
+      "date": {
+        "year": 1504,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e93",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 93",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1271,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e94",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 94",
+      "color": "terre",
+      "date": {
+        "year": 1219,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p95",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 95",
+      "color": "pierre",
+      "start": {
+        "year": 1875
+      },
+      "end": {
+        "year": 1898
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e96",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 96",
+      "color": "brique",
+      "date": {
+        "year": 1512,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e97",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 97",
+      "color": "ocre",
+      "date": {
+        "year": 1223,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e98",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 98",
+      "color": "ble",
+      "date": {
+        "year": 1060,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e99",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 99",
+      "color": "olive",
+      "date": {
+        "year": 1715,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-p100",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 100",
+      "color": "foret",
+      "start": {
+        "year": 1595
+      },
+      "end": {
+        "year": 1605
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e101",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 101",
+      "color": "canard",
+      "date": {
+        "year": 1354,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e102",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 102",
+      "color": "ardoise",
+      "date": {
+        "year": 1270,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e103",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 103",
+      "color": "encre",
+      "date": {
+        "year": 1754,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e104",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 104",
+      "color": "prune",
+      "date": {
+        "year": 1224,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-p105",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 105",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1073
+      },
+      "end": {
+        "year": 1104
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e106",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 106",
+      "color": "terre",
+      "date": {
+        "year": 1896,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e107",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 107",
+      "color": "pierre",
+      "date": {
+        "year": 1909,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e108",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 108",
+      "color": "brique",
+      "date": {
+        "year": 1728,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e109",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 109",
+      "color": "ocre",
+      "date": {
+        "year": 1195,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p110",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 110",
+      "color": "ble",
+      "start": {
+        "year": 1703
+      },
+      "end": {
+        "year": 1713
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e111",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 111",
+      "color": "olive",
+      "date": {
+        "year": 1079,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e112",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 112",
+      "color": "foret",
+      "date": {
+        "year": 1715,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e113",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 113",
+      "color": "canard",
+      "date": {
+        "year": 1724,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e114",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 114",
+      "color": "ardoise",
+      "date": {
+        "year": 1916,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-p115",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 115",
+      "color": "encre",
+      "start": {
+        "year": 1770
+      },
+      "end": {
+        "year": 1786
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e116",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 116",
+      "color": "prune",
+      "date": {
+        "year": 1879,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e117",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 117",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1564,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e118",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 118",
+      "color": "terre",
+      "date": {
+        "year": 1248,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e119",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 119",
+      "color": "pierre",
+      "date": {
+        "year": 1693,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p120",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 120",
+      "color": "brique",
+      "start": {
+        "year": 1127
+      },
+      "end": {
+        "year": 1157
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e121",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 121",
+      "color": "ocre",
+      "date": {
+        "year": 1526,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e122",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 122",
+      "color": "ble",
+      "date": {
+        "year": 1542,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e123",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 123",
+      "color": "olive",
+      "date": {
+        "year": 1855,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e124",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 124",
+      "color": "foret",
+      "date": {
+        "year": 1542,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p125",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 125",
+      "color": "canard",
+      "start": {
+        "year": 1615
+      },
+      "end": {
+        "year": 1650
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e126",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 126",
+      "color": "ardoise",
+      "date": {
+        "year": 1061,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e127",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 127",
+      "color": "encre",
+      "date": {
+        "year": 1562,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e128",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 128",
+      "color": "prune",
+      "date": {
+        "year": 1369,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e129",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 129",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1286,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p130",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 130",
+      "color": "terre",
+      "start": {
+        "year": 1722
+      },
+      "end": {
+        "year": 1760
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e131",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 131",
+      "color": "pierre",
+      "date": {
+        "year": 1827,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e132",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 132",
+      "color": "brique",
+      "date": {
+        "year": 1155,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e133",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 133",
+      "color": "ocre",
+      "date": {
+        "year": 1150,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e134",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 134",
+      "color": "ble",
+      "date": {
+        "year": 1889,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p135",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 135",
+      "color": "olive",
+      "start": {
+        "year": 1720
+      },
+      "end": {
+        "year": 1727
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e136",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 136",
+      "color": "foret",
+      "date": {
+        "year": 1957,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e137",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 137",
+      "color": "canard",
+      "date": {
+        "year": 1192,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e138",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 138",
+      "color": "ardoise",
+      "date": {
+        "year": 1733,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e139",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 139",
+      "color": "encre",
+      "date": {
+        "year": 1137,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p140",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 140",
+      "color": "prune",
+      "start": {
+        "year": 1889
+      },
+      "end": {
+        "year": 1928
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e141",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 141",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1637,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e142",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 142",
+      "color": "terre",
+      "date": {
+        "year": 1488,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e143",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 143",
+      "color": "pierre",
+      "date": {
+        "year": 1578,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e144",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 144",
+      "color": "brique",
+      "date": {
+        "year": 1244,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p145",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 145",
+      "color": "ocre",
+      "start": {
+        "year": 1715
+      },
+      "end": {
+        "year": 1746
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e146",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 146",
+      "color": "ble",
+      "date": {
+        "year": 1455,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e147",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 147",
+      "color": "olive",
+      "date": {
+        "year": 1395,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e148",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 148",
+      "color": "foret",
+      "date": {
+        "year": 1215,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e149",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 149",
+      "color": "canard",
+      "date": {
+        "year": 1083,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-p150",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 150",
+      "color": "ardoise",
+      "start": {
+        "year": 1681
+      },
+      "end": {
+        "year": 1696
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e151",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 151",
+      "color": "encre",
+      "date": {
+        "year": 1743,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e152",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 152",
+      "color": "prune",
+      "date": {
+        "year": 1317,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e153",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 153",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1277,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e154",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 154",
+      "color": "terre",
+      "date": {
+        "year": 1580,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p155",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 155",
+      "color": "pierre",
+      "start": {
+        "year": 1783
+      },
+      "end": {
+        "year": 1796
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e156",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 156",
+      "color": "brique",
+      "date": {
+        "year": 1123,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e157",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 157",
+      "color": "ocre",
+      "date": {
+        "year": 1983,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e158",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 158",
+      "color": "ble",
+      "date": {
+        "year": 1773,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e159",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 159",
+      "color": "olive",
+      "date": {
+        "year": 1415,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-p160",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 160",
+      "color": "foret",
+      "start": {
+        "year": 1490
+      },
+      "end": {
+        "year": 1517
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e161",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 161",
+      "color": "canard",
+      "date": {
+        "year": 1466,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e162",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 162",
+      "color": "ardoise",
+      "date": {
+        "year": 1344,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e163",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 163",
+      "color": "encre",
+      "date": {
+        "year": 1504,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e164",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 164",
+      "color": "prune",
+      "date": {
+        "year": 1277,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p165",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 165",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1828
+      },
+      "end": {
+        "year": 1860
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e166",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 166",
+      "color": "terre",
+      "date": {
+        "year": 1837,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e167",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 167",
+      "color": "pierre",
+      "date": {
+        "year": 1125,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e168",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 168",
+      "color": "brique",
+      "date": {
+        "year": 1772,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e169",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 169",
+      "color": "ocre",
+      "date": {
+        "year": 1784,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p170",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 170",
+      "color": "ble",
+      "start": {
+        "year": 1989
+      },
+      "end": {
+        "year": 1998
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e171",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 171",
+      "color": "olive",
+      "date": {
+        "year": 1119,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e172",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 172",
+      "color": "foret",
+      "date": {
+        "year": 1378,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e173",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 173",
+      "color": "canard",
+      "date": {
+        "year": 1593,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e174",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 174",
+      "color": "ardoise",
+      "date": {
+        "year": 1830,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p175",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 175",
+      "color": "encre",
+      "start": {
+        "year": 1331
+      },
+      "end": {
+        "year": 1351
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e176",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 176",
+      "color": "prune",
+      "date": {
+        "year": 1237,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e177",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 177",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1670,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e178",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 178",
+      "color": "terre",
+      "date": {
+        "year": 1285,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e179",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 179",
+      "color": "pierre",
+      "date": {
+        "year": 1321,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-p180",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 180",
+      "color": "brique",
+      "start": {
+        "year": 1040
+      },
+      "end": {
+        "year": 1066
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e181",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 181",
+      "color": "ocre",
+      "date": {
+        "year": 1630,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e182",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 182",
+      "color": "ble",
+      "date": {
+        "year": 1672,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e183",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 183",
+      "color": "olive",
+      "date": {
+        "year": 1214,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e184",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 184",
+      "color": "foret",
+      "date": {
+        "year": 1303,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p185",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 185",
+      "color": "canard",
+      "start": {
+        "year": 1348
+      },
+      "end": {
+        "year": 1364
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e186",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 186",
+      "color": "ardoise",
+      "date": {
+        "year": 1218,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e187",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 187",
+      "color": "encre",
+      "date": {
+        "year": 1304,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e188",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 188",
+      "color": "prune",
+      "date": {
+        "year": 1254,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e189",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 189",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1823,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-p190",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 190",
+      "color": "terre",
+      "start": {
+        "year": 1813
+      },
+      "end": {
+        "year": 1842
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e191",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 191",
+      "color": "pierre",
+      "date": {
+        "year": 1257,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e192",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 192",
+      "color": "brique",
+      "date": {
+        "year": 1935,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e193",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 193",
+      "color": "ocre",
+      "date": {
+        "year": 1799,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e194",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 194",
+      "color": "ble",
+      "date": {
+        "year": 1587,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p195",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 195",
+      "color": "olive",
+      "start": {
+        "year": 1136
+      },
+      "end": {
+        "year": 1162
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e196",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 196",
+      "color": "foret",
+      "date": {
+        "year": 1144,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e197",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 197",
+      "color": "canard",
+      "date": {
+        "year": 1982,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e198",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 198",
+      "color": "ardoise",
+      "date": {
+        "year": 1386,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e199",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 199",
+      "color": "encre",
+      "date": {
+        "year": 1901,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p200",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 200",
+      "color": "prune",
+      "start": {
+        "year": 1701
+      },
+      "end": {
+        "year": 1728
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e201",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 201",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1615,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e202",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 202",
+      "color": "terre",
+      "date": {
+        "year": 1802,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e203",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 203",
+      "color": "pierre",
+      "date": {
+        "year": 1391,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e204",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 204",
+      "color": "brique",
+      "date": {
+        "year": 1351,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-p205",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 205",
+      "color": "ocre",
+      "start": {
+        "year": 1998
+      },
+      "end": {
+        "year": 2000
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e206",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 206",
+      "color": "ble",
+      "date": {
+        "year": 1359,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e207",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 207",
+      "color": "olive",
+      "date": {
+        "year": 1107,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e208",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 208",
+      "color": "foret",
+      "date": {
+        "year": 1880,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e209",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 209",
+      "color": "canard",
+      "date": {
+        "year": 1967,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p210",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 210",
+      "color": "ardoise",
+      "start": {
+        "year": 1085
+      },
+      "end": {
+        "year": 1114
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e211",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 211",
+      "color": "encre",
+      "date": {
+        "year": 1658,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e212",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 212",
+      "color": "prune",
+      "date": {
+        "year": 1453,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e213",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 213",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1094,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e214",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 214",
+      "color": "terre",
+      "date": {
+        "year": 1624,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p215",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 215",
+      "color": "pierre",
+      "start": {
+        "year": 1491
+      },
+      "end": {
+        "year": 1517
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e216",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 216",
+      "color": "brique",
+      "date": {
+        "year": 1575,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e217",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 217",
+      "color": "ocre",
+      "date": {
+        "year": 1994,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e218",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 218",
+      "color": "ble",
+      "date": {
+        "year": 1637,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e219",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 219",
+      "color": "olive",
+      "date": {
+        "year": 1734,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p220",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 220",
+      "color": "foret",
+      "start": {
+        "year": 1332
+      },
+      "end": {
+        "year": 1366
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e221",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 221",
+      "color": "canard",
+      "date": {
+        "year": 1986,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e222",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 222",
+      "color": "ardoise",
+      "date": {
+        "year": 1218,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e223",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 223",
+      "color": "encre",
+      "date": {
+        "year": 1395,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e224",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 224",
+      "color": "prune",
+      "date": {
+        "year": 1776,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p225",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 225",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1459
+      },
+      "end": {
+        "year": 1492
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e226",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 226",
+      "color": "terre",
+      "date": {
+        "year": 1177,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e227",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 227",
+      "color": "pierre",
+      "date": {
+        "year": 1372,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e228",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 228",
+      "color": "brique",
+      "date": {
+        "year": 1494,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e229",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 229",
+      "color": "ocre",
+      "date": {
+        "year": 1853,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p230",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 230",
+      "color": "ble",
+      "start": {
+        "year": 1649
+      },
+      "end": {
+        "year": 1683
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e231",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 231",
+      "color": "olive",
+      "date": {
+        "year": 1206,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e232",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 232",
+      "color": "foret",
+      "date": {
+        "year": 1591,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e233",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 233",
+      "color": "canard",
+      "date": {
+        "year": 1968,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e234",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 234",
+      "color": "ardoise",
+      "date": {
+        "year": 1244,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p235",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 235",
+      "color": "encre",
+      "start": {
+        "year": 1716
+      },
+      "end": {
+        "year": 1723
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e236",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 236",
+      "color": "prune",
+      "date": {
+        "year": 1445,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e237",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 237",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1471,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e238",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 238",
+      "color": "terre",
+      "date": {
+        "year": 1349,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e239",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 239",
+      "color": "pierre",
+      "date": {
+        "year": 1260,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p240",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 240",
+      "color": "brique",
+      "start": {
+        "year": 1885
+      },
+      "end": {
+        "year": 1909
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e241",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 241",
+      "color": "ocre",
+      "date": {
+        "year": 1312,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e242",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 242",
+      "color": "ble",
+      "date": {
+        "year": 1549,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e243",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 243",
+      "color": "olive",
+      "date": {
+        "year": 1658,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e244",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 244",
+      "color": "foret",
+      "date": {
+        "year": 1548,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p245",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 245",
+      "color": "canard",
+      "start": {
+        "year": 1079
+      },
+      "end": {
+        "year": 1093
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e246",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 246",
+      "color": "ardoise",
+      "date": {
+        "year": 1453,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e247",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 247",
+      "color": "encre",
+      "date": {
+        "year": 1985,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e248",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 248",
+      "color": "prune",
+      "date": {
+        "year": 1211,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e249",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 249",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1316,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-p250",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 250",
+      "color": "terre",
+      "start": {
+        "year": 1538
+      },
+      "end": {
+        "year": 1547
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e251",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 251",
+      "color": "pierre",
+      "date": {
+        "year": 1332,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e252",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 252",
+      "color": "brique",
+      "date": {
+        "year": 1386,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e253",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 253",
+      "color": "ocre",
+      "date": {
+        "year": 1083,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e254",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 254",
+      "color": "ble",
+      "date": {
+        "year": 1693,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p255",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 255",
+      "color": "olive",
+      "start": {
+        "year": 1307
+      },
+      "end": {
+        "year": 1329
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e256",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 256",
+      "color": "foret",
+      "date": {
+        "year": 1724,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e257",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 257",
+      "color": "canard",
+      "date": {
+        "year": 1933,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e258",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 258",
+      "color": "ardoise",
+      "date": {
+        "year": 1177,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e259",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 259",
+      "color": "encre",
+      "date": {
+        "year": 1650,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-p260",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 260",
+      "color": "prune",
+      "start": {
+        "year": 1272
+      },
+      "end": {
+        "year": 1278
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e261",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 261",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1056,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e262",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 262",
+      "color": "terre",
+      "date": {
+        "year": 1504,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e263",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 263",
+      "color": "pierre",
+      "date": {
+        "year": 1024,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e264",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 264",
+      "color": "brique",
+      "date": {
+        "year": 1190,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p265",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 265",
+      "color": "ocre",
+      "start": {
+        "year": 1773
+      },
+      "end": {
+        "year": 1790
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e266",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 266",
+      "color": "ble",
+      "date": {
+        "year": 1603,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e267",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 267",
+      "color": "olive",
+      "date": {
+        "year": 1086,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e268",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 268",
+      "color": "foret",
+      "date": {
+        "year": 1951,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e269",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 269",
+      "color": "canard",
+      "date": {
+        "year": 1369,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p270",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 270",
+      "color": "ardoise",
+      "start": {
+        "year": 1348
+      },
+      "end": {
+        "year": 1388
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e271",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 271",
+      "color": "encre",
+      "date": {
+        "year": 1057,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e272",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 272",
+      "color": "prune",
+      "date": {
+        "year": 1304,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e273",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 273",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1923,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e274",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 274",
+      "color": "terre",
+      "date": {
+        "year": 1066,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p275",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 275",
+      "color": "pierre",
+      "start": {
+        "year": 1519
+      },
+      "end": {
+        "year": 1534
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e276",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 276",
+      "color": "brique",
+      "date": {
+        "year": 1620,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e277",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 277",
+      "color": "ocre",
+      "date": {
+        "year": 1702,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e278",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 278",
+      "color": "ble",
+      "date": {
+        "year": 1692,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e279",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 279",
+      "color": "olive",
+      "date": {
+        "year": 1326,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p280",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 280",
+      "color": "foret",
+      "start": {
+        "year": 1775
+      },
+      "end": {
+        "year": 1815
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e281",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 281",
+      "color": "canard",
+      "date": {
+        "year": 1222,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e282",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 282",
+      "color": "ardoise",
+      "date": {
+        "year": 1178,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e283",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 283",
+      "color": "encre",
+      "date": {
+        "year": 1378,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e284",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 284",
+      "color": "prune",
+      "date": {
+        "year": 1163,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p285",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 285",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1286
+      },
+      "end": {
+        "year": 1295
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e286",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 286",
+      "color": "terre",
+      "date": {
+        "year": 1229,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e287",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 287",
+      "color": "pierre",
+      "date": {
+        "year": 1810,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e288",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 288",
+      "color": "brique",
+      "date": {
+        "year": 1231,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e289",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 289",
+      "color": "ocre",
+      "date": {
+        "year": 1767,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p290",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 290",
+      "color": "ble",
+      "start": {
+        "year": 1619
+      },
+      "end": {
+        "year": 1642
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e291",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 291",
+      "color": "olive",
+      "date": {
+        "year": 1680,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e292",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 292",
+      "color": "foret",
+      "date": {
+        "year": 1721,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e293",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 293",
+      "color": "canard",
+      "date": {
+        "year": 1239,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e294",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 294",
+      "color": "ardoise",
+      "date": {
+        "year": 1249,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-p295",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 295",
+      "color": "encre",
+      "start": {
+        "year": 1627
+      },
+      "end": {
+        "year": 1666
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e296",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 296",
+      "color": "prune",
+      "date": {
+        "year": 1420,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e297",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 297",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1571,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e298",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 298",
+      "color": "terre",
+      "date": {
+        "year": 1320,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e299",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 299",
+      "color": "pierre",
+      "date": {
+        "year": 1042,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-p300",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 300",
+      "color": "brique",
+      "start": {
+        "year": 1129
+      },
+      "end": {
+        "year": 1134
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e301",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 301",
+      "color": "ocre",
+      "date": {
+        "year": 1589,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e302",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 302",
+      "color": "ble",
+      "date": {
+        "year": 1923,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e303",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 303",
+      "color": "olive",
+      "date": {
+        "year": 1914,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e304",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 304",
+      "color": "foret",
+      "date": {
+        "year": 1019,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p305",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 305",
+      "color": "canard",
+      "start": {
+        "year": 1583
+      },
+      "end": {
+        "year": 1590
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e306",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 306",
+      "color": "ardoise",
+      "date": {
+        "year": 1129,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e307",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 307",
+      "color": "encre",
+      "date": {
+        "year": 1459,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e308",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 308",
+      "color": "prune",
+      "date": {
+        "year": 1416,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e309",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 309",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1404,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p310",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 310",
+      "color": "terre",
+      "start": {
+        "year": 1724
+      },
+      "end": {
+        "year": 1752
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e311",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 311",
+      "color": "pierre",
+      "date": {
+        "year": 1464,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e312",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 312",
+      "color": "brique",
+      "date": {
+        "year": 1612,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e313",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 313",
+      "color": "ocre",
+      "date": {
+        "year": 1338,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e314",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 314",
+      "color": "ble",
+      "date": {
+        "year": 1573,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p315",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 315",
+      "color": "olive",
+      "start": {
+        "year": 1648
+      },
+      "end": {
+        "year": 1665
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e316",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 316",
+      "color": "foret",
+      "date": {
+        "year": 1825,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e317",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 317",
+      "color": "canard",
+      "date": {
+        "year": 1342,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e318",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 318",
+      "color": "ardoise",
+      "date": {
+        "year": 1870,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e319",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 319",
+      "color": "encre",
+      "date": {
+        "year": 1608,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p320",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 320",
+      "color": "prune",
+      "start": {
+        "year": 1514
+      },
+      "end": {
+        "year": 1524
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e321",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 321",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1066,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e322",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 322",
+      "color": "terre",
+      "date": {
+        "year": 1979,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e323",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 323",
+      "color": "pierre",
+      "date": {
+        "year": 1771,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e324",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 324",
+      "color": "brique",
+      "date": {
+        "year": 1862,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p325",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 325",
+      "color": "ocre",
+      "start": {
+        "year": 1741
+      },
+      "end": {
+        "year": 1770
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e326",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 326",
+      "color": "ble",
+      "date": {
+        "year": 1040,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e327",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 327",
+      "color": "olive",
+      "date": {
+        "year": 1098,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e328",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 328",
+      "color": "foret",
+      "date": {
+        "year": 1828,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e329",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 329",
+      "color": "canard",
+      "date": {
+        "year": 1185,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p330",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 330",
+      "color": "ardoise",
+      "start": {
+        "year": 1098
+      },
+      "end": {
+        "year": 1104
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e331",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 331",
+      "color": "encre",
+      "date": {
+        "year": 1961,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e332",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 332",
+      "color": "prune",
+      "date": {
+        "year": 1036,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e333",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 333",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1803,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e334",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 334",
+      "color": "terre",
+      "date": {
+        "year": 1265,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-p335",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 335",
+      "color": "pierre",
+      "start": {
+        "year": 1718
+      },
+      "end": {
+        "year": 1740
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e336",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 336",
+      "color": "brique",
+      "date": {
+        "year": 1372,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e337",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 337",
+      "color": "ocre",
+      "date": {
+        "year": 1412,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e338",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 338",
+      "color": "ble",
+      "date": {
+        "year": 1458,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e339",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 339",
+      "color": "olive",
+      "date": {
+        "year": 1059,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-p340",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 340",
+      "color": "foret",
+      "start": {
+        "year": 1854
+      },
+      "end": {
+        "year": 1866
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e341",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 341",
+      "color": "canard",
+      "date": {
+        "year": 1518,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e342",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 342",
+      "color": "ardoise",
+      "date": {
+        "year": 1438,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e343",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 343",
+      "color": "encre",
+      "date": {
+        "year": 1114,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e344",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 344",
+      "color": "prune",
+      "date": {
+        "year": 1653,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-p345",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 345",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1037
+      },
+      "end": {
+        "year": 1063
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e346",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 346",
+      "color": "terre",
+      "date": {
+        "year": 1022,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e347",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 347",
+      "color": "pierre",
+      "date": {
+        "year": 1407,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e348",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 348",
+      "color": "brique",
+      "date": {
+        "year": 1843,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e349",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 349",
+      "color": "ocre",
+      "date": {
+        "year": 1307,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p350",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 350",
+      "color": "ble",
+      "start": {
+        "year": 1978
+      },
+      "end": {
+        "year": 1994
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e351",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 351",
+      "color": "olive",
+      "date": {
+        "year": 1989,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e352",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 352",
+      "color": "foret",
+      "date": {
+        "year": 1070,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e353",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 353",
+      "color": "canard",
+      "date": {
+        "year": 1801,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e354",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 354",
+      "color": "ardoise",
+      "date": {
+        "year": 1620,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p355",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 355",
+      "color": "encre",
+      "start": {
+        "year": 1202
+      },
+      "end": {
+        "year": 1224
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e356",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 356",
+      "color": "prune",
+      "date": {
+        "year": 1232,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e357",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 357",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1700,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e358",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 358",
+      "color": "terre",
+      "date": {
+        "year": 1481,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e359",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 359",
+      "color": "pierre",
+      "date": {
+        "year": 1022,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p360",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 360",
+      "color": "brique",
+      "start": {
+        "year": 1177
+      },
+      "end": {
+        "year": 1192
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e361",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 361",
+      "color": "ocre",
+      "date": {
+        "year": 1517,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e362",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 362",
+      "color": "ble",
+      "date": {
+        "year": 1576,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e363",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 363",
+      "color": "olive",
+      "date": {
+        "year": 1091,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e364",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 364",
+      "color": "foret",
+      "date": {
+        "year": 1563,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p365",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 365",
+      "color": "canard",
+      "start": {
+        "year": 1505
+      },
+      "end": {
+        "year": 1530
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e366",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 366",
+      "color": "ardoise",
+      "date": {
+        "year": 1058,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e367",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 367",
+      "color": "encre",
+      "date": {
+        "year": 1776,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e368",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 368",
+      "color": "prune",
+      "date": {
+        "year": 1693,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e369",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 369",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1753,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p370",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 370",
+      "color": "terre",
+      "start": {
+        "year": 1812
+      },
+      "end": {
+        "year": 1846
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e371",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 371",
+      "color": "pierre",
+      "date": {
+        "year": 1495,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e372",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 372",
+      "color": "brique",
+      "date": {
+        "year": 1019,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e373",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 373",
+      "color": "ocre",
+      "date": {
+        "year": 1501,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e374",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 374",
+      "color": "ble",
+      "date": {
+        "year": 1246,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-p375",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 375",
+      "color": "olive",
+      "start": {
+        "year": 1651
+      },
+      "end": {
+        "year": 1656
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e376",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 376",
+      "color": "foret",
+      "date": {
+        "year": 1970,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e377",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 377",
+      "color": "canard",
+      "date": {
+        "year": 1698,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e378",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 378",
+      "color": "ardoise",
+      "date": {
+        "year": 1633,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e379",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 379",
+      "color": "encre",
+      "date": {
+        "year": 1457,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p380",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 380",
+      "color": "prune",
+      "start": {
+        "year": 1157
+      },
+      "end": {
+        "year": 1197
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e381",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 381",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1631,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e382",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 382",
+      "color": "terre",
+      "date": {
+        "year": 1700,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e383",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 383",
+      "color": "pierre",
+      "date": {
+        "year": 1834,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e384",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 384",
+      "color": "brique",
+      "date": {
+        "year": 1141,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p385",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 385",
+      "color": "ocre",
+      "start": {
+        "year": 1637
+      },
+      "end": {
+        "year": 1664
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e386",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 386",
+      "color": "ble",
+      "date": {
+        "year": 1732,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e387",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 387",
+      "color": "olive",
+      "date": {
+        "year": 1073,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e388",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 388",
+      "color": "foret",
+      "date": {
+        "year": 1423,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e389",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 389",
+      "color": "canard",
+      "date": {
+        "year": 1958,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p390",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 390",
+      "color": "ardoise",
+      "start": {
+        "year": 1243
+      },
+      "end": {
+        "year": 1281
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e391",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 391",
+      "color": "encre",
+      "date": {
+        "year": 1106,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e392",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 392",
+      "color": "prune",
+      "date": {
+        "year": 1943,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e393",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 393",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1322,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e394",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 394",
+      "color": "terre",
+      "date": {
+        "year": 1478,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p395",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 395",
+      "color": "pierre",
+      "start": {
+        "year": 1672
+      },
+      "end": {
+        "year": 1687
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e396",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 396",
+      "color": "brique",
+      "date": {
+        "year": 1714,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e397",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 397",
+      "color": "ocre",
+      "date": {
+        "year": 1480,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e398",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 398",
+      "color": "ble",
+      "date": {
+        "year": 1181,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e399",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 399",
+      "color": "olive",
+      "date": {
+        "year": 1823,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-p400",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 400",
+      "color": "foret",
+      "start": {
+        "year": 1190
+      },
+      "end": {
+        "year": 1210
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e401",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 401",
+      "color": "canard",
+      "date": {
+        "year": 1253,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e402",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 402",
+      "color": "ardoise",
+      "date": {
+        "year": 1971,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e403",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 403",
+      "color": "encre",
+      "date": {
+        "year": 1078,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e404",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 404",
+      "color": "prune",
+      "date": {
+        "year": 1527,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p405",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 405",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1436
+      },
+      "end": {
+        "year": 1476
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e406",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 406",
+      "color": "terre",
+      "date": {
+        "year": 1693,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e407",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 407",
+      "color": "pierre",
+      "date": {
+        "year": 1507,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e408",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 408",
+      "color": "brique",
+      "date": {
+        "year": 1920,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e409",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 409",
+      "color": "ocre",
+      "date": {
+        "year": 1207,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-p410",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 410",
+      "color": "ble",
+      "start": {
+        "year": 1458
+      },
+      "end": {
+        "year": 1484
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e411",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 411",
+      "color": "olive",
+      "date": {
+        "year": 1013,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e412",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 412",
+      "color": "foret",
+      "date": {
+        "year": 1166,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e413",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 413",
+      "color": "canard",
+      "date": {
+        "year": 1952,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e414",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 414",
+      "color": "ardoise",
+      "date": {
+        "year": 1514,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p415",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 415",
+      "color": "encre",
+      "start": {
+        "year": 1567
+      },
+      "end": {
+        "year": 1574
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e416",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 416",
+      "color": "prune",
+      "date": {
+        "year": 1671,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e417",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 417",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1479,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e418",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 418",
+      "color": "terre",
+      "date": {
+        "year": 1266,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-e419",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 419",
+      "color": "pierre",
+      "date": {
+        "year": 1184,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-p420",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 420",
+      "color": "brique",
+      "start": {
+        "year": 1722
+      },
+      "end": {
+        "year": 1742
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e421",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 421",
+      "color": "ocre",
+      "date": {
+        "year": 1675,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e422",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 422",
+      "color": "ble",
+      "date": {
+        "year": 1256,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e423",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 423",
+      "color": "olive",
+      "date": {
+        "year": 1691,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e424",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 424",
+      "color": "foret",
+      "date": {
+        "year": 1252,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p425",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 425",
+      "color": "canard",
+      "start": {
+        "year": 1611
+      },
+      "end": {
+        "year": 1635
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e426",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 426",
+      "color": "ardoise",
+      "date": {
+        "year": 1480,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e427",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 427",
+      "color": "encre",
+      "date": {
+        "year": 1940,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e428",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 428",
+      "color": "prune",
+      "date": {
+        "year": 1967,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e429",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 429",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1327,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-p430",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 430",
+      "color": "terre",
+      "start": {
+        "year": 1446
+      },
+      "end": {
+        "year": 1447
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e431",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 431",
+      "color": "pierre",
+      "date": {
+        "year": 1658,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e432",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 432",
+      "color": "brique",
+      "date": {
+        "year": 1960,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e433",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 433",
+      "color": "ocre",
+      "date": {
+        "year": 1340,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e434",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 434",
+      "color": "ble",
+      "date": {
+        "year": 1610,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-p435",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 435",
+      "color": "olive",
+      "start": {
+        "year": 1566
+      },
+      "end": {
+        "year": 1573
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e436",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 436",
+      "color": "foret",
+      "date": {
+        "year": 1991,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e437",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 437",
+      "color": "canard",
+      "date": {
+        "year": 1577,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e438",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 438",
+      "color": "ardoise",
+      "date": {
+        "year": 1850,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e439",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 439",
+      "color": "encre",
+      "date": {
+        "year": 1802,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p440",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 440",
+      "color": "prune",
+      "start": {
+        "year": 1776
+      },
+      "end": {
+        "year": 1804
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e441",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 441",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1546,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e442",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 442",
+      "color": "terre",
+      "date": {
+        "year": 1130,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e443",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 443",
+      "color": "pierre",
+      "date": {
+        "year": 1384,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e444",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 444",
+      "color": "brique",
+      "date": {
+        "year": 1652,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-p445",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 445",
+      "color": "ocre",
+      "start": {
+        "year": 1435
+      },
+      "end": {
+        "year": 1437
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e446",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 446",
+      "color": "ble",
+      "date": {
+        "year": 1019,
+        "month": 7
+      }
+    },
+    {
+      "id": "stress-e447",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 447",
+      "color": "olive",
+      "date": {
+        "year": 1318,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e448",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 448",
+      "color": "foret",
+      "date": {
+        "year": 1610,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e449",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 449",
+      "color": "canard",
+      "date": {
+        "year": 1056,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p450",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 450",
+      "color": "ardoise",
+      "start": {
+        "year": 1086
+      },
+      "end": {
+        "year": 1117
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e451",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 451",
+      "color": "encre",
+      "date": {
+        "year": 1375,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e452",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 452",
+      "color": "prune",
+      "date": {
+        "year": 1279,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e453",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 453",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1848,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e454",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 454",
+      "color": "terre",
+      "date": {
+        "year": 1460,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p455",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 455",
+      "color": "pierre",
+      "start": {
+        "year": 1265
+      },
+      "end": {
+        "year": 1267
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e456",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 456",
+      "color": "brique",
+      "date": {
+        "year": 1996,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e457",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 457",
+      "color": "ocre",
+      "date": {
+        "year": 1510,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e458",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 458",
+      "color": "ble",
+      "date": {
+        "year": 1767,
+        "month": 2
+      }
+    },
+    {
+      "id": "stress-e459",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 459",
+      "color": "olive",
+      "date": {
+        "year": 1585,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-p460",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 460",
+      "color": "foret",
+      "start": {
+        "year": 1793
+      },
+      "end": {
+        "year": 1833
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e461",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 461",
+      "color": "canard",
+      "date": {
+        "year": 1663,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e462",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 462",
+      "color": "ardoise",
+      "date": {
+        "year": 1603,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e463",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 463",
+      "color": "encre",
+      "date": {
+        "year": 1919,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e464",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 464",
+      "color": "prune",
+      "date": {
+        "year": 1583,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-p465",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 465",
+      "color": "lie-de-vin",
+      "start": {
+        "year": 1227
+      },
+      "end": {
+        "year": 1243
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e466",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 466",
+      "color": "terre",
+      "date": {
+        "year": 1432,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e467",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 467",
+      "color": "pierre",
+      "date": {
+        "year": 1433,
+        "month": 8
+      }
+    },
+    {
+      "id": "stress-e468",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 468",
+      "color": "brique",
+      "date": {
+        "year": 1005,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-e469",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 469",
+      "color": "ocre",
+      "date": {
+        "year": 1971,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-p470",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 470",
+      "color": "ble",
+      "start": {
+        "year": 1854
+      },
+      "end": {
+        "year": 1885
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e471",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 471",
+      "color": "olive",
+      "date": {
+        "year": 1323,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-e472",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 472",
+      "color": "foret",
+      "date": {
+        "year": 1154,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e473",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 473",
+      "color": "canard",
+      "date": {
+        "year": 1989,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e474",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 474",
+      "color": "ardoise",
+      "date": {
+        "year": 1115,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-p475",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 475",
+      "color": "encre",
+      "start": {
+        "year": 1977
+      },
+      "end": {
+        "year": 2000
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e476",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 476",
+      "color": "prune",
+      "date": {
+        "year": 1665,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e477",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 477",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1979,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e478",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 478",
+      "color": "terre",
+      "date": {
+        "year": 1664,
+        "month": 12
+      }
+    },
+    {
+      "id": "stress-e479",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 479",
+      "color": "pierre",
+      "date": {
+        "year": 1461,
+        "month": 10
+      }
+    },
+    {
+      "id": "stress-p480",
+      "kind": "period",
+      "laneId": "stress-lane-0",
+      "label": "Période 480",
+      "color": "brique",
+      "start": {
+        "year": 1149
+      },
+      "end": {
+        "year": 1154
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e481",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 481",
+      "color": "ocre",
+      "date": {
+        "year": 1458,
+        "month": 3
+      }
+    },
+    {
+      "id": "stress-e482",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 482",
+      "color": "ble",
+      "date": {
+        "year": 1164,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e483",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 483",
+      "color": "olive",
+      "date": {
+        "year": 1193,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e484",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 484",
+      "color": "foret",
+      "date": {
+        "year": 1196,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p485",
+      "kind": "period",
+      "laneId": "stress-lane-1",
+      "label": "Période 485",
+      "color": "canard",
+      "start": {
+        "year": 1870
+      },
+      "end": {
+        "year": 1903
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e486",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 486",
+      "color": "ardoise",
+      "date": {
+        "year": 1373,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e487",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 487",
+      "color": "encre",
+      "date": {
+        "year": 1916,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e488",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 488",
+      "color": "prune",
+      "date": {
+        "year": 1360,
+        "month": 1
+      }
+    },
+    {
+      "id": "stress-e489",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 489",
+      "color": "lie-de-vin",
+      "date": {
+        "year": 1214,
+        "month": 11
+      }
+    },
+    {
+      "id": "stress-p490",
+      "kind": "period",
+      "laneId": "stress-lane-2",
+      "label": "Période 490",
+      "color": "terre",
+      "start": {
+        "year": 1609
+      },
+      "end": {
+        "year": 1642
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e491",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 491",
+      "color": "pierre",
+      "date": {
+        "year": 1059,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e492",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 492",
+      "color": "brique",
+      "date": {
+        "year": 1178,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e493",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 493",
+      "color": "ocre",
+      "date": {
+        "year": 1544,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e494",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 494",
+      "color": "ble",
+      "date": {
+        "year": 1095,
+        "month": 5
+      }
+    },
+    {
+      "id": "stress-p495",
+      "kind": "period",
+      "laneId": "stress-lane-3",
+      "label": "Période 495",
+      "color": "olive",
+      "start": {
+        "year": 1123
+      },
+      "end": {
+        "year": 1136
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "stress-e496",
+      "kind": "event",
+      "laneId": "stress-lane-0",
+      "label": "Événement 496",
+      "color": "foret",
+      "date": {
+        "year": 1438,
+        "month": 6
+      }
+    },
+    {
+      "id": "stress-e497",
+      "kind": "event",
+      "laneId": "stress-lane-1",
+      "label": "Événement 497",
+      "color": "canard",
+      "date": {
+        "year": 1475,
+        "month": 4
+      }
+    },
+    {
+      "id": "stress-e498",
+      "kind": "event",
+      "laneId": "stress-lane-2",
+      "label": "Événement 498",
+      "color": "ardoise",
+      "date": {
+        "year": 1650,
+        "month": 9
+      }
+    },
+    {
+      "id": "stress-e499",
+      "kind": "event",
+      "laneId": "stress-lane-3",
+      "label": "Événement 499",
+      "color": "encre",
+      "date": {
+        "year": 1014,
+        "month": 6
+      }
+    }
+  ],
+  "pedagogy": {
+    "maskedItems": []
+  }
+}

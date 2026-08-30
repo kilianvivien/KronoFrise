@@ -1,0 +1,221 @@
+{
+  "schema": "krono/1",
+  "id": "fixture-grandes-periodes",
+  "meta": {
+    "title": "Les grandes périodes de l’Histoire",
+    "createdAt": "2026-08-30T09:00:00.000Z",
+    "modifiedAt": "2026-08-30T09:00:00.000Z"
+  },
+  "axis": {
+    "start": {
+      "year": -3000000
+    },
+    "end": {
+      "year": 2026
+    },
+    "segments": [
+      {
+        "until": {
+          "year": -3299
+        },
+        "weight": 1
+      },
+      {
+        "until": {
+          "year": 476
+        },
+        "weight": 2
+      },
+      {
+        "until": {
+          "year": 1492
+        },
+        "weight": 2
+      },
+      {
+        "until": {
+          "year": 2026
+        },
+        "weight": 4
+      }
+    ]
+  },
+  "themeId": "manuel-scolaire",
+  "lanes": [
+    {
+      "id": "lane-grandes-periodes",
+      "name": "Grandes périodes"
+    },
+    {
+      "id": "lane-reperes",
+      "name": "Repères"
+    }
+  ],
+  "items": [
+    {
+      "id": "gp-p1",
+      "kind": "period",
+      "laneId": "lane-grandes-periodes",
+      "label": "Préhistoire",
+      "color": "#8A6248",
+      "start": {
+        "year": -3000000
+      },
+      "end": {
+        "year": -3299
+      },
+      "shape": "bar",
+      "fuzzyStart": true
+    },
+    {
+      "id": "gp-p2",
+      "kind": "period",
+      "laneId": "lane-grandes-periodes",
+      "label": "Antiquité",
+      "color": "#C4872E",
+      "start": {
+        "year": -3299
+      },
+      "end": {
+        "year": 476
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "gp-p3",
+      "kind": "period",
+      "laneId": "lane-grandes-periodes",
+      "label": "Moyen Âge",
+      "color": "#4A6D8C",
+      "start": {
+        "year": 476
+      },
+      "end": {
+        "year": 1492
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "gp-p4",
+      "kind": "period",
+      "laneId": "lane-grandes-periodes",
+      "label": "Époque moderne",
+      "color": "#4E7A55",
+      "start": {
+        "year": 1492
+      },
+      "end": {
+        "year": 1789
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "gp-p5",
+      "kind": "period",
+      "laneId": "lane-grandes-periodes",
+      "label": "Époque contemporaine",
+      "color": "#B24E33",
+      "start": {
+        "year": 1789
+      },
+      "end": {
+        "year": 2026
+      },
+      "shape": "bar"
+    },
+    {
+      "id": "gp-e1",
+      "label": "Peintures de Lascaux",
+      "date": {
+        "year": -16999,
+        "circa": true
+      },
+      "color": "terre",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e2",
+      "label": "Naissance de l’écriture",
+      "date": {
+        "year": -3299,
+        "circa": true
+      },
+      "color": "ocre",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e3",
+      "label": "Fondation de Rome",
+      "date": {
+        "year": -752,
+        "circa": true
+      },
+      "color": "ocre",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e4",
+      "label": "Chute de l’Empire romain d’Occident",
+      "date": {
+        "year": 476
+      },
+      "color": "ardoise",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e5",
+      "label": "Couronnement de Charlemagne",
+      "date": {
+        "year": 800,
+        "month": 12,
+        "day": 25
+      },
+      "color": "ardoise",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e6",
+      "label": "Prise de Constantinople",
+      "date": {
+        "year": 1453,
+        "month": 5,
+        "day": 29
+      },
+      "color": "foret",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e7",
+      "label": "Révolution française",
+      "date": {
+        "year": 1789,
+        "month": 7,
+        "day": 14
+      },
+      "color": "brique",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    },
+    {
+      "id": "gp-e8",
+      "label": "Première Guerre mondiale",
+      "date": {
+        "year": 1914,
+        "month": 7,
+        "day": 28
+      },
+      "color": "brique",
+      "kind": "event",
+      "laneId": "lane-reperes"
+    }
+  ],
+  "pedagogy": {
+    "maskedItems": []
+  }
+}
