@@ -4,19 +4,15 @@ Points non tranchés par PLAN.md / DESIGN.md / docs/format.md, résolus par
 analogie avec la spécification la plus proche (PLAN.md §8.1). Chaque entrée est
 signalée par un commentaire `// SPEC?` dans le code.
 
-## 1. `strings.ts` et `palette.ts` traversent la frontière `core/`–`ui/`
+## 1. Source partagée des chaînes et de la palette — corrigé lors de M1
 
-- **Tension.** PLAN.md §4.2 interdit à `core/` et `layout/` d'importer `ui/`.
-  DESIGN.md §1.2/§1.3 exigent une source unique pour les couleurs
-  (`palette.ts`) et pour les chaînes (`strings.ts`), et docs/format.md §2 veut
-  que `parseDocument` échoue avec un **message français**.
-- **Résolution.** `src/ui/strings.ts` et `src/ui/palette.ts` sont des modules de
-  données purs : aucun import React, aucun accès au DOM. Ils sont les deux
-  seules exceptions de la règle ESLint de frontière ; le reste de `ui/` demeure
-  interdit à `core/` et `layout/`. Le portage Tauri et les exports headless
-  restent donc possibles.
-- **Alternative écartée.** Faire remonter des codes d'erreur que `ui/`
-  traduirait : dupliquerait le vocabulaire et contredirait format.md §2.
+L'exception M0 autorisant des imports de `ui/strings.ts` et `ui/palette.ts`
+depuis `core/` contredisait la frontière de PLAN.md §4.2. Les données pures
+vivent maintenant dans `shared/strings.ts` et `shared/palette.ts`. Les entrées
+publiques `ui/strings.ts` et `ui/palette.ts` les réexportent, sans duplication.
+Les nouvelles chaînes propres à l'éditeur restent dans `ui/strings.ts`.
+ESLint interdit toute remontée de `core/`, `layout/` **et** `shared/` vers
+React, le DOM ou les couches supérieures ; il n'y a plus d'exception UI.
 
 ## 2. Densité de la règle : seuils de changement de niveau
 
@@ -88,3 +84,41 @@ replier « XVIIᵉ » sur « XVIIe » à l'export. La sonde applique le repli.
 Les couleurs, elles, sont résolues sans recopie : `ui/tokenValues.ts` lit les
 valeurs directement dans `tokens.css`, qui reste la source unique (DESIGN.md
 §1.2).
+
+## 9. Interactions M1 non détaillées dans la spécification
+
+- Un déplacement de 4 px distingue le clic du glissement. Maj + glisser sur
+  le fond trace une sélection additive ; Maj + clic ajoute/retire un élément.
+  E arme l'événement, P la période ; la création validée revient au mode auto.
+- L'aimantation accroche une graduation à moins de 8 px. Alt la désactive ;
+  la précision du document reste entière (année/mois/jour), jamais flottante.
+- La molette avec Ctrl/⌘ zoome autour du pointeur (y compris le pincement du
+  trackpad traduit par le navigateur). Les boutons zooment autour du centre.
+  Les limites sont 100–500 000 %. Les bandes dépassant la hauteur disponible
+  défilent verticalement ; la molette horizontale/Maj et Espace + glisser
+  déplacent la vue horizontalement.
+- Les bornes d'un **axe linéaire** s'éditent directement sous la règle, dans
+  un champ temporaire. Cela permet de créer une frise sur une autre époque
+  sans formulaire ni inspecteur. Les segments élastiques restent entièrement
+  du ressort de M2 ; leurs bornes ne sont pas éditables ici.
+- Le pied d'éditeur est une barre d'état de 40 px, pas le minimap de 64 px
+  prévu en M2. L'inspecteur est masqué initialement ; les deux panneaux sont
+  des emplacements réservés et se basculent avec ⌘1/⌘2 (DESIGN.md fait foi).
+  Les modes Présentation/Fiche élève et l'export visuel attendent M3 ; seuls
+  Ouvrir/Enregistrer `.krono` sont actifs dans cette barre M1.
+- Les poignées de période sont des pilules 8×16 dans une zone de clic 24×24.
+  Une période non sélectionnée se redimensionne aussi par ses 8 px de bord.
+- Échap annule la création/le déplacement en cours. Entrée ou la perte de
+  focus valide le libellé ; création + libellé forment une seule commande.
+- Les fixtures M0 historiques portent des identifiants lisibles, pas des UUID.
+  L'import reste compatible avec ces fichiers ; les nouvelles créations
+  utilisent des UUID v4 et l'unicité est désormais vérifiée par le schéma.
+
+## 10. Empilement des accolades
+
+La mesure M0 ne réservait que les 24 px de la barre pour une accolade, alors
+que son libellé est dessiné au-dessus. M1 réserve 20 px supplémentaires
+(texte de 13 px, décalage et marge), ainsi que toute la largeur du libellé
+centré. Ces dimensions font partie du layout commun, donc écran et export
+bénéficient de la même correction. Le cas signalé « Naissance du
+christianisme » / « Pax Romana » a été vérifié dans le navigateur.

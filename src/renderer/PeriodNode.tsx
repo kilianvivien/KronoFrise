@@ -3,6 +3,7 @@
  * si la largeur le permet, sinon à droite ; bords flous en dégradé.
  */
 import type { JSX } from 'react';
+import { EDITOR } from '../ui/strings';
 import type { ScenePeriod } from '../layout/scene';
 import { ink, resolveBase, tint } from '../ui/palette';
 import { periodDatesStyle, periodLabelStyle } from './style';
@@ -18,9 +19,9 @@ const LABEL_PADDING = 8;
 
 export function PeriodNode({ period }: { period: ScenePeriod }): JSX.Element {
   const base = resolveBase(period.color);
-  const label = `Période : ${period.label}, ${period.datesLabel}`;
+  const label = EDITOR.periodAccessible(period.label, period.datesLabel);
   return (
-    <g role="button" aria-label={label} tabIndex={0}>
+    <g data-item-id={period.itemId} role="button" aria-label={label} tabIndex={0}>
       {period.shape === 'bracket' ? (
         <Bracket period={period} base={base} />
       ) : (

@@ -1,0 +1,60 @@
+.app { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
+.toolbar { height: 48px; flex: 0 0 48px; display: flex; align-items: center; gap: var(--space-1); padding: 0 var(--space-3); border-bottom: 1px solid var(--hairline); background: var(--chrome-bg); overflow-x: auto; }
+.button, .primary, .danger, .icon, .zoom, .title { height: 28px; border: 1px solid var(--hairline); border-radius: var(--radius-control); padding: 0 var(--space-3); background: var(--field-bg); font-weight: 500; white-space: nowrap; cursor: pointer; flex-shrink: 0; }
+.button:hover, .button:active { background: var(--chrome-bg-inset); }
+.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; }
+.primary:hover { background: var(--accent-hover); }
+.primary:active { background: var(--accent-pressed); }
+.danger { background: var(--danger); color: var(--on-accent); border-color: transparent; }
+.danger:hover { opacity: .85; }
+.icon { width: 28px; display: grid; place-items: center; padding: 0; border-color: transparent; background: transparent; color: var(--text-secondary); }
+.icon:hover, .icon:active, .zoom:hover, .title:hover { background: var(--chrome-bg-inset); }
+.icon[aria-pressed=true], .button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); }
+.primary[aria-pressed=true] { background: var(--accent-pressed); }
+.app button:disabled { opacity: .4; pointer-events: none; }
+.title { font-size: var(--fs-title); font-weight: 600; background: transparent; border-color: transparent; overflow: hidden; text-overflow: ellipsis; text-align: left; width: clamp(140px, 20vw, 280px); }
+.titleInput { width: 220px; height: 28px; padding: 0 var(--space-2); background: var(--field-bg); border: 1px solid var(--accent); border-radius: var(--radius-control); }
+.separator { flex: 0 0 1px; height: 16px; background: var(--hairline); margin: 0 var(--space-2); }
+.spacer { flex: 1; }
+.zoom { font-variant-numeric: tabular-nums; background: transparent; border-color: transparent; padding: 0 var(--space-1); min-width: 52px; }
+.workspace { flex: 1; display: flex; min-height: 0; }
+.main { flex: 1; min-width: 0; position: relative; }
+.sidebar, .inspector { flex-shrink: 0; overflow: hidden; background: var(--chrome-bg); transition: width 140ms ease-out; }
+.sidebar { width: 240px; border-right: 1px solid var(--hairline); }
+.inspector { width: 264px; border-left: 1px solid var(--hairline); }
+.sidebar[data-open=false], .inspector[data-open=false] { width: 0; border: 0; }
+.panelContent { padding: var(--space-3); width: 239px; }
+.inspector .panelContent { width: 263px; }
+.panelContent h2 { margin: var(--space-2) 0 var(--space-4); font-size: var(--fs-title); font-weight: 600; }
+.panelContent p { color: var(--text-secondary); margin: 0 0 var(--space-5); }
+.example { width: 100%; margin-top: var(--space-2); height: 28px; padding: 0 var(--space-2); border: 1px solid var(--hairline); background: var(--field-bg); border-radius: var(--radius-control); }
+.footer { flex: 0 0 40px; display: flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-3); border-top: 1px solid var(--hairline); color: var(--text-secondary); }
+.status { min-width: 180px; font-size: var(--fs-caption); }
+.hint { flex: 1; font-size: var(--fs-caption); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.canvas { height: 100%; overflow-x: hidden; overflow-y: auto; position: relative; background: var(--paper); touch-action: none; user-select: none; }
+.canvas:focus-visible { box-shadow: inset 0 0 0 3px var(--focus-ring); }
+.canvas[data-tool=event], .canvas[data-tool=period] { cursor: crosshair; }
+.canvas [data-item-id] { cursor: grab; }
+.canvas [data-item-id]:hover > rect { stroke-width: 1.5px; }
+.canvas[data-tool=pan], .canvas[data-tool=pan] [data-item-id] { cursor: grab; }
+.canvas[data-dragging=true], .canvas[data-dragging=true] [data-item-id] { cursor: grabbing; }
+.canvas[data-dragging=true] .selection { filter: drop-shadow(var(--shadow-drag)); opacity: .95; }
+.canvas [data-item-id]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; box-shadow: 0 0 0 3px var(--focus-ring); }
+.selection { fill: none; stroke: var(--accent); stroke-width: 2px; pointer-events: none; }
+.handle { fill: var(--field-bg); stroke: var(--accent); stroke-width: 1px; pointer-events: none; }
+.canvas .edge { cursor: ew-resize; }
+.marquee { fill: var(--accent-tint); stroke: var(--accent); pointer-events: none; }
+.guide { stroke: var(--accent); stroke-width: 1px; stroke-dasharray: 4 4; pointer-events: none; }
+.empty { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); max-width: 480px; text-align: center; color: var(--text-tertiary); pointer-events: none; }
+.inline { position: absolute; height: 28px; border: 1px solid var(--accent); border-radius: 5px; background: var(--field-bg); padding: 3px 8px; box-shadow: 0 0 0 3px var(--focus-ring); }
+.tooltip { position: absolute; pointer-events: none; border-radius: 5px; padding: 3px 8px; background: var(--tooltip-bg); color: var(--on-accent); font-size: var(--fs-caption); }
+.tooltip[data-snapped=true] { font-weight: 600; }
+.notification { position: fixed; bottom: 56px; right: var(--space-4); max-width: 560px; padding: var(--space-3); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-card); box-shadow: var(--shadow-popover); display: flex; gap: var(--space-3); align-items: center; }
+.dialog { color: var(--text-primary); background: var(--field-bg); padding: var(--space-5); border: 1px solid var(--hairline); border-radius: var(--radius-panel); box-shadow: var(--shadow-popover); }
+.dialog h2 { margin: 0 0 var(--space-5); font-size: var(--fs-title); }
+.dialog::backdrop { background: var(--accent-tint); }
+.dialogActions { display: flex; gap: var(--space-2); justify-content: flex-end; }
+.axisBounds { position: absolute; left: 8px; right: 8px; display: flex; justify-content: space-between; pointer-events: none; }
+.axisBounds button, .axisBounds input { pointer-events: auto; min-height: 24px; max-width: 220px; padding: 0 8px; border: 1px solid transparent; border-radius: var(--radius-control); background: var(--paper); color: inherit; font-size: var(--fs-caption); cursor: text; }
+.axisBounds button:hover { border-color: var(--hairline); }
+.axisBounds input { border-color: var(--accent); background: var(--field-bg); color: var(--text-primary); }

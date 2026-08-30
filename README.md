@@ -35,8 +35,9 @@ src/
 ├── renderer/  SceneGraph → SVG (écran et export headless)
 ├── export/    sonde PDF (M3)
 ├── themes/    thèmes, en données pures
-├── ui/        chrome, jetons, chaînes, palette
-└── store/     (M1) store zustand, envoi des commandes, autosauvegarde
+├── shared/    chaînes et palette pures, sans dépendance à l’interface
+├── ui/        éditeur, interactions, jetons, entrées chaînes/palette
+└── store/     store zustand, commandes, autosauvegarde IndexedDB, fichiers
 ```
 
 **La frontière sacrée** (PLAN.md §4.2, appliquée par ESLint) : `core/` et
@@ -46,11 +47,25 @@ s'imprime est exactement ce que l'on voyait.
 
 ## État
 
-**M0 — Fondations : terminé.** Modèle de document et schéma, arithmétique des
-dates av./apr. J.-C., échelle segmentée éprouvée par tests de propriété,
-commandes inversibles et pile d'annulation, moteur de mise en page, rendu SVG
-avec règle adaptative. Les quatre fixtures de docs/format.md §10 s'affichent à
-tous les niveaux de zoom (`pnpm dev`).
+**M1 — Le canevas vivant est implémenté.** Le chemin `/` ouvre l'éditeur ;
+`/?fixtures` conserve la page de contrôle M0. Les panneaux sont encore des
+emplacements réservés : leur contenu complet relève de M2.
 
-Prochaine étape : **M1 — le canevas vivant** (création au clic, glissement,
-sélection, store et autosauvegarde).
+- Cliquez pour créer un événement, glissez sur le fond pour créer une période.
+- Saisissez son libellé puis Entrée ; Échap annule. Double-cliquez pour renommer.
+- Glissez un élément pour le déplacer ou le bord d'une période pour la redimensionner.
+- Maj + clic ou Maj + glisser sélectionne plusieurs éléments ; Alt désactive l'aimantation.
+- ⌘/Ctrl Z, ⇧⌘/Ctrl Z, ⌘/Ctrl D, Suppr : annuler, rétablir, dupliquer, supprimer.
+- Molette horizontale/Maj ou Espace + glisser : naviguer ; Ctrl/⌘ + molette : zoomer.
+- Cliquez sur une borne sous la règle pour changer l'étendue d'un axe linéaire.
+- Enregistrement automatique après 500 ms, historique compris ; Ouvrir/Enregistrer
+  lit/écrit des fichiers `.krono` avec les dialogues natifs ou un repli upload/download.
+
+La vérification M0 a corrigé les imports de couches supérieures, l'inversion
+exacte des masques, plusieurs invariants d'import et la lisibilité de la règle
+en mode sombre. L'empilement des libellés d'accolades est également corrigé.
+L'export MiCetF réel et l'incorporation complète des glyphes de police PDF
+restent des points ouverts documentés, sans bloquer l'édition M1.
+
+Voir [docs/verification-m1.md](docs/verification-m1.md) pour les contrôles
+exécutés et leurs limites.

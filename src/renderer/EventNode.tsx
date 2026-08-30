@@ -5,6 +5,7 @@
  * vectorisé (DESIGN.md §7).
  */
 import type { JSX } from 'react';
+import { EDITOR } from '../ui/strings';
 import { EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP } from '../layout/metrics';
 import type { SceneEvent } from '../layout/scene';
 import { ink, resolveBase, tint } from '../ui/palette';
@@ -24,10 +25,10 @@ export function EventNode({ event }: { event: SceneEvent }): JSX.Element {
   const hasImage = event.imageSrc !== undefined;
   const chipBottom = event.chip.y + event.chip.height;
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
-  const label = `Événement : ${event.label}, ${event.dateLabel}`;
+  const label = EDITOR.eventAccessible(event.label, event.dateLabel);
 
   return (
-    <g role="button" aria-label={label} tabIndex={0}>
+    <g data-item-id={event.itemId} role="button" aria-label={label} tabIndex={0}>
       <line
         x1={event.x}
         x2={event.x}
