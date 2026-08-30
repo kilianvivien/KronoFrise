@@ -1,0 +1,71 @@
+/* KronoFrise — design tokens. DESIGN.md §2, copied verbatim.
+   Règle §1.2 : aucun littéral hexadécimal hors de ce fichier et de palette.ts. */
+
+:root {
+  /* ---- chrome, light ---- */
+  --chrome-bg:        #F3F0EB;   /* toolbar, sidebar, inspector, minimap */
+  --chrome-bg-inset:  #EAE6DF;   /* wells, active-tab background, canvas gutter */
+  --field-bg:         #FCFBF8;   /* inputs, dropdowns */
+  --hairline:         #DCD7CE;   /* all 1px borders and separators */
+  --text-primary:     #2C2925;
+  --text-secondary:   #6F6A61;   /* labels, ruler text, secondary buttons */
+  --text-tertiary:    #A09A8F;   /* placeholders, disabled, minor ticks */
+
+  /* ---- accent: terre cuite ---- */
+  --accent:           #B24E33;
+  --accent-hover:     #9E4229;
+  --accent-pressed:   #8A3922;
+  --accent-tint:      rgba(178, 78, 51, 0.10);  /* selection fills, active nav item */
+  --focus-ring:       rgba(178, 78, 51, 0.40);  /* 3px outer ring */
+  --on-accent:        #FFFFFF;
+
+  --danger:           #C13A2E;
+  --danger-tint:      rgba(193, 58, 46, 0.10);
+
+  /* ---- canvas (default theme "Manuel scolaire") ---- */
+  --paper:            #FBFAF7;
+  --paper-line:       #E9E5DC;   /* lane separators, guides at rest */
+
+  /* ---- elevation ---- */
+  --shadow-panel:     0 1px 3px rgba(44, 41, 37, 0.08);
+  --shadow-popover:   0 4px 16px rgba(44, 41, 37, 0.14);
+  --shadow-drag:      0 6px 20px rgba(44, 41, 37, 0.18); /* item while dragging */
+
+  /* ---- geometry ---- */
+  --radius-control:   6px;    /* buttons, inputs, chips */
+  --radius-card:      8px;    /* event cards, popovers, list rows */
+  --radius-panel:     10px;   /* modals, start-screen tiles */
+  --space-1: 4px;  --space-2: 8px;  --space-3: 12px;
+  --space-4: 16px; --space-5: 24px; --space-6: 32px;
+
+  /* ---- type ---- */
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+             "Segoe UI", system-ui, sans-serif;
+  --fs-caption: 11px;   /* ruler labels, badges, shortcuts hints */
+  --fs-ui:      13px;   /* default: buttons, inputs, event labels, menus */
+  --fs-title:   15px;   /* panel headers, document title */
+  --fs-display: 24px;   /* frise title on canvas (default theme) */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --chrome-bg:       #262320;
+    --chrome-bg-inset: #1E1C19;
+    --field-bg:        #1B1917;
+    --hairline:        #3B372F;
+    --text-primary:    #ECE7DF;
+    --text-secondary:  #A8A196;
+    --text-tertiary:   #736D62;
+    --accent:          #D8674A;
+    --accent-hover:    #E07A5F;
+    --accent-pressed:  #C55B40;
+    --accent-tint:     rgba(216, 103, 74, 0.16);
+    --focus-ring:      rgba(216, 103, 74, 0.45);
+    --danger:          #E0554A;
+    --danger-tint:     rgba(224, 85, 74, 0.16);
+    --shadow-panel:    0 1px 3px rgba(0, 0, 0, 0.35);
+    --shadow-popover:  0 4px 16px rgba(0, 0, 0, 0.45);
+    --shadow-drag:     0 6px 20px rgba(0, 0, 0, 0.5);
+    /* --paper and --paper-line unchanged: theme-owned (rule §1.8) */
+  }
+}
