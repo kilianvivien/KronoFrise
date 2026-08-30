@@ -67,7 +67,11 @@ export function chooseStep(pxPerYear: number, level?: TickLevel): number {
   return candidates[candidates.length - 1] ?? STEPS[STEPS.length - 1] ?? 1;
 }
 
-export function buildTicks(scale: Scale, level?: TickLevel, measurer: Measurer = approximateMeasurer): Tick[] {
+export function buildTicks(
+  scale: Scale,
+  level?: TickLevel,
+  measurer: Measurer = approximateMeasurer,
+): Tick[] {
   const ticks: Tick[] = [];
   const visibleLeft = scale.pan;
   const visibleRight = scale.pan + scale.width;
@@ -83,60 +87,102 @@ export function buildTicks(scale: Scale, level?: TickLevel, measurer: Measurer =
     const to = segment.from + (x1 - segment.x0) / segment.pxPerYear;
     const step = chooseStep(segment.pxPerYear, level);
     const tickLevel = levelOfStep(step);
-    // Les siècles commencent en 1601, pas en 1600 : la grille est décalée d'un an.
-    const offset = tickLevel === 'century' ? 1 : 0;
+    const minorStep = chooseMinorStep(step, segment.pxPerYear);
+    const toX = (t: number): number =>
+      segment.x0 + (t - segment.from) * segment.pxPerYear - scale.pan;
 
     const majors: Tick[] = [];
-    const firstIndex = Math.ceil((from - offset) / step - 1e-9);
-    const lastIndex = Math.floor((to - offset) / step + 1e-9);
-    for (let i = firstIndex; i <= lastIndex; i++) {
-      const t = i * step + offset;
-      majors.push({
-        t,
-        // Position calculée dans le segment courant : une graduation posée sur
-        // une borne reste de son côté de la coupure.
-        x: segment.x0 + (t - segment.from) * segment.pxPerYear - scale.pan,
-        major: true,
-        level: tickLevel,
-        label: labelFor(t, tickLevel),
-        segmentIndex: segment.index,
-      });
-    }
-    if (majors.length === 0) {
-      // Un segment trop court pour porter une graduation garde tout de même
-      // un repère : sans lui, la préhistoire n'afficherait aucune date.
-      majors.push({
-        t: segment.from,
-        x: segment.x0 - scale.pan,
-        major: true,
-        level: tickLevel,
-        label: labelFor(segment.from, tickLevel),
-        segmentIndex: segment.index,
-      });
-    }
-    thinLabels(majors, step, offset, step * segment.pxPerYear, measurer);
-    ensureOneLabel(majors, tickLevel);
-    ticks.push(...majors);
+    const seen = new Set<number>();
 
-    const minorStep = chooseMinorStep(step, segment.pxPerYear);
-    if (minorStep !== null) {
-      const firstMinor = Math.ceil((from - offset) / minorStep - 1e-9);
-      const lastMinor = Math.floor((to - offset) / minorStep + 1e-9);
-      for (let i = firstMinor; i <= lastMinor; i++) {
-        if (Number.isInteger((i * minorStep) / step)) continue; // déjà une majeure
-        const t = i * minorStep + offset;
+    for (const range of gridRanges(from, to, tickLevel)) {
+      const rangeMajors: Tick[] = [];
+      for (const t of gridPoints(range.from, range.to, step, range.offset)) {
+        if (seen.has(t)) continue;
+        seen.add(t);
+        rangeMajors.push({
+          t,
+          // Position calculée dans le segment courant : une graduation posée
+          // sur une borne reste de son côté de la coupure.
+          x: toX(t),
+          major: true,
+          level: tickLevel,
+          label: labelFor(t, tickLevel),
+          segmentIndex: segment.index,
+        });
+      }
+      thinLabels(rangeMajors, step, range.offset, step * segment.pxPerYear, measurer);
+      majors.push(...rangeMajors);
+
+      if (minorStep === null) continue;
+      for (const t of gridPoints(range.from, range.to, minorStep, range.offset)) {
+        // Une mineure ne double jamais une majeure (l'égalité exacte des
+        // flottants ne suffit pas pour les pas fractionnaires du niveau mois).
+        if (seen.has(t) || isMultipleOf(t - range.offset, step)) continue;
+        seen.add(t);
         ticks.push({
           t,
-          x: segment.x0 + (t - segment.from) * segment.pxPerYear - scale.pan,
+          x: toX(t),
           major: false,
           level: tickLevel,
           segmentIndex: segment.index,
         });
       }
     }
+
+    if (majors.length === 0) {
+      // Un segment trop court pour porter une graduation garde tout de même
+      // un repère : sans lui, la préhistoire n'afficherait aucune date.
+      majors.push({
+        t: segment.from,
+        x: toX(segment.from),
+        major: true,
+        level: tickLevel,
+        label: labelFor(segment.from, tickLevel),
+        segmentIndex: segment.index,
+      });
+    }
+    ensureOneLabel(majors, tickLevel);
+    ticks.push(...majors);
   }
 
   return ticks.sort((a, b) => a.x - b.x);
+}
+
+interface GridRange {
+  from: number;
+  to: number;
+  /** décalage de la grille, en années */
+  offset: number;
+}
+
+/**
+ * Les années avant J.-C. se comptent à l'envers : une graduation « ronde » y
+ * tombe sur l'année astronomique 1 − k·pas (500 av. J.-C. = -499). La grille
+ * est donc décalée d'un an avant l'an 1 — comme pour les siècles, qui
+ * commencent en 1601 et non en 1600.
+ */
+function gridRanges(from: number, to: number, level: TickLevel): GridRange[] {
+  if (level === 'century') return [{ from, to, offset: 1 }];
+  if (from < 1 && to > 1) {
+    return [
+      { from, to: 1, offset: 1 },
+      { from: 1, to, offset: 0 },
+    ];
+  }
+  return [{ from, to, offset: to <= 1 ? 1 : 0 }];
+}
+
+function isMultipleOf(value: number, step: number): boolean {
+  const ratio = value / step;
+  return Math.abs(ratio - Math.round(ratio)) < 1e-6;
+}
+
+function gridPoints(from: number, to: number, step: number, offset: number): number[] {
+  const first = Math.ceil((from - offset) / step - 1e-9);
+  const last = Math.floor((to - offset) / step + 1e-9);
+  const points: number[] = [];
+  for (let i = first; i <= last; i++) points.push(i * step + offset);
+  return points;
 }
 
 function chooseMinorStep(step: number, pxPerYear: number): number | null {

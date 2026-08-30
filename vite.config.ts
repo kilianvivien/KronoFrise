@@ -6,5 +6,8 @@ export default defineConfig({
   test: {
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     environment: 'node',
+    // Les jetons de tokens.css sont lus par ui/tokenValues.ts et incorporés
+    // dans le SVG exporté : les tests doivent voir la vraie feuille.
+    css: true,
   },
 });
