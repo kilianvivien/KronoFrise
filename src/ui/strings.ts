@@ -1,104 +1,28 @@
-/**
- * Toutes les chaînes visibles par l'utilisateur — DESIGN.md §1.3 et §9.
- * Français, vouvoiement, casse de phrase, verbes en tête des boutons.
- * Aucun littéral de texte visible ailleurs dans l'application.
- *
- * SPEC? Ce fichier (et palette.ts) sont importables depuis core/ et layout/
- * alors que PLAN.md §4.2 interdit `ui/` à ces couches : ce sont des modules de
- * données purs (ni React ni DOM), et DESIGN.md §1.3 exige une source unique
- * pour les chaînes, y compris les messages d'erreur de core/. Voir
- * docs/spec-gaps.md §1. L'exception est appliquée par ESLint, elle ne s'étend
- * à aucun autre fichier de ui/.
- */
+// SPEC? Shared pure data keeps core/layout independent of ui; see docs/spec-gaps.md §1.
+export * from "../shared/strings";
 
-export const APP_NAME = 'KronoFrise';
-export const APP_TAGLINE = 'L’éditeur de frises chronologiques.';
-
-/** Vocabulaire des dates — utilisé par core/dates.ts (formatage et analyse). */
-export const DATES = {
-  bcSuffix: 'av. J.-C.',
-  circaPrefix: 'v.',
-  century: 'siècle',
-  /** Abréviations utilisées sur la règle (niveau mois). */
-  monthsShort: [
-    'janv.', 'févr.', 'mars', 'avr.', 'mai', 'juin',
-    'juil.', 'août', 'sept.', 'oct.', 'nov.', 'déc.',
-  ],
-  /** Noms pleins — puces, inspecteur, infobulle de glissement. */
-  monthsLong: [
-    'janvier', 'février', 'mars', 'avril', 'mai', 'juin',
-    'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre',
-  ],
-  /** Le 1er du mois s'écrit « 1er », les autres jours en chiffres. */
-  firstDayOfMonth: '1er',
-} as const;
-
-export const DOC = {
-  untitled: 'Frise sans titre',
-  defaultLaneName: '',
-  importedTitle: 'Frise importée',
-} as const;
-
-export const TOOLBAR = {
-  undo: 'Annuler',
-  redo: 'Rétablir',
-  addEvent: '+ Événement',
-  addPeriod: '+ Période',
-  zoomOut: 'Dézoomer',
-  zoomIn: 'Zoomer',
-  zoomFit: 'Ajuster à la fenêtre',
-  modeEdit: 'Édition',
-  modePresent: 'Présentation',
-  modeWorksheet: 'Fiche élève',
-  export: 'Exporter',
-  share: 'Partager',
-} as const;
-
-export const CANVAS = {
-  emptyHint:
-    'Cliquez sur la frise pour ajouter un événement, ou faites glisser pour tracer une période.',
-} as const;
-
-export const START = {
-  empty: 'Aucune frise pour l’instant. Créez votre première frise ou importez un fichier.',
-  newDocument: 'Nouvelle frise',
-} as const;
-
-export const CONFIRM = {
-  /** « Supprimer 3 éléments ? » */
-  deleteItems: (count: number): string =>
-    count === 1 ? 'Supprimer cet élément ?' : `Supprimer ${count} éléments ?`,
-  delete: 'Supprimer',
-  cancel: 'Annuler',
-} as const;
-
-/** Les erreurs nomment le correctif (DESIGN.md §9). */
-export const ERRORS = {
-  notAKronoFile:
-    'Ce fichier n’est pas une frise KronoFrise (.krono). Vérifiez le fichier ou importez un export MiCetF.',
-  invalidDocument: (detail: string): string =>
-    `Ce fichier .krono est incomplet ou abîmé (${detail}). Vérifiez le fichier ou repartez d’une nouvelle frise.`,
-  unknownSchema: (schema: string): string =>
-    `Cette frise a été créée avec une version plus récente de KronoFrise (${schema}). Mettez l’application à jour pour l’ouvrir.`,
-  axisEndBeforeStart: 'la fin de l’axe doit être postérieure à son début',
-  segmentsNotSorted: 'les segments de l’axe doivent être classés par date croissante',
-  lastSegmentMismatch: 'le dernier segment doit se terminer à la fin de l’axe',
-  segmentWeight: 'chaque segment doit avoir une largeur strictement positive',
-  tooManySegments: 'l’axe ne peut pas dépasser 8 segments',
-  noLane: 'une frise contient au moins une bande',
-  unknownLane: (id: string): string => `l’élément renvoie à une bande inexistante (${id})`,
-  periodEndBeforeStart: 'une période doit se terminer après son début',
-  unparsableDate: (input: string): string =>
-    `Date incomprise : « ${input} ». Essayez « 1515 », « -52 », « v. 800 » ou « 14/07/1789 ».`,
-  imageTooLarge:
-    'Cette image dépasse 300 Ko : la frise sera plus lente à ouvrir et à exporter.',
-} as const;
-
-/** Page de développement M0 — retirée quand l'éditeur (M1) la remplace. */
-export const DEV = {
-  title: 'Aperçu des fixtures',
-  subtitle: 'M0 — modèle de document, échelle segmentée et règle adaptative.',
-  zoom: 'Zoom',
-  reset: 'Réinitialiser la vue',
-  hint: 'Molette pour naviguer, ⌘/Ctrl + molette pour zoomer.',
+export const EDITOR = {
+  open: 'Ouvrir…', save: 'Enregistrer', fileType: 'Frise KronoFrise', defaultFilename: 'frise',
+  title: 'Titre de la frise', label: 'Libellé', event: 'Nouvel événement', period: 'Nouvelle période',
+  canvas: 'Frise chronologique', sidebar: 'Structure', inspector: 'Inspecteur',
+  sidebarHint: 'Les bandes et le plan de la frise seront disponibles ici.',
+  inspectorHint: 'Double-cliquez sur un élément pour modifier son libellé. Faites glisser ses bords pour ajuster une période.',
+  sidebarToggle: 'Afficher ou masquer la structure', inspectorToggle: 'Afficher ou masquer l’inspecteur',
+  duplicate: 'Dupliquer', selectAll: 'Tout sélectionner',
+  hint: 'E : événement · P : période · Maj + glisser : sélectionner · Espace + glisser : naviguer · ⌥ : sans aimantation',
+  saved: 'Enregistré sur cet appareil', saving: 'Enregistrement…', loading: 'Ouverture de la frise…',
+  fileSaved: 'Fichier .krono enregistré',
+  storageError: 'L’enregistrement local a échoué. Enregistrez un fichier .krono pour conserver votre travail.',
+  restoreError: 'La sauvegarde locale est illisible. Ouvrez votre fichier .krono pour récupérer votre frise.',
+  fileTooLarge: 'Ce fichier dépasse 20 Mo. Réduisez les images avant de l’ouvrir ou de l’enregistrer.',
+  fileError: 'Le fichier n’a pas pu être ouvert ou enregistré. Vérifiez les autorisations puis réessayez.',
+  close: 'Fermer', examples: 'Ouvrir un exemple', chooseExample: 'Exemples…',
+  selected: (count: number): string => `${count} élément${count > 1 ? 's' : ''} sélectionné${count > 1 ? 's' : ''}`,
+  eventAccessible: (label: string, date: string): string => `Événement : ${label}, ${date}`,
+  periodAccessible: (label: string, date: string): string => `Période : ${label}, ${date}`,
+  axisStart: 'Modifier le début de la frise', axisEnd: 'Modifier la fin de la frise',
+  invalidDate: 'Date incomprise. Essayez « 1515 », « -52 » ou « 14/07/1789 ».',
+  resizeStart: 'Déplacer le début', resizeEnd: 'Déplacer la fin',
+  zoomPercent: (zoom: number): string => `${Math.round(zoom * 100)} %`,
+  range: (start: string, end: string): string => `${start} – ${end}`,
 } as const;

@@ -109,3 +109,24 @@ describe('performance (docs/format.md §10 : < 5 ms pour 500 éléments)', () =>
     expect(average).toBeLessThan(5);
   });
 });
+
+describe('layout regressions found during M1 browser verification', () => {
+  it('reserves vertical space for bracket labels beside event chips', () => {
+    const scene = sceneOf(antiquite);
+    for (const bracket of scene.periods.filter((period) => period.shape === 'bracket')) {
+      const labelTop = bracket.y - 20;
+      for (const event of scene.events.filter((event) => event.laneId === bracket.laneId && event.row > bracket.row)) {
+        expect(event.chip.y + event.chip.height).toBeLessThanOrEqual(labelTop);
+      }
+    }
+  });
+  it('chooses event-date visibility independently for each elastic segment', () => {
+    const scene = sceneOf(grandesPeriodes, 0, 20);
+    const scale = makeScale(grandesPeriodes.axis, WIDTH, 0, 20);
+    for (const event of scene.events) {
+      const segment = scale.segments.find((segment) => event.x >= segment.x0 && event.x <= segment.x1);
+      if (segment && segment.pxPerYear >= 72) expect(event.showDate).toBe(true);
+      if (segment && segment.pxPerYear < 1) expect(event.showDate).toBe(false);
+    }
+  });
+});

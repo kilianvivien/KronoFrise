@@ -116,3 +116,22 @@ describe('parseDocument', () => {
     if (!result.ok) expect(result.error.issues.length).toBeGreaterThan(0);
   });
 });
+
+describe('file-import invariants', () => {
+  it('rejects duplicate item and lane IDs', () => {
+    const doc = valid();
+    expect(() => reparse({ ...doc, items: [...doc.items, doc.items[0]] })).toThrow(/uniques/);
+    expect(() => reparse({ ...doc, lanes: [...doc.lanes, doc.lanes[0]] })).toThrow(/uniques/);
+  });
+  it('rejects a first segment before the axis start', () => {
+    const doc = valid();
+    doc.axis = { start: { year: 1700 }, end: { year: 1900 }, segments: [{ until: { year: 1600 }, weight: 1 }, { until: { year: 1900 }, weight: 1 }] };
+    expect(() => reparse(doc)).toThrow(/classés/);
+  });
+  it('requires exact final boundary precision and valid mask references', () => {
+    const doc = valid();
+    doc.axis = { start: { year: 1700 }, end: { year: 1900 }, segments: [{ until: { year: 1900, month: 6, day: 15 }, weight: 1 }] };
+    expect(() => reparse(doc)).toThrow(/dernier segment/);
+    expect(() => reparse({ ...valid(), pedagogy: { maskedItems: [{ itemId: 'missing', hide: 'label' }] } })).toThrow(/masques/);
+  });
+});

@@ -59,6 +59,7 @@ export type Command =
   | { name: 'setAxis'; axis: Axis; label?: string }
   | { name: 'setTitle'; title: string }
   | { name: 'setTheme'; themeId: string }
+  | { name: 'restoreMasks'; masks: KronoDocument['pedagogy']['maskedItems'] }
   | { name: 'setMask'; itemId: string; hide: MaskKind | null };
 
 /** Étiquette technique de la commande (journal, tests, « Annuler … »). */
@@ -140,6 +141,10 @@ export function apply(doc: KronoDocument, command: Command): KronoDocument {
         draft.themeId = command.themeId;
         break;
       }
+      case 'restoreMasks': {
+        draft.pedagogy.maskedItems = structuredClone(command.masks);
+        break;
+      }
       case 'setMask': {
         const others = draft.pedagogy.maskedItems.filter((m) => m.itemId !== command.itemId);
         draft.pedagogy.maskedItems =
@@ -165,7 +170,10 @@ export function invert(before: KronoDocument, command: Command): Command {
     case 'insertItems':
       return { name: 'removeItems', entries: command.entries };
     case 'removeItems':
-      return { name: 'insertItems', entries: command.entries };
+      return { name: 'batch', label: 'restoreItems', commands: [
+        { name: 'insertItems', entries: command.entries },
+        { name: 'restoreMasks', masks: before.pedagogy.maskedItems },
+      ] };
     case 'updateItems': {
       return {
         name: 'updateItems',
@@ -195,12 +203,10 @@ export function invert(before: KronoDocument, command: Command): Command {
       return { name: 'setTitle', title: before.meta.title };
     case 'setTheme':
       return { name: 'setTheme', themeId: before.themeId };
+    case 'restoreMasks':
+      return { name: 'restoreMasks', masks: before.pedagogy.maskedItems };
     case 'setMask':
-      return {
-        name: 'setMask',
-        itemId: command.itemId,
-        hide: before.pedagogy.maskedItems.find((m) => m.itemId === command.itemId)?.hide ?? null,
-      };
+      return { name: 'restoreMasks', masks: before.pedagogy.maskedItems };
   }
 }
 

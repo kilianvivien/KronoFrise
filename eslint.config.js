@@ -15,10 +15,8 @@ const pureLayerRules = {
       patterns: [
         { group: ['react', 'react-dom', 'react/*', 'react-dom/*'], message: 'core/ et layout/ ne dépendent jamais de React (PLAN.md §4.2).' },
         {
-          // Seules exceptions : strings.ts et palette.ts, modules de données purs
-          // (ni React ni DOM) — voir docs/spec-gaps.md §1.
-          group: ['**/ui/**', '!**/ui/strings', '!**/ui/strings.ts', '!**/ui/palette', '!**/ui/palette.ts'],
-          message: 'core/ et layout/ ne remontent pas vers ui/ (PLAN.md §4.2) — sauf strings.ts et palette.ts.',
+          group: ['**/ui/**'],
+          message: 'core/ et layout/ ne remontent jamais vers ui/ (PLAN.md §4.2).',
         },
         { group: ['**/store/**', '**/renderer/**', '**/export/**'], message: 'core/ et layout/ ne remontent jamais vers les couches supérieures (PLAN.md §4.2).' },
         { group: ['@use-gesture/*', 'idb-keyval', 'zustand*'], message: 'Dépendance liée à l’UI ou à la persistance : interdite dans core/ et layout/.' },
@@ -52,7 +50,7 @@ export default tseslint.config(
     },
   },
   {
-    files: ['src/core/**/*.ts', 'src/layout/**/*.ts'],
+    files: ['src/core/**/*.ts', 'src/layout/**/*.ts', 'src/shared/**/*.ts'],
     rules: pureLayerRules,
   },
   {

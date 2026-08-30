@@ -25,6 +25,7 @@ import {
   ROW_HEIGHT,
 } from './metrics';
 import type { Scale } from './scale';
+import { chooseStep } from './ticks';
 import type {
   SceneAxisSegment,
   SceneCoupure,
@@ -52,7 +53,8 @@ const PERIOD_DATES_GAP = 16;
 /** Marge intérieure d'une barre pour y loger le libellé. */
 const PERIOD_LABEL_PADDING = 16;
 /** En deçà de cette densité, la date sous la puce devient illisible : on la cache. */
-const MIN_PX_PER_YEAR_FOR_DATES = 0.25;
+const MAX_YEAR_STEP_FOR_DATES = 10;
+const BRACKET_LABEL_HEIGHT = 20;
 
 export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions = {}): SceneGraph {
   const measurer = cachedMeasurer(options.measurer ?? approximateMeasurer);
@@ -243,7 +245,9 @@ function boxOf(item: Item, scale: Scale, measurer: Measurer): ItemBox {
     const x = scale.timeToX(toFractionalYear(item.date));
     const dateLabel = formatDate(item.date, { monthStyle: 'long' });
     const textWidth = measurer.measure(item.label, LABEL_FONT_SIZE, 500);
-    const showDate = averageDensity(scale) >= MIN_PX_PER_YEAR_FOR_DATES;
+    const time = toFractionalYear(item.date);
+    const density = (scale.segments.find((segment) => time >= segment.from && time <= segment.to) ?? scale.segments[0])?.pxPerYear ?? 0;
+    const showDate = chooseStep(density) <= MAX_YEAR_STEP_FOR_DATES;
     const dateWidth = showDate ? measurer.measure(dateLabel, CAPTION_FONT_SIZE) : 0;
     const hasImage = item.image !== undefined;
     const width =
@@ -277,15 +281,15 @@ function boxOf(item: Item, scale: Scale, measurer: Measurer): ItemBox {
   const outsideLabel = x1 - x0 >= labelWidth + PERIOD_LABEL_PADDING ? 0 : labelWidth + ROW_GAP;
   const datesWidth = measurer.measure(periodDates(item), CAPTION_FONT_SIZE);
   return {
-    left: x0,
+    left: item.shape === 'bracket' ? Math.min(x0, (x0 + x1 - labelWidth) / 2) - ITEM_GAP / 2 : x0,
     // Deux périodes qui se touchent (Antiquité / Moyen Âge) restent sur la
     // même rangée : pas d'écart forcé entre barres, seulement autour d'un
     // libellé posé à l'extérieur.
-    right: Math.max(x1, x0 + 2) + (outsideLabel > 0 ? outsideLabel + ITEM_GAP : 0),
+    right: item.shape === 'bracket' ? Math.max(x1, (x0 + x1 + labelWidth) / 2) + ITEM_GAP / 2 : Math.max(x1, x0 + 2) + (outsideLabel > 0 ? outsideLabel + ITEM_GAP : 0),
     x0,
     x1,
     width: Math.max(x1 - x0, 2),
-    height: PERIOD_BAR_HEIGHT,
+    height: PERIOD_BAR_HEIGHT + (item.shape === 'bracket' ? BRACKET_LABEL_HEIGHT : 0),
     anchorX: x0,
     labelWidth,
     datesWidth,
@@ -302,10 +306,6 @@ function firstFreeRow(occupied: readonly Box[], left: number, right: number): nu
     );
     if (!collides) return row;
   }
-}
-
-function averageDensity(scale: Scale): number {
-  return scale.contentWidth / Math.max(scale.domain.to - scale.domain.from, Number.EPSILON);
 }
 
 /* ------------------------------------------------------------------ */
@@ -368,7 +368,7 @@ function finishPeriod(placed: PlacedPeriod, anchorY: number, rowHeight: number):
     shape: item.shape,
     x0: placed.x0,
     x1: placed.x1,
-    y: rowY(anchorY, placed.row, PERIOD_BAR_HEIGHT, rowHeight),
+    y: rowY(anchorY, placed.row, PERIOD_BAR_HEIGHT + (item.shape === 'bracket' ? BRACKET_LABEL_HEIGHT : 0), rowHeight) + (item.shape === 'bracket' ? BRACKET_LABEL_HEIGHT : 0),
     height: PERIOD_BAR_HEIGHT,
     row: placed.row,
     labelInside,

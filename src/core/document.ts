@@ -2,7 +2,7 @@
  * Fabrique et accesseurs du document — docs/format.md §2.
  * Aucune mutation ici : toute modification passe par une commande (§6).
  */
-import { DOC } from '../ui/strings';
+import { DOC } from '../shared/strings';
 import { compareDates, toFractionalYear } from './dates';
 import { newId } from './ids';
 import {

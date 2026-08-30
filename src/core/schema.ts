@@ -5,8 +5,8 @@
  * qui viole un invariant.
  */
 import { z } from 'zod';
-import { ERRORS } from '../ui/strings';
-import { compareDates, daysInMonth } from './dates';
+import { ERRORS } from '../shared/strings';
+import { compareDates, datesEqual, daysInMonth, toFractionalYear } from './dates';
 import {
   MAX_SEGMENTS,
   SCHEMA_VERSION,
@@ -48,6 +48,9 @@ export const axisSchema = z
     if (compareDates(axis.end, axis.start) <= 0) {
       ctx.addIssue({ code: z.ZodIssueCode.custom, message: ERRORS.axisEndBeforeStart, path: ['end'] });
     }
+    if (axis.segments[0] && (compareDates(axis.segments[0].until, axis.start) <= 0 || toFractionalYear(axis.segments[0].until) <= toFractionalYear(axis.start))) {
+      ctx.addIssue({ code: z.ZodIssueCode.custom, message: ERRORS.segmentsNotSorted, path: ['segments', 0, 'until'] });
+    }
     for (let i = 1; i < axis.segments.length; i++) {
       if (compareDates(axis.segments[i]!.until, axis.segments[i - 1]!.until) <= 0) {
         ctx.addIssue({
@@ -58,7 +61,7 @@ export const axisSchema = z
       }
     }
     const last = axis.segments[axis.segments.length - 1];
-    if (last !== undefined && compareDates(last.until, axis.end) !== 0) {
+    if (last !== undefined && !datesEqual(last.until, axis.end)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: ERRORS.lastSegmentMismatch,
@@ -142,6 +145,11 @@ export const documentSchema = z
   })
   .strict()
   .superRefine((doc, ctx) => {
+    for (const [key, entries] of [['lanes', doc.lanes], ['items', doc.items]] as const) {
+      if (new Set(entries.map((entry) => entry.id)).size !== entries.length) ctx.addIssue({ code: z.ZodIssueCode.custom, message: ERRORS.duplicateId, path: [key] });
+    }
+    const itemIds = new Set(doc.items.map((item) => item.id));
+    if (doc.pedagogy.maskedItems.some((mask) => !itemIds.has(mask.itemId)) || new Set(doc.pedagogy.maskedItems.map((mask) => mask.itemId)).size !== doc.pedagogy.maskedItems.length) ctx.addIssue({ code: z.ZodIssueCode.custom, message: ERRORS.invalidMasks, path: ['pedagogy'] });
     const laneIds = new Set(doc.lanes.map((lane) => lane.id));
     doc.items.forEach((item, index) => {
       if (!laneIds.has(item.laneId)) {

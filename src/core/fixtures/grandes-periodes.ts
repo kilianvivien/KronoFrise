@@ -5,7 +5,7 @@
  *
  * Rappel de la convention astronomique : « 3300 av. J.-C. » se stocke -3299.
  */
-import { GREAT_PERIOD_COLORS } from '../../ui/palette';
+import { GREAT_PERIOD_COLORS } from '../../shared/palette';
 import type { EventItem, KronoDocument, PeriodItem } from '../types';
 
 const LANE_PERIODS = 'lane-grandes-periodes';

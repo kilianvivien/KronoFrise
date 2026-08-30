@@ -4,7 +4,7 @@
  * (objectif : < 5 ms). Le générateur est déterministe : même document à
  * chaque exécution, donc mesures comparables entre deux commits.
  */
-import { PALETTE } from '../../ui/palette';
+import { PALETTE } from '../../shared/palette';
 import type { EventItem, KronoDocument, Item, PeriodItem } from '../types';
 
 /** Générateur pseudo-aléatoire (mulberry32) — déterministe, sans dépendance. */

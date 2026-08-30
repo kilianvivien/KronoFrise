@@ -6,7 +6,7 @@
  * Aucune dépendance : core/dates.ts *est* notre bibliothèque de dates
  * (PLAN.md §8.4).
  */
-import { DATES } from '../ui/strings';
+import { DATES } from '../shared/strings';
 import type { KDate, Year } from './types';
 
 export type DatePrecision = 'year' | 'month' | 'day';
