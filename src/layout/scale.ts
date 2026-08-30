@@ -17,6 +17,7 @@
 import { toFractionalYear } from '../core/dates';
 import type { Axis } from '../core/types';
 import { COUPURE_DENSITY_RATIO, COUPURE_GAP } from './metrics';
+import type { Measurer } from './measure';
 import { buildTicks, type Tick, type TickLevel } from './ticks';
 
 export interface ScaleSegment {
@@ -62,7 +63,7 @@ export interface Scale {
   timeToX(t: number, side?: BoundarySide): number;
   xToTime(x: number): number;
   /** graduations visibles ; sans argument, le niveau est choisi par segment */
-  visibleTicks(level?: TickLevel): Tick[];
+  visibleTicks(level?: TickLevel, measurer?: Measurer): Tick[];
   /** pan maximal utile : au-delà, le contenu quitte l'écran */
   maxPan(): number;
 }
@@ -160,7 +161,7 @@ export function makeScale(axis: Axis, widthPx: number, pan = 0, zoom = 1): Scale
     domain: { from: domainFrom, to: domainTo },
     timeToX,
     xToTime,
-    visibleTicks: (level?: TickLevel) => buildTicks(scale, level),
+    visibleTicks: (level?: TickLevel, measurer?: Measurer) => buildTicks(scale, level, measurer),
     maxPan: () => Math.max(0, contentWidth - safeWidth),
   };
   return scale;

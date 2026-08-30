@@ -8,6 +8,7 @@
  * deux, puis sur trois (jamais de texte incliné).
  */
 import { formatCentury, formatDate, formatYear, fromFractionalYear } from '../core/dates';
+import { approximateMeasurer, type Measurer } from './measure';
 import {
   MAX_MINOR_PER_MAJOR,
   MIN_MAJOR_STEP_PX,
@@ -44,8 +45,8 @@ const STEPS: readonly number[] = [
 
 const SUBDIVISIONS: readonly number[] = [10, 5, 4, 2];
 
-/** Largeur approchée d'un caractère de libellé en 11 px (--fs-caption). */
-const CHAR_WIDTH = 6.2;
+/** Taille des libellés de la règle (DESIGN.md §2 : --fs-caption). */
+const CAPTION_FONT_SIZE = 11;
 /** Marge minimale entre deux libellés voisins. */
 const LABEL_PADDING = 10;
 
@@ -66,7 +67,7 @@ export function chooseStep(pxPerYear: number, level?: TickLevel): number {
   return candidates[candidates.length - 1] ?? STEPS[STEPS.length - 1] ?? 1;
 }
 
-export function buildTicks(scale: Scale, level?: TickLevel): Tick[] {
+export function buildTicks(scale: Scale, level?: TickLevel, measurer: Measurer = approximateMeasurer): Tick[] {
   const ticks: Tick[] = [];
   const visibleLeft = scale.pan;
   const visibleRight = scale.pan + scale.width;
@@ -101,7 +102,20 @@ export function buildTicks(scale: Scale, level?: TickLevel): Tick[] {
         segmentIndex: segment.index,
       });
     }
-    thinLabels(majors, step, offset, step * segment.pxPerYear);
+    if (majors.length === 0) {
+      // Un segment trop court pour porter une graduation garde tout de même
+      // un repère : sans lui, la préhistoire n'afficherait aucune date.
+      majors.push({
+        t: segment.from,
+        x: segment.x0 - scale.pan,
+        major: true,
+        level: tickLevel,
+        label: labelFor(segment.from, tickLevel),
+        segmentIndex: segment.index,
+      });
+    }
+    thinLabels(majors, step, offset, step * segment.pxPerYear, measurer);
+    ensureOneLabel(majors, tickLevel);
     ticks.push(...majors);
 
     const minorStep = chooseMinorStep(step, segment.pxPerYear);
@@ -149,9 +163,18 @@ function labelFor(t: number, level: TickLevel): string {
  * trois, etc., jusqu'à ce que les libellés tiennent. Les graduations, elles,
  * restent toutes dessinées.
  */
-function thinLabels(majors: Tick[], step: number, offset: number, stepPx: number): void {
+function thinLabels(
+  majors: Tick[],
+  step: number,
+  offset: number,
+  stepPx: number,
+  measurer: Measurer,
+): void {
   if (majors.length === 0) return;
-  const widest = majors.reduce((max, tick) => Math.max(max, estimateLabelWidth(tick.label ?? '')), 0);
+  const widest = majors.reduce(
+    (max, tick) => Math.max(max, measurer.measure(tick.label ?? '', CAPTION_FONT_SIZE)),
+    0,
+  );
   const needed = widest + LABEL_PADDING;
   const keepEvery = Math.max(1, Math.ceil(needed / Math.max(stepPx, 1)));
   if (keepEvery === 1) return;
@@ -163,7 +186,13 @@ function thinLabels(majors: Tick[], step: number, offset: number, stepPx: number
   }
 }
 
-/** Largeur approchée d'un libellé de graduation, en pixels (11 px, tabular-nums). */
-export function estimateLabelWidth(label: string): number {
-  return label.length * CHAR_WIDTH;
+/**
+ * L'amincissement ne doit jamais vider un segment de tout repère : si toutes
+ * les majeures ont perdu leur libellé, on en rend un au milieu.
+ */
+function ensureOneLabel(majors: Tick[], level: TickLevel): void {
+  if (majors.length === 0 || majors.some((tick) => tick.label !== undefined)) return;
+  const middle = majors[Math.floor(majors.length / 2)];
+  if (middle !== undefined) middle.label = labelFor(middle.t, level);
 }
+

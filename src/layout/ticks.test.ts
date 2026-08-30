@@ -4,7 +4,8 @@ import { grandesPeriodes } from '../core/fixtures/index';
 import type { Axis } from '../core/types';
 import { makeScale } from './scale';
 import { MAX_MINOR_PER_MAJOR, MIN_MAJOR_STEP_PX } from './metrics';
-import { chooseStep, estimateLabelWidth, levelOfStep, type Tick } from './ticks';
+import { approximateMeasurer } from './measure';
+import { chooseStep, levelOfStep, type Tick } from './ticks';
 
 const WIDTH = 1200;
 
@@ -77,7 +78,9 @@ describe('anti-chevauchement des libellés', () => {
         const previous = ticks[i - 1]!;
         const current = ticks[i]!;
         if (previous.segmentIndex !== current.segmentIndex) continue;
-        const half = (estimateLabelWidth(previous.label ?? '') + estimateLabelWidth(current.label ?? '')) / 2;
+        // Même mesure que celle utilisée pour amincir les libellés.
+        const width = (label: string): number => approximateMeasurer.measure(label, 11);
+        const half = (width(previous.label ?? '') + width(current.label ?? '')) / 2;
         expect(current.x - previous.x).toBeGreaterThanOrEqual(half);
       }
     },
