@@ -58,3 +58,18 @@
 .axisBounds button, .axisBounds input { pointer-events: auto; min-height: 24px; max-width: 220px; padding: 0 8px; border: 1px solid transparent; border-radius: var(--radius-control); background: var(--paper); color: inherit; font-size: var(--fs-caption); cursor: text; }
 .axisBounds button:hover { border-color: var(--hairline); }
 .axisBounds input { border-color: var(--accent); background: var(--field-bg); color: var(--text-primary); }
+
+.toolbar { gap: 6px; }
+.button:hover, .icon:hover, .zoom:hover, .title:hover { background: var(--chrome-hover); }
+.button[aria-pressed=true] { border-color: var(--accent); }
+.title { width: clamp(120px, 18vw, 260px); }
+.panelContent h2 { margin-top: 4px; }
+.footer { background: var(--chrome-bg); gap: 12px; }
+.sidebar, .inspector { scrollbar-width: thin; scrollbar-color: var(--hairline) transparent; }
+@media (max-width: 1100px) {
+  .toolbar { gap: 4px; padding-inline: 8px; }
+  .title { width: 140px; }
+  .separator { margin-inline: 4px; }
+  .button { padding-inline: 8px; }
+  .status { min-width: 140px; }
+}

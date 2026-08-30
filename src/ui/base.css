@@ -25,3 +25,7 @@ button, input, select { font: inherit; color: inherit; }
     transition-duration: 0.001ms !important;
   }
 }
+
+button, input, select, textarea { transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease; }
+textarea { font: inherit; color: inherit; }
+input::placeholder, textarea::placeholder { color: var(--text-tertiary); opacity: 1; }

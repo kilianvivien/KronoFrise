@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 import './ui/base.css';
 import { DevApp } from './ui/DevApp';
 import { Editor } from './ui/Editor';
+import { startAppearance } from './store/appearance';
+
+const stopAppearance = startAppearance();
+if (import.meta.hot) import.meta.hot.dispose(stopAppearance);
 
 const container = document.getElementById('root');
 if (container === null) throw new Error('Élément racine introuvable.');

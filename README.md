@@ -64,6 +64,8 @@ s'imprime est exactement ce que l'on voyait.
 - Quatre thèmes : Manuel scolaire, Craie, Parchemin, Journal (noir et blanc).
   Le préréglage grandes périodes ajoute cinq périodes sans effacer les éléments existants.
 - Le navigateur inférieur déplace la vue à la souris ou au clavier.
+- **Interface**, en bas à droite : Terre cuite, Clair, Sombre ou Système. Le choix
+  est mémorisé sur cet appareil, indépendamment du thème de la frise.
 - Maj + clic/glisser sélectionne plusieurs éléments ; Alt désactive l'aimantation.
   ⌘/Ctrl Z, ⇧⌘/Ctrl Z, ⌘/Ctrl D, Suppr : annuler, rétablir, dupliquer, supprimer.
 - L'autosauvegarde conserve document et historique ; Ouvrir/Enregistrer échange des `.krono`.

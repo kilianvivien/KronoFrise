@@ -15,6 +15,7 @@ import { fitInsets } from '../layout/fit';
 import { canvasMeasurer } from './measureText';
 import { makeScale } from '../layout/scale';
 import { clampPan } from './camera';
+import { AppearancePicker } from './AppearancePicker';
 import { Inspector } from './Inspector';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
@@ -130,7 +131,7 @@ export function Editor(): JSX.Element {
       <button className={styles.icon} aria-label={TOOLBAR.redo} title={`${TOOLBAR.redo} (⇧⌘Z)`} disabled={!state.history.future.length || !!state.preview} onClick={state.redo}><Icon name="redo" /></button>
       <span className={styles.separator} />
       <button className={styles.button} aria-label={M2.navigate} aria-pressed={tool === 'auto'} onClick={() => setTool('auto')}>{M2.navigation}</button>
-      <button className={styles.primary} disabled={!state.ready} aria-pressed={tool === 'event'} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')}>{TOOLBAR.addEvent}</button>
+      <button className={styles.button} disabled={!state.ready} aria-pressed={tool === 'event'} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')}>{TOOLBAR.addEvent}</button>
       <button className={styles.button} disabled={!state.ready} aria-pressed={tool === 'period'} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')}>{TOOLBAR.addPeriod}</button>
       <span className={styles.separator} />
       <button className={styles.icon} aria-label={TOOLBAR.zoomOut} disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)}><Icon name="minus" /></button>
@@ -162,6 +163,7 @@ export function Editor(): JSX.Element {
     <footer className={styles.footer}>
       <span className={styles.status} role="status">{state.selection.length ? EDITOR.selected(state.selection.length) : state.savedRevision === state.revision ? EDITOR.saved : EDITOR.saving}</span>
       <span className={styles.hint}>{EDITOR.hint}</span>
+      <AppearancePicker />
       <button className={styles.icon} aria-label={EDITOR.duplicate} title={`${EDITOR.duplicate} (⌘D)`} disabled={!state.selection.length} onClick={duplicate}><Icon name="duplicate" /></button>
       <button className={styles.icon} aria-label={CONFIRM.delete} disabled={!state.selection.length} onClick={remove}><Icon name="trash" /></button>
     </footer>

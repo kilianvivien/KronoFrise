@@ -59,3 +59,12 @@ export const M2 = {
   multiHint: 'La couleur et la bande s’appliquent à tous les éléments sélectionnés.',
   selectLane: 'Modifier cette bande',
 } as const;
+
+export const APPEARANCE = {
+  title: 'Apparence de l’interface', label: 'Interface',
+  terracotta: 'Terre cuite', light: 'Clair', dark: 'Sombre', system: 'Système',
+  hint: 'Le thème de votre frise reste inchangé.',
+  terracottaHint: 'Une palette chaude qui suit le mode de votre appareil.',
+  systemHint: 'Suit le réglage clair ou sombre de votre appareil.',
+  storageWarning: 'Ce choix s’applique ici, mais votre navigateur ne permet pas de le mémoriser.',
+} as const;

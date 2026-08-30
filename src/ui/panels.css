@@ -38,3 +38,22 @@
 .axisHandle { cursor: ew-resize; }
 .axisHandle:focus { outline: none; }
 .axisHandle:focus-visible rect { stroke: var(--accent); stroke-width: 3px; }
+
+/* Interface polish: consistent field sizing and quieter section hierarchy. */
+.panelSection { padding: 16px 0; }
+.field { gap: 6px; margin-bottom: 14px; }
+.field input, .field textarea, .field select, .outline > input { min-height: 30px; font-size: var(--fs-ui); }
+.field textarea { line-height: 1.5; }
+.field input:hover, .field textarea:hover, .field select:hover, .outline > input:hover { border-color: var(--text-tertiary); }
+.field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible, .outline > input:focus-visible { border-color: var(--accent); }
+.panelSection h3, .sectionHeading h3 { color: var(--text-secondary); font-size: var(--fs-caption); letter-spacing: .04em; }
+.panelTabs { min-height: 40px; padding-bottom: 12px; }
+.segment { padding: 12px; background: var(--chrome-bg-inset); }
+.segment h4 { color: var(--text-primary); font-weight: 600; }
+.outlineItem span { min-width: 0; line-height: 1.5; }
+.outlineItem small { font-size: var(--fs-caption); }
+.outline .outlineItem:hover, .laneHeading button:hover { background: var(--chrome-hover); }
+.outline .outlineItem[aria-pressed=true] { background: var(--accent-tint); }
+.outline .outlineItem[aria-pressed=true] small { color: var(--text-secondary); }
+.check input { accent-color: var(--accent); width: 14px; height: 14px; margin: 0; }
+.inspectorContent, .outline { line-height: 1.45; }

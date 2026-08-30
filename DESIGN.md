@@ -15,7 +15,7 @@
 5. **No gradients, no colored shadows, no glassmorphism in the chrome.** Translucency is reserved: it is allowed only later in the Tauri build via native vibrancy — the web app uses solid token backgrounds.
 6. **Respect `prefers-reduced-motion: reduce`**: all animations become instant (0ms), camera moves jump.
 7. Interactive elements: visible keyboard focus (§7 focus ring), `cursor` per §8, minimum hit area 24×24px even if the visual is smaller.
-8. Chrome follows the OS light/dark scheme automatically (`prefers-color-scheme`). **The canvas background always comes from the frise's theme, not from the chrome scheme** — a light "paper" document stays light in dark mode, like a white PDF in Preview.
+8. Chrome offers Terre cuite (the original warm palette, following the OS), Clair, Sombre, and Système (neutral palette following the OS). The user choice is stored locally outside the document. Explicit light/dark choices override the OS. This user-requested polish pass supersedes the original OS-only rule. **The canvas background always comes from the frise's theme, not from the chrome scheme** — a light "paper" document stays light in dark mode, like a white PDF in Preview.
 
 ---
 

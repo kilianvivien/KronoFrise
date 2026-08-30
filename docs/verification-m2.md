@@ -70,3 +70,21 @@ reste plus verrouillé à 100 %. Les boutons de bornes reprennent le papier du t
   emploie le préréglage pour remplir les périodes après construction de l'axe.
 - L'export PDF complet, les modes pédagogiques et l'écran des documents récents
   appartiennent à M3. Les réserves M0/M1 sur MiCetF réel et les polices PDF restent ouvertes.
+
+## Passe de finition — apparence de l'interface
+
+Après la demande utilisateur de thèmes clairs/sombres :
+
+- **249 tests** réussis (dont trois nouveaux tests de préférences), lint et build
+  propres. Les tests de préférences vérifient restauration, priorité du choix
+  explicite sur le système, réaction des choix adaptatifs, synchronisation des
+  onglets, valeurs invalides et stockage refusé.
+- Dans le navigateur intégré sur le build de production : sélecteur Terre cuite,
+  Clair, Sombre, Système affiché ; modes clair et sombre inspectés visuellement ;
+  préférence Clair retrouvée après rechargement.
+- Navigation au clavier entre les choix, Home/End et fermeture par Échap vérifiés.
+- Passage Sombre → Clair : SVG du document strictement inchangé dans le DOM.
+  Système résout bien le mode sombre actuel. Les changements du système sont
+  simulés dans les tests unitaires, pas effectués dans les réglages de la machine.
+- Aucun avertissement ni erreur console pendant la vérification finale.
+- Les documents de l'utilisateur sur `:5173` n'ont pas été remplacés pour ces essais.

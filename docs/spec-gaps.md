@@ -158,3 +158,24 @@ christianisme » / « Pax Romana » a été vérifié dans le navigateur.
   les 20 Mo. La fin d'un import ne touche jamais un autre document ni un élément supprimé.
 - Le préréglage crée une nouvelle bande et ajuste l'axe en une commande composée ;
   il conserve toute donnée existante, y compris une éventuelle bande vide.
+
+## 12. Apparence de l'interface — demande utilisateur après M2
+
+La demande explicite d'un choix clair/sombre remplace la règle initiale « suivre
+uniquement le système ». Terre cuite conserve les surfaces chaudes et suit le
+système ; Clair et Sombre imposent des surfaces neutres ; Système sélectionne
+la variante neutre correspondant au système. L'accent terre cuite reste commun.
+Les couleurs supplémentaires sont définies seulement dans `tokens.css`.
+
+Le sélecteur se trouve dans la barre d'état, indépendamment des panneaux et du
+thème du document. Le réglage validé est conservé dans localStorage et propagé
+entre onglets ; un stockage indisponible ne bloque pas le changement de session.
+Il ne crée aucune commande, ne salit pas le document et n'affecte pas les exports.
+Les choix adaptatifs réagissent aux changements du système. Les contrôles natifs
+utilisent également le `color-scheme` choisi.
+
+Le panneau utilise le popover natif, avec fermeture explicite, Échap et retour
+au déclencheur. Les quatre radios prennent en charge flèches, Home et End.
+Le polissage conserve les dimensions générales de l'éditeur : champs à 30 px,
+texte des champs à 13 px, sections mieux espacées et survols/états sélectionnés
+cohérents. L'outil Événement n'est plus visuellement actif lorsqu'il n'est pas armé.

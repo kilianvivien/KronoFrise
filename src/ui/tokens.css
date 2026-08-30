@@ -2,6 +2,14 @@
    Règle §1.2 : aucun littéral hexadécimal hors de ce fichier et de palette.ts. */
 
 :root {
+  color-scheme: light;
+  --chrome-hover: #EDE9E3;
+  --preview-terra: #E6D5C5;
+  --preview-light: #F5F6F8;
+  --preview-dark: #24262B;
+  --preview-line: #D4CEC5;
+  --preview-accent: #B24E33;
+
   /* SPEC? M2 document theme tokens; independent of the chrome color scheme. */
   --chalk-paper: #283B35;
   --chalk-line: #455C52;
@@ -61,8 +69,9 @@
   --fs-display: 24px;   /* frise title on canvas (default theme) */
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+:root[data-ui-scheme="dark"] {
+    color-scheme: dark;
+    --chrome-hover: #34302B;
     --chrome-bg:       #262320;
     --chrome-bg-inset: #1E1C19;
     --field-bg:        #1B1917;
@@ -81,5 +90,26 @@
     --shadow-popover:  0 4px 16px rgba(0, 0, 0, 0.45);
     --shadow-drag:     0 6px 20px rgba(0, 0, 0, 0.5);
     /* --paper and --paper-line unchanged: theme-owned (rule §1.8) */
-  }
+}
+
+/* User-requested neutral chrome alternatives. Document tokens above stay fixed. */
+:root[data-ui-theme="light"], :root[data-ui-theme="system"][data-ui-scheme="light"] {
+  --chrome-bg: #F5F6F8;
+  --chrome-bg-inset: #EBEDF0;
+  --chrome-hover: #E8EAEE;
+  --field-bg: #FFFFFF;
+  --hairline: #DADDE2;
+  --text-primary: #252830;
+  --text-secondary: #5D6470;
+  --text-tertiary: #737B87;
+}
+:root[data-ui-theme="dark"], :root[data-ui-theme="system"][data-ui-scheme="dark"] {
+  --chrome-bg: #24262B;
+  --chrome-bg-inset: #1B1D22;
+  --chrome-hover: #33363D;
+  --field-bg: #2C2F35;
+  --hairline: #42464E;
+  --text-primary: #F0F1F3;
+  --text-secondary: #B8BEC8;
+  --text-tertiary: #999FAA;
 }
