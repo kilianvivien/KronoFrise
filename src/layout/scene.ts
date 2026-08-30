@@ -10,6 +10,7 @@ import type { Tick } from './ticks';
 export interface SceneLane {
   id: string;
   name: string;
+  color?: string;
   y: number;
   height: number;
   /** ligne d'ancrage des événements : le bas de la bande */

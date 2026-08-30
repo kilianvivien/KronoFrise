@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { KronoDocument } from '../core/types';
+import { fitInsets } from '../layout/fit';
 import { layout } from '../layout/layout';
 import { makeScale } from '../layout/scale';
 import { saveThumbnail } from '../store/persistence';
@@ -18,7 +19,7 @@ export function useThumbnail(doc: KronoDocument, ready: boolean, revision: numbe
       const { renderToSvgString } = await import('../renderer/renderToSvgString');
       if (cancelled) return;
       previous.current = { id: doc.id, time: Date.now() };
-      const scene = layout(doc, makeScale(doc.axis, 400), { measurer: canvasMeasurer, height: 250 });
+      const scene = layout(doc, makeScale(doc.axis, 400, 0, 1, fitInsets(doc, 400, canvasMeasurer)), { measurer: canvasMeasurer, height: 250 });
       const svg = renderToSvgString({ scene, title: doc.meta.title, theme: themeById(doc.themeId) });
       const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
       const image = new Image();

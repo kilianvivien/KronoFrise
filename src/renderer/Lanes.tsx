@@ -3,6 +3,7 @@
  * à gauche, séparateur 1 px. Les coupures y creusent le même vide que dans la
  * ligne de base.
  */
+import { themeColors } from './themeColors';
 import type { JSX } from 'react';
 import { CANVAS_PADDING } from '../layout/metrics';
 import type { SceneGraph, SceneLane } from '../layout/scene';
@@ -33,7 +34,7 @@ function LaneBand({
 }): JSX.Element {
   return (
     <g>
-      {lane.striped &&
+      {(lane.striped || lane.color) &&
         scene.axisSegments.map((segment) => (
           <rect
             key={`s-${segment.index}`}
@@ -41,8 +42,8 @@ function LaneBand({
             y={lane.y}
             width={Math.max(segment.x1 - segment.x0, 0)}
             height={lane.height}
-            fill={theme.paperLine}
-            opacity={STRIPE_OPACITY}
+            fill={lane.color ? themeColors(lane.color, theme).base : theme.paperLine}
+            opacity={lane.color ? (theme.id === 'journal' ? 0 : .07) : STRIPE_OPACITY}
           />
         ))}
 

@@ -122,3 +122,39 @@ que son libellé est dessiné au-dessus. M1 réserve 20 px supplémentaires
 centré. Ces dimensions font partie du layout commun, donc écran et export
 bénéficient de la même correction. Le cas signalé « Naissance du
 christianisme » / « Pax Romana » a été vérifié dans le navigateur.
+
+## 11. Interactions et apparence M2
+
+- À la demande de Kilian, Naviguer est l'outil initial : le glissement du fond
+  ne crée plus de période, et se déplace seulement horizontalement. E/P arment
+  explicitement les créations. Espace permet de saisir la vue sur un élément.
+- Même à 100 %, une demi-largeur de vue reste disponible de chaque côté pour
+  saisir la frise. « Ajuster » remet le pan à zéro et réserve des marges mesurées
+  pour les libellés et images, sans modifier les dates ni les poids enregistrés.
+  Un libellé plus large que la fenêtre elle-même ne peut pas tenir sans retour
+  à la ligne : l'axe conserve au moins 64 px et la navigation reste disponible.
+- Une coupure nouvelle conserve la densité de projection initiale ; elle peut
+  donc ne pas présenter immédiatement le zigzag, mais sa poignée reste visible.
+  Glisser conserve la somme des poids des deux voisins, chacun gardant au moins
+  2 % de cette somme. Flèches gauche/droite : ±2 %. La saisie numérique conserve
+  la règle du format (poids strictement positif, sans minimum de 2 %).
+- Les poignées utilisent le suivi des événements du pointeur dans la fenêtre
+  pour conserver la continuité malgré les repositionnements SVG en direct.
+  La libération produit une seule commande ; Échap, perte de focus et annulation
+  du pointeur restaurent le document.
+- Les thèmes réutilisent la typographie mesurée pour conserver l'empilement.
+  Craie utilise un tableau sombre et des traits clairs ; Parchemin un papier
+  chaud ; Journal supprime les couleurs des éléments et désature les images.
+  Les nouveaux hexadécimaux sont exclusivement des jetons dans `tokens.css`.
+- `Lane.color` est un ajout optionnel documenté à `krono/1`, nécessaire au M2.
+  Les anciens fichiers se chargent ; les anciens lecteurs stricts ne savent pas
+  ouvrir un fichier contenant ce nouveau champ. Supprimer une bande transfère
+  ses éléments vers la première bande restante, avec annulation exacte.
+- Une bande repliée occupe 32 px et masque ses éléments sans les supprimer.
+  L'inspecteur est ouvert initialement ; la structure varie entre 200 et 320 px.
+- Les images PNG/JPEG/WebP sont décodées localement, ramenées à 512 px maximum,
+  puis intégrées en JPEG à qualité 0,85 sur fond blanc (pas de métadonnées).
+  L'entrée brute est limitée à 20 Mo ; le document enrichi doit aussi respecter
+  les 20 Mo. La fin d'un import ne touche jamais un autre document ni un élément supprimé.
+- Le préréglage crée une nouvelle bande et ajuste l'axe en une commande composée ;
+  il conserve toute donnée existante, y compris une éventuelle bande vide.

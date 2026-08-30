@@ -5,7 +5,8 @@
 import type { JSX } from 'react';
 import { EDITOR } from '../ui/strings';
 import type { ScenePeriod } from '../layout/scene';
-import { ink, resolveBase, tint } from '../ui/palette';
+import { MANUEL_SCOLAIRE, type Theme } from '../themes';
+import { themeColors } from './themeColors';
 import { periodDatesStyle, periodLabelStyle } from './style';
 
 const BAR_RADIUS = 4;
@@ -17,22 +18,22 @@ const BRACKET_DROP = 6;
 const ARROW_HEAD = 10;
 const LABEL_PADDING = 8;
 
-export function PeriodNode({ period }: { period: ScenePeriod }): JSX.Element {
-  const base = resolveBase(period.color);
+export function PeriodNode({ period, theme = MANUEL_SCOLAIRE }: { period: ScenePeriod; theme?: Theme }): JSX.Element {
+  const { base, fill, text } = themeColors(period.color, theme);
   const label = EDITOR.periodAccessible(period.label, period.datesLabel);
   return (
     <g data-item-id={period.itemId} role="button" aria-label={label} tabIndex={0}>
       {period.shape === 'bracket' ? (
         <Bracket period={period} base={base} />
       ) : (
-        <Bar period={period} base={base} />
+        <Bar period={period} base={base} fill={fill} />
       )}
-      <Labels period={period} base={base} />
+      <Labels period={period} text={text} />
     </g>
   );
 }
 
-function Bar({ period, base }: { period: ScenePeriod; base: string }): JSX.Element {
+function Bar({ period, base, fill }: { period: ScenePeriod; base: string; fill: string }): JSX.Element {
   const width = Math.max(period.x1 - period.x0, 1);
   const maskId = `fuzzy-${period.itemId}`;
   const needsMask = period.fuzzyStart || period.fuzzyEnd;
@@ -40,7 +41,7 @@ function Bar({ period, base }: { period: ScenePeriod; base: string }): JSX.Eleme
     period.shape === 'arrow' ? (
       <path
         d={arrowPath(period.x0, period.y, width, period.height)}
-        fill={tint(base)}
+        fill={fill}
         stroke={base}
         strokeWidth={1}
         {...(needsMask ? { mask: `url(#${maskId})` } : {})}
@@ -52,7 +53,7 @@ function Bar({ period, base }: { period: ScenePeriod; base: string }): JSX.Eleme
         width={width}
         height={period.height}
         rx={BAR_RADIUS}
-        fill={tint(base)}
+        fill={fill}
         stroke={base}
         strokeWidth={1}
         {...(needsMask ? { mask: `url(#${maskId})` } : {})}
@@ -107,8 +108,7 @@ function Bracket({ period, base }: { period: ScenePeriod; base: string }): JSX.E
   );
 }
 
-function Labels({ period, base }: { period: ScenePeriod; base: string }): JSX.Element {
-  const text = ink(base);
+function Labels({ period, text }: { period: ScenePeriod; text: string }): JSX.Element {
   const centerY = period.y + period.height / 2 + 4;
   if (period.shape === 'bracket') {
     return (

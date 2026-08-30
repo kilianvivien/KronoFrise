@@ -38,6 +38,8 @@ export interface Lane {
   /** « » autorisé (bande unique sans nom) */
   name: string;
   collapsed?: boolean;
+  /** Optional palette color, added in M2; old documents remain valid. */
+  color?: string;
 }
 
 export interface ItemImage {

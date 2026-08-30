@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
 import { useStore } from 'zustand';
 import { addItems, deleteItems } from '../core/commands';
 import { createDocument } from '../core/document';
@@ -7,10 +7,18 @@ import { FIXTURES } from '../core/fixtures';
 import { editorStore } from '../store/editor';
 import { openFile, saveFile } from '../store/fileIO';
 import { startPersistence } from '../store/persistence';
-import { CONFIRM, DOC, EDITOR, START, TOOLBAR } from './strings';
+import { CONFIRM, DOC, EDITOR, M2, START, TOOLBAR } from './strings';
 import { EditorCanvas, type Tool } from './EditorCanvas';
 import { useThumbnail } from './useThumbnail';
 import styles from './Editor.module.css';
+import { fitInsets } from '../layout/fit';
+import { canvasMeasurer } from './measureText';
+import { makeScale } from '../layout/scale';
+import { clampPan } from './camera';
+import { Inspector } from './Inspector';
+import { Outline } from './Outline';
+import { Minimap } from './Minimap';
+import './panels.css';
 
 function editable(target: EventTarget | null): boolean {
   return target instanceof Element && !!target.closest('input,textarea,select,[contenteditable=true],dialog');
@@ -19,7 +27,12 @@ export function Editor(): JSX.Element {
   const state = useStore(editorStore);
   const [tool, setTool] = useState<Tool>('auto');
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
-  const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(false);
+  const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(true);
+  const [laneId, setLaneId] = useState<string | null>(null);
+  const [focusItem, setFocusItem] = useState<{ id: string; serial: number } | null>(null);
+  const [canvasWidth, setCanvasWidth] = useState(800);
+  const insets = useMemo(() => fitInsets(state.document, canvasWidth, canvasMeasurer), [state.document, canvasWidth]);
+  const [sidebarWidth, setSidebarWidth] = useState(240);
   const [title, setTitle] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
@@ -104,7 +117,8 @@ export function Editor(): JSX.Element {
     const next = Math.max(1, Math.min(5000, zoom * factor));
     // SPEC? Toolbar zoom anchors the viewport centre; wheel zoom anchors the pointer.
     const width = document.querySelector('[data-tool]')?.clientWidth ?? 800;
-    setPan(Math.max(0, (pan + width / 2) * next / zoom - width / 2)); setZoom(next);
+    const current = makeScale(state.document.axis, width, pan, zoom, insets), nextScale = makeScale(state.document.axis, width, 0, next, insets);
+    setPan(clampPan(nextScale, nextScale.timeToX(current.xToTime(width / 2)) - width / 2)); setZoom(next);
   };
 
   return <div className={styles.app}>
@@ -115,6 +129,7 @@ export function Editor(): JSX.Element {
       <button className={styles.icon} aria-label={TOOLBAR.undo} title={`${TOOLBAR.undo} (⌘Z)`} disabled={!state.history.past.length || !!state.preview} onClick={state.undo}><Icon name="undo" /></button>
       <button className={styles.icon} aria-label={TOOLBAR.redo} title={`${TOOLBAR.redo} (⇧⌘Z)`} disabled={!state.history.future.length || !!state.preview} onClick={state.redo}><Icon name="redo" /></button>
       <span className={styles.separator} />
+      <button className={styles.button} aria-label={M2.navigate} aria-pressed={tool === 'auto'} onClick={() => setTool('auto')}>{M2.navigation}</button>
       <button className={styles.primary} disabled={!state.ready} aria-pressed={tool === 'event'} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')}>{TOOLBAR.addEvent}</button>
       <button className={styles.button} disabled={!state.ready} aria-pressed={tool === 'period'} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')}>{TOOLBAR.addPeriod}</button>
       <span className={styles.separator} />
@@ -127,18 +142,22 @@ export function Editor(): JSX.Element {
       <button className={styles.icon} aria-label={EDITOR.inspectorToggle} aria-pressed={inspector} onClick={() => setInspector(!inspector)}><Icon name="inspector" /></button>
     </header>
     <div className={styles.workspace}>
-      <aside className={styles.sidebar} data-open={sidebar} aria-hidden={!sidebar} inert={!sidebar}>
+      <aside className={styles.sidebar} style={sidebar ? { width: sidebarWidth } : undefined} data-open={sidebar} aria-hidden={!sidebar} inert={!sidebar}>
         <div className={styles.panelContent}>
-          <h2>{EDITOR.sidebar}</h2><p>{EDITOR.sidebarHint}</p>
+          <h2>{EDITOR.sidebar}</h2>
           <button className={styles.button} disabled={!state.ready} onClick={() => { void preserveCurrent().then((safe) => { if (safe) { state.replace(createDocument()); fit(); } }); }}>{START.newDocument}</button>
           <select aria-label={EDITOR.examples} className={styles.example} value="" disabled={!state.ready} onChange={(event) => {
             const fixture = FIXTURES.find((entry) => entry.file === event.target.value);
             if (fixture) void preserveCurrent().then((safe) => { if (safe) { state.replace({ ...structuredClone(fixture.document), id: newId() }); fit(); } });
           }}><option value="">{EDITOR.chooseExample}</option>{FIXTURES.map((entry) => <option key={entry.file} value={entry.file}>{entry.document.meta.title}</option>)}</select>
+          <Outline onLane={(id) => { setLaneId(id); setInspector(true); }} onFocus={(id) => { setLaneId(null); setInspector(true); setFocusItem({ id, serial: Date.now() }); }} />
         </div>
       </aside>
-      <main className={styles.main}>{state.ready ? <EditorCanvas key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} /> : <p>{EDITOR.loading}</p>}</main>
-      <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><div className={styles.panelContent}><h2>{EDITOR.inspector}</h2><p>{EDITOR.inspectorHint}</p></div></aside>
+      {sidebar && <div className="sidebarResize" role="separator" aria-label={M2.resizeSidebar} aria-orientation="vertical" aria-valuemin={200} aria-valuemax={320} aria-valuenow={sidebarWidth} tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setSidebarWidth(Math.max(200, Math.min(320, sidebarWidth + (e.key === 'ArrowLeft' ? -10 : 10)))); } }}
+        onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)} onPointerMove={(e) => { if (e.currentTarget.hasPointerCapture(e.pointerId)) setSidebarWidth(Math.max(200, Math.min(320, e.clientX))); }} onPointerUp={(e) => e.currentTarget.releasePointerCapture(e.pointerId)} />}
+      <main className={styles.main}>{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} /><Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
+      <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><Inspector laneId={laneId} onLane={setLaneId} fit={fit} /></aside>
     </div>
     <footer className={styles.footer}>
       <span className={styles.status} role="status">{state.selection.length ? EDITOR.selected(state.selection.length) : state.savedRevision === state.revision ? EDITOR.saved : EDITOR.saving}</span>

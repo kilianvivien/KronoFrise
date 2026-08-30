@@ -2,6 +2,19 @@
    Règle §1.2 : aucun littéral hexadécimal hors de ce fichier et de palette.ts. */
 
 :root {
+  /* SPEC? M2 document theme tokens; independent of the chrome color scheme. */
+  --chalk-paper: #283B35;
+  --chalk-line: #455C52;
+  --chalk-ink: #F6F3E9;
+  --chalk-muted: #C4CEC4;
+  --parchment-paper: #F3E7CD;
+  --parchment-line: #DDD0B4;
+  --parchment-ink: #513D2B;
+  --parchment-muted: #76634C;
+  --journal-paper: #FFFFFF;
+  --journal-line: #E3E3E3;
+  --journal-ink: #161616;
+
   --tooltip-bg: #2C2925;
   /* ---- chrome, light ---- */
   --chrome-bg:        #F3F0EB;   /* toolbar, sidebar, inspector, minimap */

@@ -75,6 +75,7 @@ export const laneSchema = z
     id: z.string().min(1),
     name: z.string(),
     collapsed: z.boolean().optional(),
+    color: z.string().min(1).optional(),
   })
   .strict();
 

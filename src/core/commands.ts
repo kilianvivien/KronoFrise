@@ -55,8 +55,10 @@ export type Command =
   | { name: 'updateItems'; label: string; patches: { itemId: string; patch: ItemPatch }[] }
   | { name: 'insertLane'; lane: Lane; at: number }
   | { name: 'removeLane'; lane: Lane; at: number }
-  | { name: 'updateLane'; laneId: string; patch: { name?: string; collapsed?: boolean | null } }
+  | { name: 'updateLane'; laneId: string; patch: { name?: string; collapsed?: boolean | null; color?: string | null } }
   | { name: 'setAxis'; axis: Axis; label?: string }
+  | { name: 'reorderLanes'; ids: string[] }
+  | { name: 'setAuthor'; author: string | null }
   | { name: 'setTitle'; title: string }
   | { name: 'setTheme'; themeId: string }
   | { name: 'restoreMasks'; masks: KronoDocument['pedagogy']['maskedItems'] }
@@ -120,6 +122,9 @@ export function apply(doc: KronoDocument, command: Command): KronoDocument {
         const lane = draft.lanes.find((candidate) => candidate.id === command.laneId);
         if (lane === undefined) break;
         if (command.patch.name !== undefined) lane.name = command.patch.name;
+        if ('color' in command.patch) {
+          if (command.patch.color == null) delete lane.color; else lane.color = command.patch.color;
+        }
         if ('collapsed' in command.patch) {
           if (command.patch.collapsed === null || command.patch.collapsed === undefined) {
             delete lane.collapsed;
@@ -131,6 +136,15 @@ export function apply(doc: KronoDocument, command: Command): KronoDocument {
       }
       case 'setAxis': {
         draft.axis = structuredClone(command.axis);
+        break;
+      }
+      case 'reorderLanes': {
+        if (command.ids.length !== draft.lanes.length || new Set(command.ids).size !== draft.lanes.length || command.ids.some((id) => !draft.lanes.some((lane) => lane.id === id))) break;
+        draft.lanes = command.ids.map((id) => draft.lanes.find((lane) => lane.id === id)).filter((lane): lane is Lane => lane !== undefined);
+        break;
+      }
+      case 'setAuthor': {
+        if (command.author === null) delete draft.meta.author; else draft.meta.author = command.author;
         break;
       }
       case 'setTitle': {
@@ -190,8 +204,9 @@ export function invert(before: KronoDocument, command: Command): Command {
       return { name: 'insertLane', lane: command.lane, at: command.at };
     case 'updateLane': {
       const lane = before.lanes.find((candidate) => candidate.id === command.laneId);
-      const patch: { name?: string; collapsed?: boolean | null } = {};
+      const patch: { name?: string; collapsed?: boolean | null; color?: string | null } = {};
       if (command.patch.name !== undefined) patch.name = lane?.name ?? '';
+      if ('color' in command.patch) patch.color = lane?.color ?? null;
       if ('collapsed' in command.patch) patch.collapsed = lane?.collapsed ?? null;
       return { name: 'updateLane', laneId: command.laneId, patch };
     }
@@ -199,6 +214,10 @@ export function invert(before: KronoDocument, command: Command): Command {
       const inverse: Command = { name: 'setAxis', axis: before.axis };
       return command.label === undefined ? inverse : { ...inverse, label: command.label };
     }
+    case 'reorderLanes':
+      return { name: 'reorderLanes', ids: before.lanes.map((lane) => lane.id) };
+    case 'setAuthor':
+      return { name: 'setAuthor', author: before.meta.author ?? null };
     case 'setTitle':
       return { name: 'setTitle', title: before.meta.title };
     case 'setTheme':

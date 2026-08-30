@@ -18,12 +18,12 @@
 .spacer { flex: 1; }
 .zoom { font-variant-numeric: tabular-nums; background: transparent; border-color: transparent; padding: 0 var(--space-1); min-width: 52px; }
 .workspace { flex: 1; display: flex; min-height: 0; }
-.main { flex: 1; min-width: 0; position: relative; }
-.sidebar, .inspector { flex-shrink: 0; overflow: hidden; background: var(--chrome-bg); transition: width 140ms ease-out; }
+.main { display: flex; flex-direction: column; flex: 1; min-width: 0; position: relative; }
+.sidebar, .inspector { flex-shrink: 0; overflow-x: hidden; overflow-y: auto; background: var(--chrome-bg); transition: width 140ms ease-out; }
 .sidebar { width: 240px; border-right: 1px solid var(--hairline); }
 .inspector { width: 264px; border-left: 1px solid var(--hairline); }
 .sidebar[data-open=false], .inspector[data-open=false] { width: 0; border: 0; }
-.panelContent { padding: var(--space-3); width: 239px; }
+.panelContent { padding: var(--space-3); width: 100%; }
 .inspector .panelContent { width: 263px; }
 .panelContent h2 { margin: var(--space-2) 0 var(--space-4); font-size: var(--fs-title); font-weight: 600; }
 .panelContent p { color: var(--text-secondary); margin: 0 0 var(--space-5); }
@@ -31,7 +31,7 @@
 .footer { flex: 0 0 40px; display: flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-3); border-top: 1px solid var(--hairline); color: var(--text-secondary); }
 .status { min-width: 180px; font-size: var(--fs-caption); }
 .hint { flex: 1; font-size: var(--fs-caption); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.canvas { height: 100%; overflow-x: hidden; overflow-y: auto; position: relative; background: var(--paper); touch-action: none; user-select: none; }
+.canvas { flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; position: relative; background: var(--paper); touch-action: none; user-select: none; }
 .canvas:focus-visible { box-shadow: inset 0 0 0 3px var(--focus-ring); }
 .canvas[data-tool=event], .canvas[data-tool=period] { cursor: crosshair; }
 .canvas [data-item-id] { cursor: grab; }

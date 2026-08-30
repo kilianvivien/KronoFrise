@@ -64,12 +64,12 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
 
   // 1) Empiler chaque bande et mesurer la hauteur qu'elle réclame.
   const placedLanes = doc.lanes.map((lane) => {
-    const placed = layoutLane(doc, lane, scale, measurer);
+    const placed = lane.collapsed ? { events: [], periods: [], rows: 0, rowHeight: ROW_HEIGHT } : layoutLane(doc, lane, scale, measurer);
     const contentHeight = placed.rows * (placed.rowHeight + ROW_GAP);
     return {
       lane,
       placed,
-      height: Math.max(LANE_HEIGHT, LANE_LABEL_HEIGHT + contentHeight + ROW_GAP),
+      height: lane.collapsed ? 32 : Math.max(LANE_HEIGHT, LANE_LABEL_HEIGHT + contentHeight + ROW_GAP),
     };
   });
 
@@ -78,11 +78,12 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
   const needed =
     CANVAS_PADDING * 2 + AXIS_BAND_HEIGHT + placedLanes.reduce((sum, entry) => sum + entry.height, 0);
   const spare = Math.max((options.height ?? 0) - needed, 0);
-  const bonus = placedLanes.length > 0 ? spare / placedLanes.length : 0;
+  const expanded = placedLanes.filter((entry) => !entry.lane.collapsed).length;
+  const bonus = expanded ? spare / expanded : 0;
 
   let y = CANVAS_PADDING;
   placedLanes.forEach((entry, index) => {
-    const height = entry.height + bonus;
+    const height = entry.height + (entry.lane.collapsed ? 0 : bonus);
     const anchorY = y + height;
 
     for (const event of entry.placed.events) {
@@ -95,6 +96,7 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
     lanes.push({
       id: entry.lane.id,
       name: entry.lane.name,
+      ...(entry.lane.color ? { color: entry.lane.color } : {}),
       y,
       height,
       anchorY,

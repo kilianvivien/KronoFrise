@@ -68,7 +68,8 @@ export interface Scale {
   maxPan(): number;
 }
 
-export function makeScale(axis: Axis, widthPx: number, pan = 0, zoom = 1): Scale {
+export interface ScaleInsets { left: number; right: number }
+export function makeScale(axis: Axis, widthPx: number, pan = 0, zoom = 1, insets: ScaleInsets = { left: 0, right: 0 }): Scale {
   const domainFrom = toFractionalYear(axis.start);
   const domainTo = toFractionalYear(axis.end);
   const safeWidth = Math.max(widthPx, 1);
@@ -92,11 +93,11 @@ export function makeScale(axis: Axis, widthPx: number, pan = 0, zoom = 1): Scale
   // 2) Répartir la largeur restante entre les segments.
   const contentWidth = safeWidth * safeZoom;
   const gapCount = coupureBefore.filter(Boolean).length;
-  const usableWidth = Math.max(contentWidth - gapCount * COUPURE_GAP, 1);
+  const usableWidth = Math.max(contentWidth - insets.left - insets.right - gapCount * COUPURE_GAP, 1);
 
   const segments: ScaleSegment[] = [];
   const coupures: Coupure[] = [];
-  let cursor = 0;
+  let cursor = insets.left;
   bounds.forEach((bound, index) => {
     if (coupureBefore[index] === true) {
       coupures.push({ x: cursor, width: COUPURE_GAP, leftIndex: index - 1, rightIndex: index });

@@ -79,11 +79,17 @@ Within a segment the mapping is linear. Across segments it is piecewise linear a
 
 ## 4. Lanes & items
 
+M2 adds optional `Lane.color` to `krono/1`. Existing documents remain valid;
+older strict M0/M1 readers do not accept this new optional property. Lane
+color is independent of item colors. Collapsed bands retain all their items.
+
+
 ```ts
 interface Lane {
   id: string;
   name: string;                      // "" allowed (unnamed default lane)
   collapsed?: boolean;
+  color?: string;                    // M2: palette id or custom hex; absent = neutral band
 }
 
 type Item = EventItem | PeriodItem;

@@ -1,0 +1,40 @@
+.inspectorContent { width: 263px; padding: 12px; }
+.panelTabs, .sectionHeading, .laneHeading { display: flex; align-items: center; gap: 4px; }
+.panelTabs { justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--hairline); color: var(--text-secondary); }
+.panelSection { padding: 12px 0; border-bottom: 1px solid var(--hairline); }
+.panelSection h3, .outline h3 { font-size: var(--fs-ui); margin: 0 0 12px; font-weight: 600; }
+.panelSection h4 { font-size: var(--fs-caption); color: var(--text-secondary); margin: 0 0 8px; }
+.panelSection p, .outline p { font-size: var(--fs-caption); color: var(--text-secondary); }
+.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; font-size: var(--fs-caption); color: var(--text-secondary); }
+.field input, .field textarea, .field select, .outline > input { width: 100%; min-height: 28px; padding: 4px 8px; color: var(--text-primary); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); font: inherit; }
+.field textarea { resize: vertical; }
+.inspectorContent button, .outline button { min-height: 28px; border: 1px solid var(--hairline); border-radius: var(--radius-control); padding: 4px 8px; background: var(--field-bg); cursor: pointer; font-size: var(--fs-caption); }
+.inspectorContent button:hover, .outline button:hover { background: var(--chrome-bg-inset); }
+.inspectorContent button[aria-pressed=true], .outline button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); }
+.check { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: var(--fs-caption); }
+.colors { border: 0; padding: 0; margin: 12px 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+.colors legend { font-size: var(--fs-caption); color: var(--text-secondary); margin-bottom: 8px; }
+.colors button { width: 26px; height: 26px; min-height: 26px; padding: 0; border: 2px solid transparent; border-radius: 50%; }
+.colors button[aria-pressed=true] { outline: 2px solid var(--accent); outline-offset: 2px; }
+.segment { margin-bottom: 12px; padding: 12px; border: 1px solid var(--hairline); border-radius: var(--radius-card); }
+.imageField img { display: block; width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-card); margin-bottom: 8px; }
+.imageField button { margin-bottom: 8px; }
+.outline { margin-top: 20px; }
+.sectionHeading { justify-content: space-between; margin: 16px 0 8px; }
+.sectionHeading h3 { margin: 0; }
+.laneHeading { margin: 12px 0 4px; }
+.laneHeading button { border-color: transparent; background: transparent; padding: 2px; min-width: 24px; }
+.laneTitle { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
+.outline i { display: inline-block; flex: 0 0 6px; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
+.outline .outlineItem { display: flex; align-items: center; width: 100%; text-align: left; border-color: transparent; background: transparent; padding: 6px 8px; margin: 2px 0; }
+.outlineItem span { overflow: hidden; text-overflow: ellipsis; }
+.outlineItem small { display: block; color: var(--text-tertiary); margin-top: 2px; }
+.sidebarResize { flex: 0 0 4px; cursor: col-resize; touch-action: none; margin-left: -4px; z-index: 2; }
+.sidebarResize:hover { background: var(--accent); }
+.minimap { flex: 0 0 64px; height: 64px; overflow: hidden; border-top: 1px solid var(--hairline); background: var(--chrome-bg); touch-action: none; cursor: grab; }
+.minimap:active { cursor: grabbing; }
+.minimapView { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.5px; }
+.axisPopover { position: absolute; z-index: 4; width: 240px; padding: 12px; border: 1px solid var(--hairline); border-radius: var(--radius-panel); background: var(--field-bg); box-shadow: var(--shadow-popover); }
+.axisHandle { cursor: ew-resize; }
+.axisHandle:focus { outline: none; }
+.axisHandle:focus-visible rect { stroke: var(--accent); stroke-width: 3px; }

@@ -47,25 +47,34 @@ s'imprime est exactement ce que l'on voyait.
 
 ## État
 
-**M1 — Le canevas vivant est implémenté.** Le chemin `/` ouvre l'éditeur ;
-`/?fixtures` conserve la page de contrôle M0. Les panneaux sont encore des
-emplacements réservés : leur contenu complet relève de M2.
+**M2 — Apparence et structure sont implémentées.** `/` ouvre l'éditeur ;
+`/?fixtures` conserve la page de contrôle M0.
 
-- Cliquez pour créer un événement, glissez sur le fond pour créer une période.
-- Saisissez son libellé puis Entrée ; Échap annule. Double-cliquez pour renommer.
-- Glissez un élément pour le déplacer ou le bord d'une période pour la redimensionner.
-- Maj + clic ou Maj + glisser sélectionne plusieurs éléments ; Alt désactive l'aimantation.
-- ⌘/Ctrl Z, ⇧⌘/Ctrl Z, ⌘/Ctrl D, Suppr : annuler, rétablir, dupliquer, supprimer.
-- Molette horizontale/Maj ou Espace + glisser : naviguer ; Ctrl/⌘ + molette : zoomer.
-- Cliquez sur une borne sous la règle pour changer l'étendue d'un axe linéaire.
-- Enregistrement automatique après 500 ms, historique compris ; Ouvrir/Enregistrer
-  lit/écrit des fichiers `.krono` avec les dialogues natifs ou un repli upload/download.
+- Glissez le fond pour saisir la frise et naviguer horizontalement, même à 100 %.
+  La molette conserve le défilement vertical. Espace + glisser navigue aussi sur un élément.
+- **+ Événement / E**, puis clic ; **+ Période / P**, puis glissement : créer.
+  Entrée valide le libellé, Échap annule, puis l'outil revient à Naviguer.
+- Le bouton de pourcentage ajuste la vue en tenant compte des libellés et images.
+- L'inspecteur édite dates, descriptions, couleurs, formes, bandes, images et métadonnées.
+- La structure permet de rechercher, sélectionner, nommer, colorer, replier et réordonner
+  les bandes. Glissez un élément vers une autre bande, sur le canevas ou dans le plan.
+- Clic droit sur la règle : scinder à une date. Glissez une poignée pour redistribuer
+  les largeurs ; double-cliquez pour éditer ou supprimer une coupure. Les poids restent
+  éditables dans l'inspecteur (huit segments maximum).
+- Quatre thèmes : Manuel scolaire, Craie, Parchemin, Journal (noir et blanc).
+  Le préréglage grandes périodes ajoute cinq périodes sans effacer les éléments existants.
+- Le navigateur inférieur déplace la vue à la souris ou au clavier.
+- Maj + clic/glisser sélectionne plusieurs éléments ; Alt désactive l'aimantation.
+  ⌘/Ctrl Z, ⇧⌘/Ctrl Z, ⌘/Ctrl D, Suppr : annuler, rétablir, dupliquer, supprimer.
+- L'autosauvegarde conserve document et historique ; Ouvrir/Enregistrer échange des `.krono`.
 
 La vérification M0 a corrigé les imports de couches supérieures, l'inversion
 exacte des masques, plusieurs invariants d'import et la lisibilité de la règle
 en mode sombre. L'empilement des libellés d'accolades est également corrigé.
 L'export MiCetF réel et l'incorporation complète des glyphes de police PDF
-restent des points ouverts documentés, sans bloquer l'édition M1.
+restent des points ouverts documentés, sans bloquer l'édition M2.
 
 Voir [docs/verification-m1.md](docs/verification-m1.md) pour les contrôles
 exécutés et leurs limites.
+
+Voir [docs/verification-m2.md](docs/verification-m2.md) pour la vérification M2.

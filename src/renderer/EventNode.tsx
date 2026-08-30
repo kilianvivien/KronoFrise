@@ -8,7 +8,8 @@ import type { JSX } from 'react';
 import { EDITOR } from '../ui/strings';
 import { EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP } from '../layout/metrics';
 import type { SceneEvent } from '../layout/scene';
-import { ink, resolveBase, tint } from '../ui/palette';
+import { MANUEL_SCOLAIRE, type Theme } from '../themes';
+import { themeColors } from './themeColors';
 import { chipDateStyle, chipTextStyle } from './style';
 
 const CHIP_RADIUS = 5;
@@ -18,10 +19,8 @@ const CONNECTOR_OPACITY = 0.5;
 /** Trait 2-4 pour les dates approximatives (DESIGN.md §4). */
 const CIRCA_DASH = '2 4';
 
-export function EventNode({ event }: { event: SceneEvent }): JSX.Element {
-  const base = resolveBase(event.color);
-  const fill = tint(base);
-  const text = ink(base);
+export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEvent; theme?: Theme }): JSX.Element {
+  const { base, fill, text } = themeColors(event.color, theme);
   const hasImage = event.imageSrc !== undefined;
   const chipBottom = event.chip.y + event.chip.height;
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
@@ -54,6 +53,7 @@ export function EventNode({ event }: { event: SceneEvent }): JSX.Element {
       {hasImage && (
         <image
           href={event.imageSrc}
+          filter={theme.id === 'journal' ? 'url(#journal-monochrome)' : undefined}
           x={event.chip.x + ROW_GAP}
           y={event.chip.y + ROW_GAP}
           width={EVENT_IMAGE_SIZE}

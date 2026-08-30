@@ -53,7 +53,7 @@ export const TOOLBAR = {
 
 export const CANVAS = {
   emptyHint:
-    'Cliquez sur la frise pour ajouter un événement, ou faites glisser pour tracer une période.',
+    'Faites glisser pour naviguer. Choisissez + Événement ou + Période pour ajouter un élément.',
 } as const;
 
 export const START = {
@@ -101,3 +101,7 @@ export const DEV = {
   reset: 'Réinitialiser la vue',
   hint: 'Molette pour naviguer, ⌘/Ctrl + molette pour zoomer.',
 } as const;
+
+export const THEME_NAMES = { manuel: 'Manuel scolaire', craie: 'Craie', parchemin: 'Parchemin', journal: 'Journal' } as const;
+export const GREAT_PERIOD_NAMES = ['Préhistoire', 'Antiquité', 'Moyen Âge', 'Époque moderne', 'Époque contemporaine'] as const;
+export const PRESET_LANE_NAME = 'Grandes périodes';
