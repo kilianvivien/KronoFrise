@@ -88,3 +88,20 @@ Après la demande utilisateur de thèmes clairs/sombres :
   simulés dans les tests unitaires, pas effectués dans les réglages de la machine.
 - Aucun avertissement ni erreur console pendant la vérification finale.
 - Les documents de l'utilisateur sur `:5173` n'ont pas été remplacés pour ces essais.
+
+## Remplissages et textures
+
+- **265 tests** réussis. Lint et build propres. Les nouveaux tests couvrent les
+  huit styles dans JSON et la commande groupée inverse, le rejet d'un style
+  inconnu, la compatibilité des anciens documents, le passage au SceneGraph,
+  les cinq motifs dans les quatre thèmes et les identifiants SVG distincts.
+- Les motifs restent des primitives vectorielles autonomes, y compris sur une
+  flèche à bord approximatif. Les 12 couleurs × 4 thèmes en remplissage plein
+  ont un contraste texte/fond d'au moins 4,5:1 ; les textes hors d'une barre
+  conservent leur couleur adaptée au papier.
+- Navigateur, build `:4173` : période Époque moderne sélectionnée, Hachures
+  appliquées et inspectées visuellement ; Plein appliqué puis annulation
+  ramenant aux Hachures. Croisillons appliqués puis thème Journal : rendu
+  monochrome inspecté visuellement. Après rechargement, Croisillons reste coché.
+- Aucun avertissement ni erreur console dans ces contrôles. Les fichiers de
+  l'utilisateur ouverts sur `:5173` n'ont pas été remplacés pendant les essais.

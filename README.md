@@ -56,6 +56,8 @@ s'imprime est exactement ce que l'on voyait.
   Entrée valide le libellé, Échap annule, puis l'outil revient à Naviguer.
 - Le bouton de pourcentage ajuste la vue en tenant compte des libellés et images.
 - L'inspecteur édite dates, descriptions, couleurs, formes, bandes, images et métadonnées.
+  Sous Couleur, **Remplissage** propose Léger, Plein, Sans fond, Hachures,
+  Croisillons, Points, Lignes et Quadrillage, également sur une sélection multiple.
 - La structure permet de rechercher, sélectionner, nommer, colorer, replier et réordonner
   les bandes. Glissez un élément vers une autre bande, sur le canevas ou dans le plan.
 - Clic droit sur la règle : scinder à une date. Glissez une poignée pour redistribuer

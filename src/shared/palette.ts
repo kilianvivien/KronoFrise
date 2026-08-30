@@ -118,3 +118,13 @@ function toHex(r: number, g: number, b: number): string {
 function clampByte(v: number): number {
   return Math.min(255, Math.max(0, Math.round(v)));
 }
+
+/** Contrast-safe text for fully saturated fills (sRGB relative luminance). */
+export function contrastText(background: string): string {
+  const [r, g, b] = toRgb(background).map((value) => {
+    const channel = value / 255;
+    return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+  });
+  const luminance = .2126 * r! + .7152 * g! + .0722 * b!;
+  return (luminance + .05) / .05 >= 1.05 / (luminance + .05) ? '#000000' : WHITE;
+}

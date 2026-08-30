@@ -15,6 +15,7 @@ import {
   type Axis,
   type Item,
   type ItemImage,
+  type FillStyle,
   type KDate,
   type KronoDocument,
   type Lane,
@@ -31,6 +32,7 @@ export interface ItemPatch {
   label?: string;
   description?: string | null;
   color?: string;
+  fillStyle?: FillStyle | null;
   laneId?: string;
   image?: ItemImage | null;
   pinnedRow?: number | null;
@@ -328,7 +330,7 @@ export function deleteLane(doc: KronoDocument, laneId: string): Command | null {
 /* Internes                                                            */
 /* ------------------------------------------------------------------ */
 
-const OPTIONAL_KEYS = new Set(['description', 'image', 'pinnedRow', 'fuzzyStart', 'fuzzyEnd']);
+const OPTIONAL_KEYS = new Set(['fillStyle', 'description', 'image', 'pinnedRow', 'fuzzyStart', 'fuzzyEnd']);
 
 function applyPatch(item: Item, patch: ItemPatch): void {
   const target = item as unknown as Record<string, unknown>;

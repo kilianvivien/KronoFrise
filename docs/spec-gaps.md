@@ -179,3 +179,25 @@ au déclencheur. Les quatre radios prennent en charge flèches, Home et End.
 Le polissage conserve les dimensions générales de l'éditeur : champs à 30 px,
 texte des champs à 13 px, sections mieux espacées et survols/états sélectionnés
 cohérents. L'outil Événement n'est plus visuellement actif lorsqu'il n'est pas armé.
+
+## 13. Remplissages et textures — demande utilisateur après M2
+
+Les éléments disposent d'un `fillStyle` optionnel, documenté dans le contrat de
+format. L'absence du champ conserve exactement le remplissage léger existant.
+Les autres valeurs sont Plein, Sans fond, Hachures, Croisillons, Points, Lignes
+et Quadrillage. Revenir à Léger enlève le champ ; l'annulation restitue la
+valeur antérieure exacte. Les changements groupés restent une seule commande.
+
+Les textures sont des motifs SVG à pas fixe de 8 ou 10 px, avec un trait à
+30 % ou des points à 38 % d'opacité, au-dessus du fond léger du thème. Elles
+partagent leur composant avec les aperçus de l'inspecteur et les SVG autonomes ;
+aucune image externe ni nouvelle dépendance. Les identifiants sont uniques
+par instance de composant. Les formes et les masques des bords approximatifs
+continuent de délimiter le remplissage. Plein utilise le noir ou le blanc selon
+le contraste sRGB ; le texte placé hors d'une période conserve son encre normale.
+Sans fond emploie une peinture transparente pour conserver la zone de sélection.
+
+Les accolades ne comportent aucune surface fermée. Le sélecteur est désactivé
+si toute la sélection est composée d'accolades et une explication accompagne
+les sélections concernées. Les bandes gardent leur fond léger : cette demande
+porte sur les événements et périodes. L'export PDF final reste du ressort de M3.

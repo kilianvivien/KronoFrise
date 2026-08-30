@@ -83,6 +83,11 @@ M2 adds optional `Lane.color` to `krono/1`. Existing documents remain valid;
 older strict M0/M1 readers do not accept this new optional property. Lane
 color is independent of item colors. Collapsed bands retain all their items.
 
+The post-M2 fill extension adds optional `ItemBase.fillStyle` to `krono/1`.
+Old files keep their original tinted appearance. Older strict readers cannot
+read files carrying this new field. Brackets retain the setting but have no
+filled surface; it becomes visible if changed to a bar or arrow.
+
 
 ```ts
 interface Lane {
@@ -102,6 +107,8 @@ interface ItemBase {
   color: string;                     // palette id ("brique") — NOT a hex.
                                      // Custom hex allowed with prefix "#", but the
                                      // picker only offers the 12 palette ids.
+  fillStyle?: 'tint' | 'solid' | 'none' | 'hatch' | 'crosshatch' | 'dots' | 'lines' | 'grid';
+                                     // absent = tint; same color, different surface treatment
   image?: { src: string; }           // data URL (embedded) — .krono files are self-contained
   pinnedRow?: number;                // manual stacking override; absent = auto layout
 }

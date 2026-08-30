@@ -2,10 +2,11 @@
  * Période — DESIGN.md §4 : barre pleine, accolade ou flèche ; libellé dedans
  * si la largeur le permet, sinon à droite ; bords flous en dégradé.
  */
-import type { JSX } from 'react';
+import { useId, type JSX } from 'react';
 import { EDITOR } from '../ui/strings';
 import type { ScenePeriod } from '../layout/scene';
 import { MANUEL_SCOLAIRE, type Theme } from '../themes';
+import { fillPaint, FillPattern } from './FillPattern';
 import { themeColors } from './themeColors';
 import { periodDatesStyle, periodLabelStyle } from './style';
 
@@ -19,16 +20,19 @@ const ARROW_HEAD = 10;
 const LABEL_PADDING = 8;
 
 export function PeriodNode({ period, theme = MANUEL_SCOLAIRE }: { period: ScenePeriod; theme?: Theme }): JSX.Element {
-  const { base, fill, text } = themeColors(period.color, theme);
+  const patternId = `period-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const { base, fill, text } = fillPaint(period.color, theme, period.fillStyle, patternId);
+  const labelText = period.shape === 'bracket' || !period.labelInside ? themeColors(period.color, theme).text : text;
   const label = EDITOR.periodAccessible(period.label, period.datesLabel);
   return (
     <g data-item-id={period.itemId} role="button" aria-label={label} tabIndex={0}>
+      {period.shape !== 'bracket' && <FillPattern id={patternId} style={period.fillStyle} color={period.color} theme={theme} />}
       {period.shape === 'bracket' ? (
         <Bracket period={period} base={base} />
       ) : (
         <Bar period={period} base={base} fill={fill} />
       )}
-      <Labels period={period} text={text} />
+      <Labels period={period} text={labelText} />
     </g>
   );
 }
@@ -130,7 +134,7 @@ function Labels({ period, text }: { period: ScenePeriod; text: string }): JSX.El
         {period.label}
       </text>
       {period.labelInside && period.showDates && (
-        <text x={period.x1 - LABEL_PADDING} y={centerY} style={periodDatesStyle(text)}>
+        <text x={period.x1 - LABEL_PADDING} y={centerY} style={{ ...periodDatesStyle(text), ...(period.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
           {period.datesLabel}
         </text>
       )}

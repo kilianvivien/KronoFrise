@@ -5,6 +5,7 @@
  * dessinent **ce graphe** et rien d'autre. Toute géométrie est déjà résolue
  * ici ; le rendu n'ajoute que les couleurs (palette) et le style.
  */
+import type { FillStyle } from '../core/types';
 import type { Tick } from './ticks';
 
 export interface SceneLane {
@@ -36,6 +37,7 @@ export interface SceneEvent {
   dateLabel: string;
   /** identifiant de palette ou hex — résolu par le rendu */
   color: string;
+  fillStyle?: FillStyle;
   circa: boolean;
   /** abscisse de la pastille d'ancrage */
   x: number;
@@ -54,6 +56,7 @@ export interface ScenePeriod {
   label: string;
   datesLabel: string;
   color: string;
+  fillStyle?: FillStyle;
   shape: 'bar' | 'bracket' | 'arrow';
   x0: number;
   x1: number;

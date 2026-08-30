@@ -4,12 +4,12 @@
  * SVG `<text>` : sélectionnable, lisible par un lecteur d'écran, jamais
  * vectorisé (DESIGN.md §7).
  */
-import type { JSX } from 'react';
+import { useId, type JSX } from 'react';
 import { EDITOR } from '../ui/strings';
 import { EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP } from '../layout/metrics';
 import type { SceneEvent } from '../layout/scene';
 import { MANUEL_SCOLAIRE, type Theme } from '../themes';
-import { themeColors } from './themeColors';
+import { fillPaint, FillPattern } from './FillPattern';
 import { chipDateStyle, chipTextStyle } from './style';
 
 const CHIP_RADIUS = 5;
@@ -20,7 +20,8 @@ const CONNECTOR_OPACITY = 0.5;
 const CIRCA_DASH = '2 4';
 
 export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEvent; theme?: Theme }): JSX.Element {
-  const { base, fill, text } = themeColors(event.color, theme);
+  const patternId = `event-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
+  const { base, fill, text } = fillPaint(event.color, theme, event.fillStyle, patternId);
   const hasImage = event.imageSrc !== undefined;
   const chipBottom = event.chip.y + event.chip.height;
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
@@ -28,6 +29,7 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
 
   return (
     <g data-item-id={event.itemId} role="button" aria-label={label} tabIndex={0}>
+      <FillPattern id={patternId} style={event.fillStyle} color={event.color} theme={theme} />
       <line
         x1={event.x}
         x2={event.x}
@@ -72,7 +74,7 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
       </text>
 
       {event.showDate && (
-        <text x={textLeft} y={event.chip.y + 29} style={chipDateStyle(text)}>
+        <text x={textLeft} y={event.chip.y + 29} style={{ ...chipDateStyle(text), ...(event.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
           {event.dateLabel}
         </text>
       )}

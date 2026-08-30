@@ -47,6 +47,9 @@ export interface ItemImage {
   src: string;
 }
 
+export const FILL_STYLES = ['tint', 'solid', 'none', 'hatch', 'crosshatch', 'dots', 'lines', 'grid'] as const;
+export type FillStyle = typeof FILL_STYLES[number];
+
 export interface ItemBase {
   id: string;
   laneId: string;
@@ -54,6 +57,8 @@ export interface ItemBase {
   description?: string;
   /** identifiant de palette (« brique »), ou hex personnalisé préfixé « # » */
   color: string;
+  /** Absent = original light tint. Patterns remain vector geometry. */
+  fillStyle?: FillStyle;
   image?: ItemImage;
   /** empilement manuel ; absent = disposition automatique */
   pinnedRow?: number;

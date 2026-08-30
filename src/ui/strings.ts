@@ -68,3 +68,10 @@ export const APPEARANCE = {
   systemHint: 'Suit le réglage clair ou sombre de votre appareil.',
   storageWarning: 'Ce choix s’applique ici, mais votre navigateur ne permet pas de le mémoriser.',
 } as const;
+
+export const FILLS = {
+  title: 'Remplissage', tint: 'Léger', solid: 'Plein', none: 'Sans fond',
+  hatch: 'Hachures', crosshatch: 'Croisillons', dots: 'Points', lines: 'Lignes', grid: 'Quadrillage',
+  bracketHint: 'Les accolades n’ont pas de surface à remplir. Choisissez une barre ou une flèche pour afficher le motif.',
+  mixed: 'Plusieurs remplissages : choisissez un style pour l’appliquer à la sélection.',
+} as const;

@@ -4,11 +4,12 @@ import { deleteLane, type ItemPatch } from '../core/commands';
 import { formatDate } from '../core/dates';
 import { greatPeriodsPreset } from '../core/presets';
 import { editorStore } from '../store/editor';
-import { THEMES } from '../themes';
+import { THEMES, themeById } from '../themes';
 import { AxisEditor } from './AxisEditor';
 import { Check, Colors, Field, commit, dateInput, reportError } from './fields';
 import { importImage } from './images';
-import { M2 } from './strings';
+import { FillPicker } from './FillPicker';
+import { FILLS, M2 } from './strings';
 
 export function Inspector({ laneId, onLane, fit }: { laneId: string | null; onLane: (id: string | null) => void; fit: () => void }): JSX.Element {
   const state = useStore(editorStore), doc = state.document;
@@ -41,6 +42,10 @@ export function Inspector({ laneId, onLane, fit }: { laneId: string | null; onLa
         </>}
       </>}
       <Colors value={items[0]!.color} onChange={(color) => patch({ color })} />
+      <FillPicker value={items.every((i) => (i.fillStyle ?? 'tint') === (items[0]!.fillStyle ?? 'tint')) ? (items[0]!.fillStyle ?? 'tint') : null}
+        color={items[0]!.color} theme={themeById(doc.themeId)} disabled={items.every((i) => i.kind === 'period' && i.shape === 'bracket')}
+        onChange={(fillStyle) => patch({ fillStyle: fillStyle === 'tint' ? null : fillStyle })} />
+      {items.some((i) => i.kind === 'period' && i.shape === 'bracket') && <p>{FILLS.bracketHint}</p>}
       <label className="field">{M2.lane}<select value={items.every((i) => i.laneId === items[0]!.laneId) ? items[0]!.laneId : ''} onChange={(e) => patch({ laneId: e.target.value })}><option value="" disabled>—</option>{doc.lanes.map((l) => <option key={l.id} value={l.id}>{l.name || M2.unnamedLane}</option>)}</select></label>
       {item && <>
         <Check label={M2.pinned} value={item.pinnedRow !== undefined} onChange={(pinned) => patch({ pinnedRow: pinned ? 0 : null })} />

@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { ERRORS } from '../shared/strings';
 import { compareDates, datesEqual, daysInMonth, toFractionalYear } from './dates';
 import {
+  FILL_STYLES,
   MAX_SEGMENTS,
   SCHEMA_VERSION,
   YEAR_MAX,
@@ -85,6 +86,7 @@ const itemBaseShape = {
   label: z.string(),
   description: z.string().optional(),
   color: z.string().min(1),
+  fillStyle: z.enum(FILL_STYLES).optional(),
   image: z.object({ src: z.string().min(1) }).strict().optional(),
   pinnedRow: z.number().int().min(0).optional(),
 };
