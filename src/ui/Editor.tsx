@@ -28,6 +28,7 @@ import { Presentation } from './Presentation';
 import { Library } from './Library';
 import { ExportDialog } from './ExportDialog';
 import { AgentSkillDialog } from './AgentSkillDialog';
+import { SetupDialog } from './SetupDialog';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
 import { PwaPrompts } from './PwaPrompts';
@@ -67,6 +68,7 @@ export function Editor(): JSX.Element {
   const [tutorial, setTutorial] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [agentSkill, setAgentSkill] = useState(false);
+  const [setup, setSetup] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
   const [sidebar, setSidebar] = useState(() => !window.matchMedia('(max-width: 1100px)').matches);
   const [inspector, setInspector] = useState(() => !window.matchMedia('(max-width: 1100px)').matches);
@@ -356,10 +358,11 @@ export function Editor(): JSX.Element {
       <IconButton icon="agentSkill" label={APP_LINKS.agentSkill} above atEnd onClick={() => setAgentSkill(true)} />
       <a className={`${styles.icon} ${styles.tip} ${styles.tipAbove} ${styles.tipEnd}`} href="https://github.com/kilianvivien/KronoFrise" target="_blank" rel="noopener noreferrer" aria-label={APP_LINKS.github} data-tip={APP_LINKS.github}><Icon name="github" /></a>
     </footer>
-    <PwaPrompts hidden={!state.ready || tutorial || !tutorialDone || library || exporting || agentSkill || mode === 'present' || deleting.length > 0 || !!state.error || notice !== null} save={saveBeforeUpdate} />
+    <PwaPrompts hidden={!state.ready || tutorial || !tutorialDone || library || exporting || agentSkill || setup || mode === 'present' || deleting.length > 0 || !!state.error || notice !== null} save={saveBeforeUpdate} />
     {agentSkill && <AgentSkillDialog onClose={() => setAgentSkill(false)} />}
+    {setup && state.ready && <SetupDialog onClose={() => { setSetup(false); fit(); }} />}
     {exporting && <ExportDialog worksheet={worksheet && !answerKey} onClose={() => setExporting(false)} onDone={setNotice} />}
-    {library && <Library onClose={() => setLibrary(false)} onImported={setNotice} onOpen={(replace) => {
+    {library && <Library onClose={() => setLibrary(false)} onImported={setNotice} onCreated={() => setSetup(true)} onOpen={(replace) => {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });
     }} />}
     {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}

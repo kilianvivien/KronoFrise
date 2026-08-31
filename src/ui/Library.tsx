@@ -21,11 +21,13 @@ import { CONFIRM, EDITOR, LIBRARY, START } from './strings';
 import { Icon } from './icons';
 import styles from './Library.module.css';
 
-export function Library({ onClose, onOpen, onImported }: {
+export function Library({ onClose, onOpen, onImported, onCreated }: {
   onClose: () => void;
   /** remplace le document courant, après avoir mis le travail en cours à l'abri */
   onOpen: (open: () => Promise<void>) => void;
   onImported: (message: string) => void;
+  /** une frise vide vient de naître : l'éditeur propose sa mise en route */
+  onCreated: () => void;
 }): JSX.Element {
   const state = useStore(editorStore);
   const [entries, setEntries] = useState<LibraryEntry[] | null>(null);
@@ -72,7 +74,11 @@ export function Library({ onClose, onOpen, onImported }: {
       } catch { setError(LIBRARY.unreadable); }
     });
   };
-  const create = (): void => onOpen(() => { editorStore.getState().replace(createDocument()); onClose(); return Promise.resolve(); });
+  const create = (): void => onOpen(() => {
+    editorStore.getState().replace(createDocument());
+    onClose(); onCreated();
+    return Promise.resolve();
+  });
   const duplicate = (entry: LibraryEntry): void => {
     onOpen(async () => {
       try {

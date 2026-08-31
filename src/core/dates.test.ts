@@ -4,12 +4,15 @@ import {
   compareDates,
   formatCentury,
   formatDate,
+  formatSpan,
   formatYear,
   fromFractionalYear,
   fromRoman,
   parseDateInput,
+  shiftYears,
   toFractionalYear,
   toRoman,
+  withEra,
 } from './dates';
 import type { KDate } from './types';
 
@@ -167,5 +170,62 @@ describe('formatYear : typographie française des grands nombres', () => {
   it('groupe par milliers au-delà, avec une espace fine insécable', () => {
     expect(formatYear(-9999)).toBe('10 000 av. J.-C.');
     expect(formatYear(-2_999_999)).toBe('3 000 000 av. J.-C.');
+  });
+});
+
+
+describe('shiftYears (boutons ± 100 / ± 1000 ans)', () => {
+  it('décale l’année sans toucher au reste de la date', () => {
+    expect(shiftYears({ year: 1789, month: 7, day: 14 }, 100)).toEqual({ year: 1889, month: 7, day: 14 });
+    expect(shiftYears({ year: 1789, circa: true }, -1000)).toEqual({ year: 789, circa: true });
+  });
+
+  it('franchit l’an 1 sans cas particulier', () => {
+    // -51 = 52 av. J.-C. ; +100 ans donne l'an 49 apr. J.-C.
+    expect(formatYear(shiftYears({ year: -51 }, 100).year)).toBe('49');
+    expect(formatYear(shiftYears({ year: 49 }, -100).year)).toBe('52 av. J.-C.');
+  });
+
+  it('reste dans les bornes du format et rend la même date au butoir', () => {
+    const floor: KDate = { year: -10_000_000 };
+    expect(shiftYears(floor, -1000)).toBe(floor);
+    expect(shiftYears({ year: 10_000 }, 1000)).toEqual({ year: 10_000 });
+  });
+
+  it('ramène un 29 février sur une année non bissextile', () => {
+    expect(shiftYears({ year: 2000, month: 2, day: 29 }, 100)).toEqual({ year: 2100, month: 2, day: 28 });
+  });
+});
+
+describe('withEra (bascule av. / apr. J.-C.)', () => {
+  it('garde l’année historique en changeant d’ère', () => {
+    expect(formatYear(withEra({ year: 1789 }, true).year)).toBe('1789 av. J.-C.');
+    expect(formatYear(withEra({ year: -1788 }, false).year)).toBe('1789');
+  });
+
+  it('ne touche à rien quand l’ère est déjà la bonne', () => {
+    const date: KDate = { year: 1789, month: 7 };
+    expect(withEra(date, false)).toBe(date);
+  });
+
+  it('fait l’aller-retour sans dériver, y compris à l’an 1', () => {
+    for (const year of [1, 52, 476, 1789]) {
+      const ad: KDate = { year };
+      expect(withEra(withEra(ad, true), false)).toEqual(ad);
+    }
+  });
+});
+
+
+describe('formatSpan (étendue d’un axe)', () => {
+  it('compte en années, groupées dès quatre chiffres', () => {
+    expect(formatSpan(237)).toBe('237 ans');
+    expect(formatSpan(2951)).toBe('2\u202F951 ans');
+    expect(formatSpan(999_999)).toBe('999\u202F999 ans');
+  });
+
+  it('passe au million pour la Préhistoire', () => {
+    expect(formatSpan(1_000_000)).toBe('1 million d’années');
+    expect(formatSpan(2_997_000)).toBe('3 millions d’années');
   });
 });

@@ -7,7 +7,7 @@
  * (PLAN.md §8.4).
  */
 import { DATES } from '../shared/strings';
-import type { KDate, Year } from './types';
+import { YEAR_MAX, YEAR_MIN, type KDate, type Year } from './types';
 
 export type DatePrecision = 'year' | 'month' | 'day';
 
@@ -29,6 +29,34 @@ export function yearFromBc(bcYear: number): Year {
 
 export function isBc(year: Year): boolean {
   return year <= 0;
+}
+
+/**
+ * Décale une date d'un nombre d'années, bornes du format comprises.
+ *
+ * Les boutons « ± 100 ans » et « ± 1000 ans » de l'inspecteur passent tous
+ * par ici : la numérotation astronomique fait que franchir l'an 1 ne demande
+ * aucun cas particulier (−1 + 2 = 1, soit 2 av. J.-C. → 1 apr. J.-C.).
+ */
+export function shiftYears(date: KDate, delta: number): KDate {
+  const year = clamp(date.year + delta, YEAR_MIN, YEAR_MAX);
+  if (year === date.year) return date;
+  // Un 29 février ne survit pas à toutes les années bissextiles.
+  if (date.month !== undefined && date.day !== undefined && date.day > daysInMonth(year, date.month)) {
+    return { ...date, year, day: daysInMonth(year, date.month) };
+  }
+  return { ...date, year };
+}
+
+/**
+ * Bascule d'ère à *année historique* constante : 1789 ↔ 1789 av. J.-C.
+ * C'est ce que veut dire cocher « av. J.-C. » à côté d'une date déjà écrite —
+ * pas « recule de 2 × 1789 ans ».
+ */
+export function withEra(date: KDate, bc: boolean): KDate {
+  if (isBc(date.year) === bc) return date;
+  const historical = historicalYear(date.year);
+  return { ...date, year: bc ? yearFromBc(historical) : historical };
 }
 
 export function precisionOf(date: KDate): DatePrecision {
@@ -123,6 +151,24 @@ export function formatDate(date: KDate, options: FormatDateOptions = {}): string
         : `${date.day === 1 ? DATES.firstDayOfMonth : String(date.day)} ${month} ${year}`;
   }
   return circa && date.circa === true ? `${DATES.circaPrefix} ${text}` : text;
+}
+
+/**
+ * Étendue en clair : « 237 ans », « 2 951 ans », « 3 millions d'années ».
+ *
+ * Une durée se groupe dès quatre chiffres, contrairement à une année : « 2 951
+ * ans » se lit, « 2951 ans » se compte. Au-delà du million, l'unité change —
+ * la Préhistoire ne se raconte pas en années.
+ */
+export function formatSpan(years: number): string {
+  const value = Math.max(0, Math.round(years));
+  if (value < 1_000_000) return `${groupAll(value)} ${DATES.years}`;
+  const millions = Math.round(value / 1_000_000);
+  return `${groupAll(millions)} ${millions > 1 ? DATES.millionYearsPlural : DATES.millionYears}`;
+}
+
+function groupAll(value: number): string {
+  return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202F');
 }
 
 /** Numéro de siècle historique : 1804 → 19 ; année -199 (200 av. J.-C.) → 2. */

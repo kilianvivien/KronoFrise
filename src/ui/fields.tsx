@@ -1,4 +1,5 @@
 import { useRef, useState, type JSX } from 'react';
+import { ZodError } from 'zod';
 import { apply, type Command } from '../core/commands';
 import { parseDateInput } from '../core/dates';
 import { parseDocument } from '../core/schema';
@@ -9,8 +10,23 @@ import { EDITOR, M2 } from './strings';
 import { PALETTE, resolveBase } from './palette';
 import { Icon, type IconName } from './icons';
 
+/**
+ * Une règle du schéma refusée doit se lire comme une phrase.
+ *
+ * `ZodError.message` est le JSON de toutes les anomalies : régler la fin de
+ * l'axe avant son début affichait un tableau d'objets dans le bandeau. On n'en
+ * garde que la première, qui est la cause — les suivantes n'en sont que les
+ * conséquences (un axe à l'envers désordonne aussi ses segments).
+ */
 export function reportError(error: unknown): void {
-  editorStore.setState({ error: error instanceof Error ? error.message : EDITOR.fileError });
+  editorStore.setState({ error: errorMessage(error) });
+}
+function errorMessage(error: unknown): string {
+  if (error instanceof ZodError) {
+    const issue = error.issues[0]?.message;
+    if (issue !== undefined && issue !== '') return `${issue[0]!.toUpperCase()}${issue.slice(1)}.`;
+  }
+  return error instanceof Error ? error.message : EDITOR.fileError;
 }
 export function commit(command: Command): void {
   const state = editorStore.getState();

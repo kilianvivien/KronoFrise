@@ -28,6 +28,10 @@ export const DATES = {
   ],
   /** Le 1er du mois s'écrit « 1er », les autres jours en chiffres. */
   firstDayOfMonth: '1er',
+  /** Étendue d'un axe : une durée, pas une date. */
+  years: 'ans',
+  millionYears: 'million d’années',
+  millionYearsPlural: 'millions d’années',
 } as const;
 
 export const DOC = {

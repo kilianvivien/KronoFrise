@@ -7,12 +7,12 @@
 import { useRef, type JSX } from 'react';
 import { useStore } from 'zustand';
 import { deleteLane, type ItemPatch } from '../core/commands';
-import { formatDate } from '../core/dates';
 import { greatPeriodsPreset } from '../core/presets';
 import { editorStore } from '../store/editor';
 import { themeById } from '../themes';
 import { AxisEditor } from './AxisEditor';
-import { Check, Choices, Colors, Field, PanelButton, commit, dateInput, patchTitleBlock, reportError } from './fields';
+import { DateField } from './DateField';
+import { Check, Choices, Colors, Field, PanelButton, commit, patchTitleBlock, reportError } from './fields';
 import { Icon } from './icons';
 import { importImage } from './images';
 import { FillPicker } from './FillPicker';
@@ -66,11 +66,11 @@ export function Inspector({ laneId, onLane, fit, mode = 'edit', answerKey = fals
       <Field label={M2.label} value={item.label} onCommit={(label) => patch({ label })} />
       <Field label={M2.description} value={item.description ?? ''} multiline onCommit={(description) => patch({ description: description || null })} />
       {item.kind === 'event' ? <>
-        <Field label={M2.date} value={formatDate(item.date)} onCommit={(value) => patch({ date: dateInput(value) })} />
+        <DateField label={M2.date} value={item.date} hint onChange={(date) => patch({ date })} />
         <Check label={M2.circa} value={!!item.date.circa} onChange={(circa) => patch({ date: { ...item.date, circa } })} />
       </> : <>
-        <Field label={M2.start} value={formatDate(item.start)} onCommit={(value) => patch({ start: dateInput(value) })} />
-        <Field label={M2.end} value={formatDate(item.end)} onCommit={(value) => patch({ end: dateInput(value) })} />
+        <DateField label={M2.start} value={item.start} onChange={(start) => patch({ start })} />
+        <DateField label={M2.end} value={item.end} hint onChange={(end) => patch({ end })} />
         <Choices label={M2.shape} value={item.shape} options={SHAPES} onChange={(shape) => patch({ shape })} />
         <Check label={M2.fuzzyStart} value={!!item.fuzzyStart} onChange={(fuzzyStart) => patch({ fuzzyStart })} />
         <Check label={M2.fuzzyEnd} value={!!item.fuzzyEnd} onChange={(fuzzyEnd) => patch({ fuzzyEnd })} />

@@ -1,4 +1,5 @@
 // SPEC? Shared pure data keeps core/layout independent of ui; see docs/spec-gaps.md §1.
+import { DATES } from "../shared/strings";
 export * from "../shared/strings";
 
 export const EDITOR = {
@@ -76,6 +77,48 @@ export const M2 = {
   resizeSidebar: 'Redimensionner la structure',
   multiHint: 'La couleur et la bande s’appliquent à tous les éléments sélectionnés.',
   selectLane: 'Modifier cette bande',
+} as const;
+
+/**
+ * Aide à la saisie d'une date — demande de Kilian (31 août 2026).
+ *
+ * Écrire « 52 av. J.-C. » suppose de connaître la convention ; les deux
+ * boutons d'ère et les décalages de siècle/millénaire la rendent inutile.
+ */
+export const DATE_INPUT = {
+  tools: 'Aide à la saisie de la date',
+  era: 'Ère',
+  bc: DATES.bcSuffix,
+  ad: 'apr. J.-C.',
+  bcLong: 'Avant Jésus-Christ',
+  adLong: 'Après Jésus-Christ',
+  shift: 'Décaler la date',
+  century: '100 ans',
+  millennium: '1000 ans',
+  earlier: (years: number): string => `Reculer de ${years} ans`,
+  later: (years: number): string => `Avancer de ${years} ans`,
+  hint: 'Écrivez « 1515 », « 52 av. J.-C. », « v. 800 » ou « 14/07/1789 ».',
+  showTools: 'Afficher l’aide à la saisie',
+  hideTools: 'Masquer l’aide à la saisie',
+} as const;
+
+/**
+ * Mise en route d'une frise vide — demande de Kilian (31 août 2026).
+ * Deux bornes et un titre : le reste se règle dans l'inspecteur.
+ */
+export const SETUP = {
+  title: 'Votre nouvelle frise',
+  intro: 'Posez le titre et les deux bornes de l’axe. Tout reste modifiable ensuite dans l’inspecteur.',
+  name: 'Titre',
+  namePlaceholder: 'La Révolution française',
+  start: 'Début',
+  end: 'Fin',
+  suggestions: 'Périodes courantes',
+  suggestionsHint: 'Remplit les deux bornes ; aucun élément n’est ajouté.',
+  summary: (range: string, span: string): string => `${range} · ${span}`,
+  endBeforeStart: 'La fin doit être postérieure au début.',
+  create: 'Créer la frise',
+  skip: 'Passer',
 } as const;
 
 /** Mode fiche élève — PLAN.md §3.5, docs/format.md §5. */
