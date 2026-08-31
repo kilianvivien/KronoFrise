@@ -140,6 +140,27 @@ export function contrastRatio(a: string, b: string): number {
   return (Math.max(la, lb) + .05) / (Math.min(la, lb) + .05);
 }
 
+/**
+ * Encre lisible sur un remplissage donné.
+ *
+ * `ink(base)` est défini par DESIGN.md §4 pour du texte posé sur `tint(base)`.
+ * Dès qu'un thème change le papier, le remplissage change avec lui et l'encre
+ * doit suivre : « Blé » sur le papier chaud de *Parchemin* tombait à 4,1:1.
+ * On assombrit donc par pas déterministes jusqu'au seuil AA plutôt que de
+ * corriger à l'œil — et sur un remplissage déjà conforme, la valeur de §4 est
+ * rendue telle quelle.
+ */
+export function readableInk(base: string, fill: string, target = 4.5): string {
+  const start = ink(base);
+  if (contrastRatio(start, fill) >= target) return start;
+  for (let step = 1; step <= 10; step++) {
+    const candidate = mix(start, INK_BLACK, step / 10);
+    if (contrastRatio(candidate, fill) >= target) return candidate;
+  }
+  // Remplissage trop sombre pour toute encre foncée : le blanc contraste mieux.
+  return contrastText(fill);
+}
+
 /** Contrast-safe text for fully saturated fills (sRGB relative luminance). */
 export function contrastText(background: string): string {
   const light = luminance(background);

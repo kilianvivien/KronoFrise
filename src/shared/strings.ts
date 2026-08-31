@@ -106,6 +106,6 @@ export const DEV = {
   hint: 'Molette pour naviguer, ⌘/Ctrl + molette pour zoomer.',
 } as const;
 
-export const THEME_NAMES = { manuel: 'Manuel scolaire', craie: 'Craie', parchemin: 'Parchemin', journal: 'Journal' } as const;
+export const THEME_NAMES = { manuel: 'Manuel scolaire', craie: 'Craie', parchemin: 'Parchemin', journal: 'Journal', officielle: 'Frise officielle', tableau: 'Tableau blanc' } as const;
 export const GREAT_PERIOD_NAMES = ['Préhistoire', 'Antiquité', 'Moyen Âge', 'Époque moderne', 'Époque contemporaine'] as const;
 export const PRESET_LANE_NAME = 'Grandes périodes';

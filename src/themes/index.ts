@@ -38,7 +38,15 @@ export const MANUEL_SCOLAIRE: Theme = {
 export const CRAIE: Theme = { ...MANUEL_SCOLAIRE, id: 'craie', name: THEME_NAMES.craie, paper: 'var(--chalk-paper)', paperLine: 'var(--chalk-line)', axisInk: 'var(--chalk-ink)', rulerInk: 'var(--chalk-ink)', rulerInkMinor: 'var(--chalk-muted)', laneInk: 'var(--chalk-muted)' };
 export const PARCHEMIN: Theme = { ...MANUEL_SCOLAIRE, id: 'parchemin', name: THEME_NAMES.parchemin, paper: 'var(--parchment-paper)', paperLine: 'var(--parchment-line)', axisInk: 'var(--parchment-ink)', rulerInk: 'var(--parchment-ink)', rulerInkMinor: 'var(--parchment-muted)', laneInk: 'var(--parchment-muted)' };
 export const JOURNAL: Theme = { ...MANUEL_SCOLAIRE, id: 'journal', name: THEME_NAMES.journal, paper: 'var(--journal-paper)', paperLine: 'var(--journal-line)', axisInk: 'var(--journal-ink)', rulerInk: 'var(--journal-ink)', rulerInkMinor: 'var(--journal-ink)', laneInk: 'var(--journal-ink)' };
-export const THEMES: readonly Theme[] = [MANUEL_SCOLAIRE, CRAIE, PARCHEMIN, JOURNAL];
+/**
+ * SPEC? PLAN.md §3.4 nomme cinq thèmes et en demande « 6 à 8 ».
+ * « Frise officielle » est spécifié ; « Tableau blanc » complète la série au
+ * bas de la fourchette — voir docs/spec-gaps.md §13.5.
+ */
+export const OFFICIELLE: Theme = { ...MANUEL_SCOLAIRE, id: 'officielle', name: THEME_NAMES.officielle, paper: 'var(--officielle-paper)', paperLine: 'var(--officielle-line)', axisInk: 'var(--officielle-ink)', rulerInk: 'var(--officielle-ink)', rulerInkMinor: 'var(--officielle-muted)', laneInk: 'var(--officielle-muted)' };
+export const TABLEAU_BLANC: Theme = { ...MANUEL_SCOLAIRE, id: 'tableau', name: THEME_NAMES.tableau, paper: 'var(--whiteboard-paper)', paperLine: 'var(--whiteboard-line)', axisInk: 'var(--whiteboard-ink)', rulerInk: 'var(--whiteboard-muted)', rulerInkMinor: 'var(--whiteboard-muted)', laneInk: 'var(--whiteboard-muted)' };
+
+export const THEMES: readonly Theme[] = [MANUEL_SCOLAIRE, OFFICIELLE, CRAIE, PARCHEMIN, TABLEAU_BLANC, JOURNAL];
 
 export function themeById(id: string): Theme {
   return THEMES.find((theme) => theme.id === id) ?? MANUEL_SCOLAIRE;

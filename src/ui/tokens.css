@@ -22,6 +22,15 @@
   --journal-paper: #FFFFFF;
   --journal-line: #E3E3E3;
   --journal-ink: #161616;
+  /* SPEC? M4 : « Frise officielle » et « Tableau blanc » (docs/spec-gaps.md §13.5). */
+  --officielle-paper: #FCFCFA;
+  --officielle-line: #DEDCD5;
+  --officielle-ink: #23211D;
+  --officielle-muted: #6E6A62;
+  --whiteboard-paper: #F7F9FB;
+  --whiteboard-line: #DCE3EA;
+  --whiteboard-ink: #1F2A33;
+  --whiteboard-muted: #6B7A87;
 
   --tooltip-bg: #2C2925;
   /* ---- chrome, light ---- */

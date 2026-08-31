@@ -385,3 +385,32 @@ trois fois plus lent et ne dit rien de l'expérience réelle.
 Tout tient sous les 16,7 ms d'une image à 60 Hz. La mise en page n'était pas
 le goulot : le coût est la réconciliation React des nœuds SVG, ce que
 l'élagage attaque directement.
+
+### 13.5 Les thèmes restants : lequel inventer, et lequel ne pas inventer
+
+PLAN.md §3.4 demande « 6 à 8 thèmes » et en nomme cinq. Quatre étaient livrés
+en M2 ; deux manquaient.
+
+- **Frise officielle** est spécifié — « matches the Éduscol/programmes color
+  conventions for the great periods ». Un thème ne choisit pas les couleurs des
+  éléments (c'est le rôle du préréglage des grandes périodes) : ce qu'il porte,
+  c'est leur *traitement*. Retenu : un papier neutre et des bandes franchement
+  colorées (`mix(base, papier, 0.30)`) au lieu de la teinte légère du manuel —
+  la frise des programmes se lit en bandes pleines, pas en pastels.
+- **Tableau blanc** complète la série au bas de la fourchette. Registre absent
+  des cinq autres : le feutre sur un tableau blanc — papier froid, remplissages
+  saturés, encre bleu-nuit. *Craie* est le tableau noir, *Manuel scolaire* le
+  papier chaud du manuel ; celui-ci est ce que l'on projette réellement en
+  classe. Six thèmes suffisent : trois de plus auraient été du remplissage.
+
+### 13.6 Une encre par remplissage, pas par couleur
+
+Le test de contraste par thème a trouvé un défaut **antérieur** : « Blé » sur
+le papier chaud de *Parchemin* tombait à 4,1:1, sous le seuil de DESIGN.md §7.
+
+Cause : `ink(base)` est défini par DESIGN.md §4 pour du texte posé sur
+`tint(base)`. Dès qu'un thème change le papier, le remplissage change avec lui
+et l'encre, elle, ne bougeait pas. `readableInk(base, fill)` assombrit par pas
+déterministes jusqu'au seuil AA — et rend `ink(base)` inchangé partout où il
+passait déjà, si bien que *Manuel scolaire* est au pixel près ce qu'il était.
+Les six thèmes × douze couleurs sont désormais vérifiés par test.
