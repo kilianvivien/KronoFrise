@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
 import { useStore } from 'zustand';
 import { addItems, deleteItems } from '../core/commands';
+import { axisCovering } from '../core/axis';
 import { csvItems } from '../core/importers';
 import { newId } from '../core/ids';
 import { editorStore } from '../store/editor';
@@ -67,6 +68,12 @@ export function Editor(): JSX.Element {
   }, []);
   useEffect(() => { if (title !== null) { finishingTitle.current = false; titleInput.current?.focus(); titleInput.current?.select(); } }, [title !== null]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { if (deleting.length) dialog.current?.showModal(); else dialog.current?.close(); }, [deleting]);
+  // Une confirmation s'efface d'elle-même ; une erreur attend d'être lue.
+  useEffect(() => {
+    if (notice === null) return;
+    const timer = setTimeout(() => setNotice(null), 5000);
+    return () => clearTimeout(timer);
+  }, [notice]);
 
   const fit = () => { setZoom(1); setPan(0); };
   const worksheet = mode === 'worksheet';
@@ -113,7 +120,11 @@ export function Editor(): JSX.Element {
         const { items, skipped } = csvItems(text, laneId);
         if (items.length === 0) return;
         event.preventDefault();
-        current.dispatch(addItems(current.document, items));
+        // Les éléments collés hors de l'axe l'étendent : sinon ils seraient
+        // invisibles. L'axe et les éléments forment une seule annulation.
+        const axis = axisCovering(current.document.axis, items);
+        const add = addItems(current.document, items);
+        current.dispatch(axis === null ? add : { name: 'batch', label: 'pasteItems', commands: [add, { name: 'setAxis', axis }] });
         current.select(items.map((item) => item.id));
         setNotice(EDITOR.pasted(items.length, skipped.length));
       } catch { /* un collage qui n'est pas un tableau reste un collage ordinaire */ }
@@ -221,7 +232,11 @@ export function Editor(): JSX.Element {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });
     }} />}
     {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}
-    {(state.error || notice) && <div className={styles.notification} role={state.error ? 'alert' : 'status'}>{state.error || notice}<button className={styles.button} onClick={() => { editorStore.setState({ error: null }); setNotice(null); }}>{EDITOR.close}</button></div>}
+    {(state.error || notice) && <div className={styles.notification} data-kind={state.error ? 'error' : 'notice'} role={state.error ? 'alert' : 'status'}>
+      <Icon name={state.error ? 'close' : 'check'} />
+      <span>{state.error || notice}</span>
+      <button className={styles.icon} aria-label={EDITOR.close} onClick={() => { editorStore.setState({ error: null }); setNotice(null); }}><Icon name="close" /></button>
+    </div>}
     <dialog ref={dialog} className={styles.dialog} onCancel={() => setDeleting([])} aria-labelledby="delete-title">
       <h2 id="delete-title">{CONFIRM.deleteItems(deleting.length)}</h2>
       <div className={styles.dialogActions}><button className={styles.button} autoFocus onClick={() => setDeleting([])}>{CONFIRM.cancel}</button><button className={styles.danger} onClick={() => { state.dispatch(deleteItems(state.document, deleting)); state.select([]); setDeleting([]); }}>{CONFIRM.delete}</button></div>

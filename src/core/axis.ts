@@ -1,6 +1,7 @@
 import { compareDates, toFractionalYear } from './dates';
+import { itemEnd, itemStart } from './document';
 import { axisSchema } from './schema';
-import { MAX_SEGMENTS, type Axis, type KDate } from './types';
+import { MAX_SEGMENTS, type Axis, type Item, type KDate } from './types';
 import { ERRORS } from '../shared/strings';
 
 /** Split without distorting the projection: equal density, until the weights are edited. */
@@ -39,4 +40,24 @@ export function redistributeAxis(axis: Axis, boundaryIndex: number, leftShare: n
 }
 export function setAxisBounds(axis: Axis, start: KDate, end: KDate): Axis {
   return axisSchema.parse({ ...axis, start, end, segments: axis.segments.map((segment, index) => index === axis.segments.length - 1 ? { ...segment, until: end } : segment) });
+}
+
+/**
+ * Étend l'axe pour contenir des éléments importés ou collés, avec une marge
+ * d'un vingtième. Rend `null` si l'axe les contient déjà : coller ne modifie
+ * l'axe que lorsque c'est nécessaire, et jamais dans l'autre sens — un axe ne
+ * se rétrécit pas tout seul.
+ */
+export function axisCovering(axis: Axis, items: readonly Item[]): Axis | null {
+  if (items.length === 0) return null;
+  const years = items.flatMap((item) => [toFractionalYear(itemStart(item)), toFractionalYear(itemEnd(item))]);
+  const first = Math.min(...years);
+  const last = Math.max(...years);
+  const from = toFractionalYear(axis.start);
+  const to = toFractionalYear(axis.end);
+  if (first >= from && last <= to) return null;
+  const margin = Math.max(1, Math.round((Math.max(last, to) - Math.min(first, from)) * 0.05));
+  const start: KDate = first < from ? { year: Math.floor(first) - margin } : axis.start;
+  const end: KDate = last > to ? { year: Math.ceil(last) + margin } : axis.end;
+  return setAxisBounds(axis, start, end);
 }

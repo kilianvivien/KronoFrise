@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { splitAxis, removeAxisBreak, redistributeAxis, moveAxisBreak, setAxisBounds } from './axis';
+import { splitAxis, removeAxisBreak, redistributeAxis, moveAxisBreak, setAxisBounds, axisCovering } from './axis';
 import { createDocument, linearAxis } from './document';
 import { apply, invert, type Command } from './commands';
 import { greatPeriodsPreset } from './presets';
 import { parseDocument } from './schema';
+import type { Item } from './types';
 import { makeScale } from '../layout/scale';
 
 const axis = linearAxis({ year: -1000 }, { year: 2000 });
@@ -55,5 +56,21 @@ describe('elastic editing', () => {
     expect(parseDocument(next).lanes[1]!.color).toBe('olive');
     expect(apply(next, invert(doc, command))).toEqual(doc);
     expect(apply(doc, { name: 'reorderLanes', ids: ['second'] })).toEqual(doc);
+  });
+});
+
+describe('axe étendu par un collage', () => {
+  it('n’étend l’axe que lorsque des éléments tombent dehors', () => {
+    const axis = linearAxis({ year: 1900 }, { year: 2000 });
+    const inside: Item = { id: 'a', kind: 'event', laneId: 'l', label: 'Dedans', color: 'brique', date: { year: 1950 } };
+    const before: Item = { id: 'b', kind: 'event', laneId: 'l', label: 'Avant', color: 'brique', date: { year: 1850 } };
+    expect(axisCovering(axis, [inside])).toBeNull();
+    expect(axisCovering(axis, [])).toBeNull();
+    const extended = axisCovering(axis, [inside, before]);
+    expect(extended).not.toBeNull();
+    expect(extended!.start.year).toBeLessThan(1850);
+    // L'axe ne se rétrécit jamais : la borne de fin reste celle d'origine.
+    expect(extended!.end.year).toBe(2000);
+    expect(extended!.segments.at(-1)!.until).toEqual(extended!.end);
   });
 });

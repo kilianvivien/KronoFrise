@@ -127,3 +127,21 @@
 .footer { gap: var(--space-3); }
 .hint { color: var(--text-tertiary); }
 .empty { font-size: var(--fs-ui); line-height: 1.6; }
+
+/* Canevas vide : une invitation, pas un message d'erreur. */
+.empty { display: flex; flex-direction: column; align-items: center; gap: var(--space-2); max-width: 420px; }
+.empty svg { width: 24px; height: 24px; opacity: .5; }
+.empty p { margin: 0; }
+.emptyTitle { font-size: var(--fs-title); font-weight: 600; }
+.emptyKeys { display: flex; align-items: center; gap: 6px; margin-top: var(--space-2); font-size: var(--fs-caption); }
+.emptyKeys kbd {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px;
+  font: inherit; font-size: var(--fs-caption); border: 1px solid currentColor; border-radius: 4px; opacity: .7;
+}
+
+/* Notification : confirmation discrète, erreur explicite. */
+.notification { align-items: flex-start; gap: var(--space-2); padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4); }
+.notification span { flex: 1; }
+.notification > svg { flex: 0 0 16px; margin-top: 1px; color: var(--text-tertiary); }
+.notification[data-kind=error] { border-color: var(--danger); }
+.notification[data-kind=error] > svg { color: var(--danger); }

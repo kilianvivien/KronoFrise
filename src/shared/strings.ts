@@ -55,8 +55,9 @@ export const TOOLBAR = {
 } as const;
 
 export const CANVAS = {
+  emptyTitle: 'Votre frise est prête.',
   emptyHint:
-    'Faites glisser pour naviguer. Choisissez l’outil Événement ou Période dans la barre d’outils pour ajouter un élément.',
+    'Choisissez l’outil Événement ou Période dans la barre d’outils, puis cliquez sur la frise. Faites glisser le fond pour naviguer.',
 } as const;
 
 export const START = {

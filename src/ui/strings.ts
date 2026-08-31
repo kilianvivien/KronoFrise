@@ -53,7 +53,7 @@ export const M2 = {
   theme: 'Thème', manuel: 'Manuel scolaire', craie: 'Craie', parchemin: 'Parchemin', journal: 'Journal',
   axis: 'Axe du temps', split: 'Scinder à cette date', splitAt: 'Date de coupure',
   segment: 'Segment', boundary: 'Modifier la coupure', removeBreak: 'Supprimer la coupure',
-  addBreak: 'Ajouter une coupure', apply: 'Appliquer', weight: 'Largeur relative',
+  addBreak: 'Ajouter une coupure', splitHint: 'Scinde l’axe à cette date : chaque segment reçoit ensuite sa propre largeur.', apply: 'Appliquer', weight: 'Largeur relative',
   maxSegments: 'Une frise peut contenir jusqu’à huit segments.', invalidAxis: 'La coupure doit se trouver entre les deux bornes du segment.',
   resizeBoundary: (index: number): string => `Déplacer la coupure ${index}`,
   segmentName: (index: number): string => `Segment ${index}`,

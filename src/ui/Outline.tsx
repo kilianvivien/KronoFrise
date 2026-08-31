@@ -62,7 +62,7 @@ export function Outline({ onLane, onFocus }: { onLane: (id: string) => void; onF
         }
       }}>
       <div className="laneHeading">
-        <button className="iconOnly" aria-label={lane.collapsed ? M2.expand : M2.collapse} aria-expanded={!lane.collapsed}
+        <button className="iconOnly" aria-label={lane.collapsed ? M2.expand : M2.collapse} title={lane.collapsed ? M2.expand : M2.collapse} aria-expanded={!lane.collapsed}
           onClick={() => commit({ name: 'updateLane', laneId: lane.id, patch: { collapsed: !lane.collapsed } })}>
           <Icon name={lane.collapsed ? 'chevronRight' : 'chevronDown'} />
         </button>
@@ -71,8 +71,8 @@ export function Outline({ onLane, onFocus }: { onLane: (id: string) => void; onF
           <i style={{ background: resolveBase(lane.color ?? 'pierre') }} />
           <span>{lane.name || M2.unnamedLane}</span>
         </button>
-        <button className="iconOnly" aria-label={M2.moveUp} disabled={index === 0} onClick={() => move(index, -1)}><Icon name="arrowUp" /></button>
-        <button className="iconOnly" aria-label={M2.moveDown} disabled={index === doc.lanes.length - 1} onClick={() => move(index, 1)}><Icon name="arrowDown" /></button>
+        <button className="iconOnly" aria-label={M2.moveUp} title={M2.moveUp} disabled={index === 0} onClick={() => move(index, -1)}><Icon name="arrowUp" /></button>
+        <button className="iconOnly" aria-label={M2.moveDown} title={M2.moveDown} disabled={index === doc.lanes.length - 1} onClick={() => move(index, 1)}><Icon name="arrowDown" /></button>
       </div>
 
       {(!lane.collapsed || search !== '') && matches.filter((item) => item.laneId === lane.id).map((item) =>

@@ -52,8 +52,10 @@ s'imprime est exactement ce que l'on voyait.
 **M3 — Les super-pouvoirs du professeur sont implémentés.** `/` ouvre
 l'éditeur ; `/?fixtures` conserve la page de contrôle M0.
 
-- La barre d'outils est en icônes groupées (outils, modes, fichiers), chacune
-  avec son infobulle et son raccourci.
+- Interface en icônes : barre d'outils groupée (outils, modes, fichiers), plan
+  et inspecteur au même vocabulaire, chaque commande avec son infobulle et son
+  raccourci. L'inspecteur suit la grille de DESIGN.md §3 ; les formes, les
+  thèmes et les formats d'export se choisissent sur des aperçus.
 - **Trois modes** : Édition, Présentation, Fiche élève.
   - *Fiche élève* : masquer un libellé, une date ou les deux, tout masquer,
     en masquer la moitié au hasard, afficher le corrigé. Masquer ne modifie

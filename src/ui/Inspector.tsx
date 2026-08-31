@@ -140,7 +140,7 @@ export function Inspector({ laneId, onLane, fit, mode = 'edit', answerKey = fals
 
 function Header({ title, badge, onBack }: { title: string; badge: string; onBack: () => void }): JSX.Element {
   return <header className="panelHeader">
-    <button className="panelBack" aria-label={M2.backToDocument} onClick={onBack}><Icon name="back" /></button>
+    <button className="panelBack" aria-label={M2.backToDocument} title={M2.backToDocument} onClick={onBack}><Icon name="back" /></button>
     <h2>{title}</h2>
     <span className="badge">{badge}</span>
   </header>;

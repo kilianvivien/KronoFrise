@@ -138,6 +138,14 @@ Type usage: UI text is `--fs-ui`/regular; panel headers `--fs-title`/600; never 
 
 **Inspector rows**: 28px min height, grid `96px 1fr` (label right-aligned `--text-secondary` `--fs-ui`, control left-aligned), row gap `--space-2`, section headers `--fs-caption`/600 uppercase letter-spacing 0.06em `--text-tertiary` with `--space-4` above.
 
+**Panel conventions** (refinement pass, 31 août 2026 — the inspector now follows the row spec above):
+- Section headers are `--fs-caption`/600 uppercase, letter-spacing 0.06em, `--text-tertiary`; a fieldset legend inside a section stays sentence case in `--text-secondary`, so the hierarchy reads at a glance.
+- Exclusive choices with few options are **segmented icon controls** (container `--chrome-bg-inset`, selected segment `--field-bg` + `--shadow-panel` + `--accent` glyph): period shape (bar/bracket/arrow), page size, orientation, PNG resolution.
+- The document theme is chosen from **preview cards** (real paper, ruler and bar of that theme), never a dropdown. Export formats are cards with an icon and a name.
+- Boolean options sit in the control column of their row; their labels stay short enough to fit one line ("Approximative", "Début flou").
+- Empty states are an invitation, not an error: an icon, one bold line, one explanatory line, and the relevant shortcut keys as `kbd` chips.
+- Confirmations disappear on their own after 5s with a `check` glyph; errors carry a `--danger` glyph and stay until dismissed.
+
 **Popovers/menus**: bg `--field-bg`, 1px `--hairline`, radius `--radius-card`, shadow `--shadow-popover`, item height 26px, hover bg `--accent` text `--on-accent` (macOS menu behavior).
 
 ---

@@ -19,6 +19,7 @@ import { Field, commit, dateInput, reportError } from './fields';
 import { importImage } from './images';
 import { M2 } from './strings';
 import { canvasMeasurer } from './measureText';
+import { Icon } from './icons';
 import { moveSelection, precisionAt, selectedStart, snapDate } from './canvasMath';
 import styles from './Editor.module.css';
 
@@ -284,7 +285,14 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
       {tooltip?.guide !== null && tooltip && <line className={styles.guide} x1={tooltip.guide} x2={tooltip.guide} y1={0} y2={scene.height} />}
       {!readOnly && <AxisHandles axis={doc.axis} scale={scale} y={scene.baselineY} edit={(index, x) => setAxisMenu({ index, x, date: formatDate(doc.axis.segments[index]!.until) })} />}
     </Frise>
-    {!doc.items.length && <p className={styles.empty} style={{ color: resolveToken(theme.rulerInk) }}>{CANVAS.emptyHint}</p>}
+    {!doc.items.length && !readOnly && <div className={styles.empty} style={{ color: resolveToken(theme.rulerInk) }}>
+      <Icon name="event" />
+      <p className={styles.emptyTitle}>{CANVAS.emptyTitle}</p>
+      <p>{CANVAS.emptyHint}</p>
+      <p className={styles.emptyKeys}>
+        <kbd>E</kbd> {M2.event} <kbd>P</kbd> {M2.period}
+      </p>
+    </div>}
     {editing && editBox && <input ref={input} className={styles.inline} aria-label={EDITOR.label}
       style={{ left: Math.max(4, Math.min(size.width - 244, editBox.x)), top: editBox.y, width: Math.max(160, Math.min(editBox.width, 320)) }}
       value={editing.value} onChange={(event) => setEditing({ ...editing, value: event.target.value })}
