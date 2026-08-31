@@ -234,8 +234,14 @@ Fiche élève mode (masking, worksheet + answer key), Présentation mode with st
 
 **Exit:** the full teacher loop — build, project, print, hand out — with zero other software involved. **Public beta here.**
 
-### M4 — Polish, typography & desktop (3–4 weeks)
+### M4 — Polish, typography & desktop (3–4 weeks) — partie web ✅ 2026-08-31
 Keyboard completeness, accessibility pass, performance pass (500+ items), remaining themes, PWA/offline, Tauri app: native menus, `.krono` file association, app icon, notarized DMG.
+
+**État (Kilian, 2026-08-31 — « le web d'abord, Tauri après ») :** clavier,
+accessibilité, performance, thèmes (6), PWA/hors-ligne et les ajouts 1, 3, 4
+sont livrés ; l'ajout 2 l'est pour l'impression, pas pour la typographie par
+thème. Reste **Tauri** en entier, et les points listés dans
+docs/verification-m4.md § Limites.
 
 Added after the M3 interface pass (Kilian, 2026-08-31):
 

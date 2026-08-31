@@ -38,6 +38,7 @@ interface KronoDocument {
   };
   axis: Axis;
   themeId: string;                   // e.g. "manuel-scolaire" (default)
+  titleBlock?: TitleBlock;           // M4; absent = no title drawn on the canvas
   lanes: Lane[];                     // ≥ 1; a new doc has one lane {name: ""}
   items: Item[];
   pedagogy: Pedagogy;
@@ -88,6 +89,27 @@ Old files keep their original tinted appearance. Older strict readers cannot
 read files carrying this new field. Brackets retain the setting but have no
 filled surface; it becomes visible if changed to a bar or arrow.
 
+M4 adds two more optional properties to `krono/1`, on the same terms — old
+files stay valid, older strict readers do not accept the new fields:
+
+- **`fillStyle: 'gradient'`** — a ninth fill. SVG and PNG carry a real
+  `linearGradient`; the PDF has no gradient primitive and renders a banded
+  approximation of the same geometry (16 layers, `renderer/shapes.ts`). That
+  difference is part of the contract, not an accident, and the export dialog
+  states it. See docs/spec-gaps.md §13.11.
+- **`titleBlock`** — a document-level heading drawn above the frise. It is part
+  of the `SceneGraph`, so screen, SVG, PNG and PDF place it identically; its
+  height pushes the lanes down rather than overlapping them.
+
+```ts
+interface TitleBlock {
+  align: 'left' | 'center';
+  subtitle?: string;                 // one line, under the title
+  author?: boolean;                  // shows meta.author when present
+  date?: boolean;                    // shows meta.createdAt, formatted in French
+}
+```
+
 
 ```ts
 interface Lane {
@@ -107,7 +129,8 @@ interface ItemBase {
   color: string;                     // palette id ("brique") — NOT a hex.
                                      // Custom hex allowed with prefix "#", but the
                                      // picker only offers the 12 palette ids.
-  fillStyle?: 'tint' | 'solid' | 'none' | 'hatch' | 'crosshatch' | 'dots' | 'lines' | 'grid';
+  fillStyle?: 'tint' | 'solid' | 'none' | 'hatch' | 'crosshatch' | 'dots' | 'lines' | 'grid'
+            | 'gradient';   // M4
                                      // absent = tint; same color, different surface treatment
   image?: { src: string; }           // data URL (embedded) — .krono files are self-contained
   pinnedRow?: number;                // manual stacking override; absent = auto layout
