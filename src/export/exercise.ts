@@ -15,7 +15,7 @@ import { EXPORT } from '../ui/strings';
 import { toRgb01 } from '../ui/tokenValues';
 import { exportPdf, type PdfOptions } from './pdf';
 import { MARGIN, mm, pageDimensions } from './paper';
-import { toWinAnsi } from './pdfScene';
+import { toPdfText } from './pdfScene';
 
 /** Étiquettes : 2 colonnes, hauteur fixe, pointillés de découpe entre elles. */
 const LABEL_HEIGHT = mm(14);
@@ -40,7 +40,7 @@ export async function exportExercise(doc: KronoDocument, options: PdfOptions): P
   const hairline = toRgb01('var(--text-tertiary)');
   const width = page.getWidth() - MARGIN * 2;
 
-  page.drawText(toWinAnsi(EXPORT.exerciseTitle), {
+  page.drawText(toPdfText(EXPORT.exerciseTitle), {
     x: MARGIN, y: page.getHeight() - MARGIN - TITLE_SIZE, size: TITLE_SIZE, font: bold,
     color: rgb(ink.r, ink.g, ink.b),
   });
@@ -61,7 +61,7 @@ export async function exportExercise(doc: KronoDocument, options: PdfOptions): P
       borderColor: rgb(hairline.r, hairline.g, hairline.b), borderWidth: 0.75,
       borderDashArray: [3, 3],
     });
-    const text = toWinAnsi(label);
+    const text = toPdfText(label);
     const size = fitSize(text, columnWidth - mm(6), font);
     page.drawText(text, {
       x: x + mm(3), y: y + LABEL_HEIGHT / 2 - size / 3, size, font,

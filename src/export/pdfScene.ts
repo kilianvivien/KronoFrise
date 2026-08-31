@@ -53,9 +53,16 @@ const color = (value: string) => {
   return rgb(r, g, b);
 };
 
-/** WinAnsi ne contient ni « ᵉ » ni l'espace fine insécable. */
-export function toWinAnsi(text: string): string {
-  return text.replace(/\u1D49\u02B3/g, 'er').replace(/\u1D49/g, 'e').replace(/\u202F/g, '\u00A0');
+/**
+ * Texte prêt pour le PDF.
+ *
+ * Depuis l'incorporation d'Inter (M4, ajout 2), « XVIIᵉ » s'imprime tel quel :
+ * il n'y a plus de repli sur « XVIIe ». Seule reste l'espace fine insécable
+ * (U+202F), absente du sous-ensemble, ramenée sur l'espace insécable — ce que
+ * l'œil ne distingue pas à 11 px et que la typographie française admet.
+ */
+export function toPdfText(text: string): string {
+  return text.replace(/\u202F/g, '\u00A0');
 }
 
 interface TextOptions {
@@ -71,7 +78,7 @@ function drawText(context: PdfContext, text: string, px: number, py: number, opt
   const { frame } = context;
   const font = options.bold === true ? context.bold : context.font;
   const size = options.size * frame.scale;
-  const safe = toWinAnsi(text);
+  const safe = toPdfText(text);
   const width = font.widthOfTextAtSize(safe, size);
   const offset = options.anchor === 'middle' ? width / 2 : options.anchor === 'end' ? width : 0;
   context.page.drawText(safe, {

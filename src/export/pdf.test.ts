@@ -8,19 +8,23 @@ import { apply } from '../core/commands';
 import { antiquite, grandesPeriodes, revolution } from '../core/fixtures/index';
 import { maskAll } from '../core/pedagogy';
 import { exportPdf } from './pdf';
-import { roundedRectPath, toWinAnsi, translatePath } from './pdfScene';
+import { roundedRectPath, toPdfText, translatePath } from './pdfScene';
 import { pageDimensions } from './paper';
 import { inflateSync } from 'node:zlib';
 
 /**
- * Texte réellement présent dans le PDF. pdf-lib écrit des chaînes hexadécimales
- * encodées en WinAnsi : les caractères typographiques français (’ – œ) y ont
- * un code propre, qu'il faut retraduire pour comparer.
+ * Texte réellement présent dans le PDF.
+ *
+ * Depuis l'incorporation d'Inter (M4, ajout 2), les libellés ne sont plus des
+ * octets WinAnsi lisibles à l'œil dans le flux : une police en sous-ensemble
+ * s'écrit avec ses propres codes de glyphes. C'est justement ce qui rend le
+ * texte *toujours* du texte pour un lecteur de PDF — la table `ToUnicode` que
+ * pdf-lib écrit à côté rend chaque code à son caractère.
+ *
+ * Le test emprunte donc le même chemin qu'un lecteur : il lit la table, puis
+ * décode les chaînes. Sans cela, on ne vérifierait plus rien.
  */
-const WIN_ANSI_HIGH: Record<number, string> = {
-  0x82: '‚', 0x85: '…', 0x91: '‘', 0x92: '’', 0x93: '“', 0x94: '”', 0x96: '–', 0x97: '—', 0x9c: 'œ',
-};
-function pdfText(bytes: Uint8Array): string[] {
+function streamsOf(bytes: Uint8Array): string {
   const raw = Buffer.from(bytes).toString('latin1');
   let content = '';
   const streams = /stream\r?\n/g;
@@ -30,8 +34,37 @@ function pdfText(bytes: Uint8Array): string[] {
     const chunk = Buffer.from(raw.slice(start, raw.indexOf('endstream', start)), 'latin1');
     try { content += inflateSync(chunk).toString('latin1'); } catch { /* flux non compressé ou image */ }
   }
-  return [...content.matchAll(/<([0-9A-Fa-f]+)>\s*Tj/g)].map(([, hex]) =>
-    [...Buffer.from(hex as string, 'hex')].map((code) => WIN_ANSI_HIGH[code] ?? String.fromCharCode(code)).join(''));
+  return content;
+}
+
+/**
+ * Les tables `ToUnicode` du document, **une par police**.
+ *
+ * Les deux polices incorporées (normale et demi-grasse) numérotent leurs
+ * glyphes à partir de 1 chacune : fondre leurs tables ferait lire « POLITIQUE »
+ * là où le PDF dit « Avènement ». On les garde donc séparées et l'on décode
+ * chaque chaîne sous chacune ; un libellé français ne se reconstitue que sous
+ * la bonne, une mauvaise table ne produisant que du charabia.
+ */
+function toUnicodeMaps(content: string): Map<number, string>[] {
+  const decode = (hex: string): string =>
+    (hex.match(/.{4}/g) ?? []).map((unit) => String.fromCharCode(Number.parseInt(unit, 16))).join('');
+  return [...content.matchAll(/beginbfchar([\s\S]*?)endbfchar/g)].map(([, body]) => {
+    const map = new Map<number, string>();
+    for (const [, code, value] of (body as string).matchAll(/<([0-9A-Fa-f]+)>\s*<([0-9A-Fa-f]+)>/g)) {
+      map.set(Number.parseInt(code!, 16), decode(value!));
+    }
+    return map;
+  });
+}
+
+function pdfText(bytes: Uint8Array): string[] {
+  const content = streamsOf(bytes);
+  const maps = toUnicodeMaps(content);
+  expect(maps.length).toBeGreaterThan(0);
+  const codes = [...content.matchAll(/<([0-9A-Fa-f]+)>\s*Tj/g)]
+    .map(([, hex]) => ((hex as string).match(/.{4}/g) ?? []).map((unit) => Number.parseInt(unit, 16)));
+  return maps.flatMap((map) => codes.map((sequence) => sequence.map((code) => map.get(code) ?? '\uFFFD').join('')));
 }
 
 const A4 = { size: 'a4', orientation: 'landscape', wall: false } as const;
@@ -56,8 +89,12 @@ describe('export PDF', () => {
     const pdf = await PDFDocument.load(await exportPdf(revolution, A4));
     const objects = pdf.context.enumerateIndirectObjects().map(([, object]) => String(object));
     // Les libellés passent par une police incorporée : ils restent du texte
-    // sélectionnable, jamais des tracés (docs/format.md §9).
-    expect(objects.some((object) => object.includes('Helvetica'))).toBe(true);
+    // sélectionnable, jamais des tracés (docs/format.md §9). `FontFile2` est
+    // le fichier de police lui-même, embarqué dans le PDF — pas une des 14
+    // polices standard, qui n'auraient pas l'exposant ordinal.
+    expect(objects.some((object) => object.includes('/FontFile2'))).toBe(true);
+    expect(objects.some((object) => object.includes('Inter'))).toBe(true);
+    expect(objects.some((object) => object.includes('Helvetica'))).toBe(false);
     // Les seules images du PDF sont celles des événements : la frise elle-même
     // n'est jamais une capture d'écran.
     const images = objects.filter((object) => object.includes('/Subtype /Image')).length;
@@ -97,9 +134,22 @@ describe('export PDF', () => {
     expect(key.byteLength).toBeGreaterThan(worksheet.byteLength);
   }, 20_000);
 
-  it('replie les exposants absents des polices standard', () => {
-    expect(toWinAnsi('XVIIᵉ siècle')).toBe('XVIIe siècle');
-    expect(toWinAnsi('1ᵉʳ janvier')).toBe('1er janvier');
+  it('imprime « XVIIᵉ siècle » avec son exposant, dans le PDF réel', async () => {
+    // Le point de tout l'ajout 2 : les 14 polices standard sont en WinAnsi et
+    // n'ont pas U+1D49, si bien que la règle s'imprimait « XVIIe ». On lit ici
+    // le vrai flux du PDF, décodé comme le ferait un lecteur.
+    const strings = pdfText(await exportPdf(grandesPeriodes, A4));
+    const ordinals = strings.filter((value) => value.includes('\u1D49'));
+    expect(ordinals.length).toBeGreaterThan(0);
+    // Aucun libellé de siècle n'est resté replié sur un « e » ordinaire.
+    expect(strings.some((value) => /si[eè]cle/.test(value) && !value.includes('\u1D49'))).toBe(false);
+  }, 20_000);
+
+  it('imprime les exposants ordinaux au lieu de les replier', () => {
+    // Depuis l'incorporation d'Inter, l'exposant ordinal survit à l'impression.
+    expect(toPdfText('XVIIᵉ siècle')).toBe('XVIIᵉ siècle');
+    expect(toPdfText('1ᵉʳ janvier')).toBe('1ᵉʳ janvier');
+    expect(toPdfText('12\u202F000')).toBe('12\u00A0000');
   });
 
   it('décale une tuile de motif sans la déformer', () => {

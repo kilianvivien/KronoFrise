@@ -16,6 +16,7 @@
     "bench": "vite-node scripts/bench-layout.ts"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
     "@use-gesture/react": "^10.3.1",
     "idb-keyval": "^6.2.2",
     "immer": "^10.1.3",

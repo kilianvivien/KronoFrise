@@ -7,7 +7,9 @@
  * recouvrent de 10 mm, avec repères de coupe et numéro de page
  * (docs/format.md §9).
  */
-import { PDFDocument, StandardFonts, rgb } from 'pdf-lib';
+import { PDFDocument, rgb } from 'pdf-lib';
+import fontkit from '@pdf-lib/fontkit';
+import { EMBEDDED_FONTS } from './fonts';
 import { layout } from '../layout/layout';
 import { fitInsets } from '../layout/fit';
 import { makeScale } from '../layout/scale';
@@ -17,7 +19,7 @@ import { themeById } from '../themes';
 import { FS_CAPTION } from '../renderer/style';
 import { toRgb01 } from '../ui/tokenValues';
 import { EXPORT } from '../ui/strings';
-import { drawScene, toWinAnsi, type PdfContext } from './pdfScene';
+import { drawScene, toPdfText, type PdfContext } from './pdfScene';
 import { MARGIN, OVERLAP, paginate, sceneHeightFor, sceneWidthFor, type PaperOptions } from './paper';
 
 export interface PdfOptions extends PaperOptions {
@@ -56,8 +58,12 @@ export async function exportPdf(doc: KronoDocument, options: PdfOptions): Promis
   pdf.setTitle(doc.meta.title);
   if (doc.meta.author !== undefined) pdf.setAuthor(doc.meta.author);
   pdf.setCreator('KronoFrise');
-  const font = await pdf.embedFont(StandardFonts.Helvetica);
-  const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
+  // Police réellement incorporée : les 14 polices standard sont en WinAnsi et
+  // n'ont pas « ᵉ » (docs/spec-gaps.md §8). `subset` ne garde que les glyphes
+  // employés, si bien qu'une frise n'emporte que quelques kilo-octets.
+  pdf.registerFontkit(fontkit);
+  const font = await pdf.embedFont(EMBEDDED_FONTS.regular(), { subset: true });
+  const bold = await pdf.embedFont(EMBEDDED_FONTS.semibold(), { subset: true });
   const images = await embedImages(pdf, scene.events.flatMap((event) => event.imageSrc === undefined ? [] : [event.imageSrc]));
 
   const scenes: { scene: typeof scene; caption?: string }[] = [
@@ -83,13 +89,13 @@ export async function exportPdf(doc: KronoDocument, options: PdfOptions): Promis
     coverMargins(page, sheet.width, sheet.height, paper);
     if (caption !== undefined) {
       const ink = toRgb01('var(--text-secondary)');
-      page.drawText(toWinAnsi(caption), {
+      page.drawText(toPdfText(caption), {
         x: MARGIN, y: MARGIN / 2, size: FS_CAPTION, font: bold, color: rgb(ink.r, ink.g, ink.b),
       });
     }
     if (sheet.pages.length > 1) drawAssembly(page, sheet.width, sheet.height, sheetPage.overlapLeft, sheetPage.overlapRight);
     if (sheet.pages.length > 1) {
-      const label = toWinAnsi(EXPORT.assembly(sheetPage.index + 1, sheet.pages.length));
+      const label = toPdfText(EXPORT.assembly(sheetPage.index + 1, sheet.pages.length));
       const size = FS_CAPTION;
       const ink = toRgb01('var(--text-tertiary)');
       page.drawText(label, {

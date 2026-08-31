@@ -479,3 +479,48 @@ SPEC? DESIGN.md ne décrit pas de bulle d'accompagnement : elle reprend la
 recette « Popovers/menus » de §3 et l'anneau d'accent de §5, sans nouveau
 vocabulaire visuel. Le bouton de reprise est une icône Lucide dans la barre
 d'état, à côté du sélecteur d'apparence — c'est le « menu d'aide » demandé.
+
+### 13.9 Polices incorporées : « XVIIᵉ » s'imprime enfin (§8 refermé)
+
+§8 laissait la question ouverte : les 14 polices standard d'un PDF sont
+encodées en WinAnsi, qui ne contient pas « ᵉ » (U+1D49), et M3 avait choisi le
+repli « XVIIe » plutôt que d'ajouter une dépendance sans accord. **Kilian a
+tranché le 31 août 2026** : `@pdf-lib/fontkit` entre dans la liste fermée de
+PLAN.md §8.4, avec une police libre incorporée.
+
+Trois choses que le travail a apprises :
+
+- **Le sous-ensemble « latin » de Google Fonts n'a pas l'ordinal non plus.**
+  Inter, Source Sans 3 et EB Garamond servis par défaut sont amputés des
+  lettres modificatives. Il a fallu demander un sous-ensemble explicite
+  (paramètre `text=`) couvrant le répertoire réel de l'application : français
+  complet, ordinaux, ponctuation, espaces insécables. 49 Ko par graisse.
+- **Le choix de la police est une contrainte de mise en page, pas de goût.**
+  `layout/measure.ts` mesure avec les métriques de SF Pro Text, la police de
+  l'écran ; une police d'impression plus large ferait déborder les libellés
+  *au seul endroit qu'on ne regarde pas*, le papier. Inter a été retenue parce
+  que ses chasses tiennent dans ces boîtes — vérifié sur tous les libellés des
+  quatre fixtures, aux deux graisses. `fonts.test.ts` fige la contrainte à 3 %,
+  la marge qu'absorbe le rembourrage de 8 px d'une puce.
+- **Le test du flux PDF a dû apprendre à lire.** Une police en sous-ensemble
+  écrit ses propres codes de glyphes : les libellés ne sont plus des octets
+  lisibles dans le flux, et le contrôle « chaque libellé retrouvé en texte »
+  serait devenu vide de sens. Le test emprunte maintenant le chemin d'un
+  lecteur de PDF — il lit les tables `ToUnicode` puis décode. Les deux polices
+  numérotant leurs glyphes à partir de 1 chacune, leurs tables sont gardées
+  **séparées** : les fondre faisait lire « POLITIQUE » là où le PDF dit
+  « Avènement ».
+
+Reste ouverte la seconde facette de l'ajout 2 : **un thème qui nomme sa
+typographie** (Parchemin en serif, Craie en écriture à la craie). Elle n'est
+pas faite, et ce n'est pas un oubli : `layout/measure.ts` ne connaît qu'une
+table de chasses, celle de SF Pro. Un thème serif changerait les largeurs
+réelles sans changer les largeurs mesurées, et ferait déborder les libellés —
+exactement le défaut de §12.7, cette fois par construction. La faire
+proprement demande une table de chasses **par fonte**, engendrée depuis les
+fichiers désormais présents dans `assets/fonts/`, puis passée au moteur de
+mise en page. À planifier comme un travail à part entière.
+
+Le morceau d'export passe de 437 Ko à 1,3 Mo (fontkit et les deux graisses).
+Il est chargé paresseusement — il n'entre pas dans le coût d'ouverture — et
+préchargé par le service worker, si bien qu'exporter hors ligne fonctionne.
