@@ -135,10 +135,26 @@ export const EXPORT = {
   resolution: 'Résolution', transparent: 'Fond transparent',
   answerKey: 'Exporter le corrigé (sans masques)',
   worksheetHint: 'La fiche élève est exportée telle qu’elle s’affiche, masques compris.',
+  html: 'Page web interactive',
+  htmlHint: 'Un fichier .html autonome : la frise s’y explore à la souris et au clavier, sans connexion.',
   action: 'Exporter', cancel: 'Annuler', done: 'Fichier exporté',
   assembly: (index: number, total: number): string => `page ${index} / ${total}`,
   failed: 'L’export a échoué. Réessayez, ou enregistrez un fichier .krono pour ne rien perdre.',
   working: 'Export en cours…',
+} as const;
+
+/** Chaînes embarquées dans la page web exportée (elle vit sans l'application). */
+export const VIEWER = {
+  previous: 'Élément précédent',
+  next: 'Élément suivant',
+  overview: 'Vue d’ensemble',
+  zoomIn: 'Zoomer',
+  zoomOut: 'Dézoomer',
+  fit: 'Ajuster à la fenêtre',
+  fullscreen: 'Plein écran',
+  help: 'Glissez pour naviguer · molette pour zoomer · ← → pour parcourir la frise',
+  position: (index: number, total: number): string => `${index} / ${total}`,
+  madeWith: 'Frise réalisée avec KronoFrise',
 } as const;
 
 export const APPEARANCE = {

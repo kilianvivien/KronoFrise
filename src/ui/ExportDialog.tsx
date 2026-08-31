@@ -10,13 +10,14 @@ import { useStore } from 'zustand';
 import { editorStore } from '../store/editor';
 import { downloadBlob } from '../export/download';
 import { exportFilename, exportPng, exportScene, exportSvg } from '../export/render';
+import { exportHtml } from '../export/html';
 import { exportPdf } from '../export/pdf';
 import { paginate, sceneHeightFor, sceneWidthFor, type Orientation, type PageSize } from '../export/paper';
 import { canvasMeasurer } from './measureText';
 import { EXPORT } from './strings';
 import styles from './Editor.module.css';
 
-type Format = 'pdf' | 'svg' | 'png';
+type Format = 'pdf' | 'html' | 'svg' | 'png';
 
 /** Largeur de scène des exports d'image, en pixels CSS (DESIGN.md §3.6). */
 const IMAGE_WIDTH = 1600;
@@ -55,6 +56,10 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
         const bytes = await exportPdf(doc, { ...paper, pages, worksheet, measurer: canvasMeasurer });
         const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
         if (await downloadBlob(blob, exportFilename(doc, 'pdf', 'frise'), EXPORT.pdf, 'application/pdf', '.pdf')) onDone(EXPORT.done);
+      } else if (format === 'html') {
+        const html = await exportHtml(doc, { width: IMAGE_WIDTH, worksheet, measurer: canvasMeasurer });
+        const blob = new Blob([html], { type: 'text/html' });
+        if (await downloadBlob(blob, exportFilename(doc, 'html', 'frise'), EXPORT.html, 'text/html', '.html')) onDone(EXPORT.done);
       } else if (format === 'svg') {
         const svg = await exportSvg(doc, { width: IMAGE_WIDTH, worksheet, measurer: canvasMeasurer });
         const blob = new Blob([svg], { type: 'image/svg+xml' });
@@ -68,14 +73,14 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
     finally { setBusy(false); }
   };
 
-  const scene = format === 'pdf' ? null : exportScene(doc, { width: IMAGE_WIDTH, worksheet, measurer: canvasMeasurer });
+  const scene = format === 'pdf' || format === 'html' ? null : exportScene(doc, { width: IMAGE_WIDTH, worksheet, measurer: canvasMeasurer });
 
   return <dialog ref={dialog} className={styles.dialog} onCancel={onClose} aria-labelledby="export-title">
     <h2 id="export-title">{EXPORT.title}</h2>
     <div className="exportForm">
       <fieldset>
         <legend>{EXPORT.format}</legend>
-        {([['pdf', EXPORT.pdf], ['svg', EXPORT.svg], ['png', EXPORT.png]] as const).map(([value, label]) =>
+        {([['pdf', EXPORT.pdf], ['html', EXPORT.html], ['svg', EXPORT.svg], ['png', EXPORT.png]] as const).map(([value, label]) =>
           <button key={value} type="button" aria-pressed={format === value} onClick={() => setFormat(value)}>{label}</button>)}
       </fieldset>
 
@@ -110,6 +115,7 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
       </>}
 
       {scene !== null && <p role="status">{`${Math.round(scene.width * (format === 'png' ? ratio : 1))} × ${Math.round(scene.height * (format === 'png' ? ratio : 1))} px`}</p>}
+      {format === 'html' && <p>{EXPORT.htmlHint}</p>}
       {worksheet && <p>{EXPORT.worksheetHint}</p>}
       {error !== null && <p className="exportError" role="alert">{error}</p>}
     </div>
