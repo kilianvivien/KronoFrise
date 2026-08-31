@@ -5,7 +5,7 @@ tranché le 31 août 2026 : le web d'abord, Tauri dans une session dédiée.
 
 ## Automatisé
 
-- `pnpm test` : **410 tests**, tous réussis. `pnpm lint` et `pnpm build` :
+- `pnpm test` : **452 tests**, tous réussis. `pnpm lint` et `pnpm build` :
   propres, TypeScript strict, aucun `any`.
 - `pnpm bench` mesure la mise en page hors navigateur.
 
@@ -21,7 +21,11 @@ présents, typographie française complète, chasses tenant dans les boîtes
 mesurées), exposants ordinaux dans le **flux du PDF réel**, dégradé (arrêts
 lisibles sur les six thèmes, couches ordonnées, bandes comptées dans le PDF),
 bloc de titre (bandes repoussées, coupures décalées, commande inversible,
-modification partielle qui ne perd rien), tables de chasses engendrées
+modification partielle qui ne perd rien), réorganisation animée (départ sur la
+géométrie d'avant et arrivée exacte sur celle d'après, élément d'un seul tenant
+à chaque image, axe et graduations immobiles, élément apparu posé d'emblée,
+courbe `ease-out` du jeton, et une durée lue avec son unité — « 140ms » comme
+« .14s »), tables de chasses engendrées
 (confrontées au fichier de police, glyphe par glyphe, sur tous les libellés des
 fixtures ; caractères absents relevés dans la fonte ; fonte incorporée au PDF
 et au SVG selon le thème).
@@ -65,6 +69,19 @@ dit rien de l'expérience réelle.
   #E4E9EE → #A6B7C7 sur une puce de 165 px.
 - **Bloc de titre** : titre, sous-titre et « Kilian Vivien · 30 août 2026 »
   centrés au-dessus de la frise, bandes repoussées.
+- **Réorganisation après un dépôt** (DESIGN.md §8), mesurée image par image sur
+  le build de production : un événement glissé sur son voisin repousse celui-ci
+  d'une rangée, puis ⌘Z rend la frise à son état d'avant — la puce parcourt
+  650 → 689 px en **huit images intermédiaires** (654,8 · 661,9 · 668,2 · 674,0
+  · 678,8 · 683,0 · 686,3 · 688,4), des pas qui vont en se resserrant :
+  c'est la courbe `ease-out` du jeton, sur les 140 ms annoncées. Rien ne se
+  disloque en chemin — capture en plein vol : la puce à mi-hauteur, sa pastille
+  toujours sur l'axe et son connecteur tendu entre les deux.
+  Sous `prefers-reduced-motion: reduce`, **zéro image intermédiaire** : la scène
+  saute, comme le veut la préférence. Ce qui se calcule pendant un geste n'est
+  pas touché : la puce suit le pointeur à 4,2 px près (le seuil de départ du
+  glissement) et un panoramique de 100 px déplace la frise de 100 px, sans
+  retard.
 - Aucune erreur console sur l'ensemble des parcours.
 
 ## Limites
@@ -83,10 +100,6 @@ dit rien de l'expérience réelle.
   même scène, mêmes fonctions de forme que le SVG, qui lui est inspecté, plus
   la lecture du flux du PDF, désormais **décodé par les tables `ToUnicode`**
   comme le ferait un lecteur.
-- **Les positions des éléments ne s'animent pas après un dépôt** (DESIGN.md
-  §8). Le canevas pose ses éléments en coordonnées absolues, que le CSS ne sait
-  pas interpoler ; il faudrait des groupes positionnés par `transform`, une
-  reprise du rendu partagé avec les exports. Voir docs/spec-gaps.md §13.10.
 - Le glissement du bloc de titre entre haut-gauche et haut-centre est rendu par
   un contrôle segmenté, pas par un geste (docs/spec-gaps.md §13.12).
 - Aucun essai sur matériel tactile, ni impression papier réelle.

@@ -39,6 +39,22 @@ export function resolveToken(value: string): string {
   return token === undefined ? value : resolveToken(token);
 }
 
+/**
+ * Une durée CSS en millisecondes — « 140ms » comme « .14s ».
+ *
+ * Les deux formes existent pour un même jeton : la source écrit `140ms`, le
+ * minificateur de la construction de production écrit `.14s`. Lire le nombre
+ * sans son unité donnait alors une animation de 0,14 ms, c'est-à-dire un saut
+ * — invisible en développement, systématique une fois publié.
+ */
+export function cssMilliseconds(value: string): number {
+  const match = /^\s*(-?[\d.]+)\s*(ms|s)?\s*$/.exec(resolveToken(value));
+  if (match === null) return 0;
+  const amount = Number.parseFloat(match[1] as string);
+  if (!Number.isFinite(amount)) return 0;
+  return match[2] === 's' ? amount * 1000 : amount;
+}
+
 /** Composantes 0–1, prêtes pour pdf-lib. */
 export function toRgb01(color: string): { r: number; g: number; b: number } {
   const hex = resolveToken(color).trim();

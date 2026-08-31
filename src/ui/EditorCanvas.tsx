@@ -22,6 +22,7 @@ import { M2 } from './strings';
 import { canvasMeasurer } from './measureText';
 import { Icon } from './icons';
 import { moveSelection, precisionAt, selectedStart, snapDate } from './canvasMath';
+import { useReflow } from './useReflow';
 import styles from './Editor.module.css';
 
 import { backgroundIntent, createsEvent, type Tool } from './gesturePolicy';
@@ -65,7 +66,12 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
   const input = useRef<HTMLInputElement>(null);
   const finishingEdit = useRef(false);
   const scale = useMemo(() => makeScale(doc.axis, size.width, pan, zoom, insets), [doc.axis, size.width, pan, zoom, insets]);
-  const scene = useMemo(() => layout(doc, scale, { measurer: canvasMeasurer, height: size.height, worksheet }), [doc, scale, size.height, worksheet]);
+  const settled = useMemo(() => layout(doc, scale, { measurer: canvasMeasurer, height: size.height, worksheet }), [doc, scale, size.height, worksheet]);
+  // Après un dépôt, la mise en page ne saute pas : elle glisse vers sa nouvelle
+  // forme en 140 ms (DESIGN.md §8). Le reste du composant — sélection,
+  // poignées, aimantation — travaille sur cette scène-là, celle qui est peinte,
+  // et reste donc d'accord avec ce que l'on voit pendant le mouvement.
+  const scene = useReflow(settled, doc.id, state.preview === null ? state.revision : null);
   // Ce qui est réellement dessiné : la scène élaguée à la fenêtre, avec une
   // largeur de vue de marge de chaque côté. La sélection, la souris et les
   // exports continuent de travailler sur `scene`, qui reste entière.

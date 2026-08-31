@@ -557,12 +557,12 @@ module — l'animation ne joue jamais, sans la moindre erreur. Une transition n'
 pas de nom à renommer. Vérifié dans le navigateur : opacité 0 → 0,10 après deux
 images → 1 après la transition.
 
-**Reste à faire, et ce n'est pas dans cette demande** : §8 prévoit aussi que
-« la mise en page qui se réorganise après un dépôt anime les positions sur
-140 ms ». Les éléments du canevas sont posés en coordonnées absolues, que le
-CSS ne sait pas interpoler ; il faudrait que chaque groupe soit positionné par
-`transform`. C'est une reprise du rendu — partagé avec les exports — qui mérite
-son propre changement plutôt qu'un ajout à celui-ci.
+**Renvoyé à un changement à part, et fait depuis** : §8 prévoit aussi que « la
+mise en page qui se réorganise après un dépôt anime les positions sur 140 ms ».
+Les éléments du canevas sont posés en coordonnées absolues, que le CSS ne sait
+pas interpoler. La solution n'a pas été de repositionner chaque groupe par
+`transform` — une reprise du rendu, partagé avec les exports — mais d'interpoler
+la scène elle-même : voir §13.14.
 
 ### 13.11 Dégradé : deux décisions que la spécification laissait ouvertes
 
@@ -693,3 +693,58 @@ libellé d'événement ne dépassant sa puce dans les trois thèmes (pire marge
 2,6 px *à l'intérieur*), l'exposant ordinal présent sur Manuel et Parchemin et
 replié sur Craie, et un SVG exporté ouvert **hors de l'application** qui
 s'affiche bien en Garamond depuis la police incorporée.
+
+### 13.14 Réorganisation animée : c'est la scène qui glisse, pas le rendu
+
+DESIGN.md §8 finit par une phrase restée sans mise en œuvre : « la mise en page
+qui se réorganise après un dépôt anime les positions sur 140 ms ». §13.10 la
+renvoyait à un changement à part, en pointant l'obstacle : la scène est posée en
+coordonnées absolues, que le CSS ne sait pas interpoler, et repositionner chaque
+groupe par `transform` était une reprise du rendu — partagé avec les exports.
+
+**La reprise n'a pas eu lieu : c'est la scène que l'on interpole.**
+`layout/reflow.ts` ajoute `interpolateScene(avant, après, t)`, fonction pure de
+plus sur le `SceneGraph`, exactement comme `visibleScene`. L'éditeur peint la
+scène intermédiaire ; le rendu, lui, ne sait rien de tout cela et reste au pixel
+près celui des exports. Un `transform` par groupe aurait laissé en arrière tout
+ce qui n'est pas un groupe : les connecteurs, tracés dans une passe séparée pour
+passer derrière les puces, le contour de sélection, les poignées de bord — le
+CSS n'anime pas les extrémités d'une ligne. Ici, tout est calculé depuis les
+mêmes coordonnées : un élément ne peut pas se disloquer en chemin, et le test
+le vérifie sur chaque image.
+
+Décisions non spécifiées :
+
+- **Ce n'est pas le dépôt qui déclenche le mouvement, c'est la modification
+  validée.** Pendant un glissement, l'aperçu recalcule déjà la mise en page à
+  chaque image : les voisins s'écartent en direct, si bien qu'au lâcher il ne
+  reste rien à animer. Ce qui saute, dans cette application, ce sont les
+  changements *discrets* — annuler, refaire, supprimer, changer de bande,
+  décaler aux flèches, un champ de l'inspecteur. Le déclencheur est donc la
+  révision du magasin, et `null` tant qu'un aperçu est en cours : animer une
+  image de geste la ferait traîner derrière le pointeur (§13.10).
+- **Ce qui glisse est ce que l'empilement décide** : les bandes, les éléments,
+  la ligne de base, la hauteur du canevas et l'étendue verticale des coupures.
+  Les graduations, les segments d'axe et le bloc de titre ne bougent pas d'un
+  dépôt — ils appartiennent à l'axe et au document — et restent donc en place.
+- **Le contenu est toujours celui de l'arrivée** : seule la position est en
+  chemin. Un élément qui vient d'apparaître n'a pas de position d'origine ; il
+  est posé d'emblée à la sienne plutôt que de venir de nulle part.
+- **Une modification qui ne déplace rien ne s'anime pas** (`sameGeometry`) :
+  renommer une bande ou changer une couleur ne doit pas ouvrir 140 ms pendant
+  lesquelles il ne se passe rien.
+- **`prefers-reduced-motion` est traité ici, explicitement.** base.css annule
+  les transitions CSS d'un coup ; une animation JavaScript, elle, n'obéit à
+  rien. `reflowDuration()` rend zéro quand la préférence est posée, et la scène
+  saute — vérifié au navigateur dans les deux réglages.
+- **La courbe est celle du jeton.** `--ease-ui` vaut `ease-out`, soit
+  `cubic-bezier(0, 0, 0.58, 1)` : `easeUi` la résout au lieu d'approcher une
+  courbe voisine, sans quoi deux mouvements simultanés — un panneau qui se
+  replie, la frise qui se réorganise — n'auraient pas la même allure.
+
+Défaut trouvé **dans le navigateur, et invisible en développement** : la durée
+est lue dans le jeton `--motion-ui`, mais le minificateur de la construction de
+production réécrit `140ms` en `.14s`. Lire le nombre sans son unité donnait une
+animation de 0,14 ms — c'est-à-dire le saut d'avant, publié à chaque fois et
+jamais reproductible en développement. `cssMilliseconds` lit maintenant l'unité,
+et le test couvre les deux écritures d'une même durée.
