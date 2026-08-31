@@ -13,7 +13,8 @@
     "lint": "eslint .",
     "fixtures:emit": "vite-node scripts/emit-fixtures.ts",
     "samples": "vite-node scripts/export-samples.ts",
-    "bench": "vite-node scripts/bench-layout.ts"
+    "bench": "vite-node scripts/bench-layout.ts",
+    "metrics": "vite-node scripts/emit-face-metrics.ts"
   },
   "dependencies": {
     "@pdf-lib/fontkit": "^1.1.1",

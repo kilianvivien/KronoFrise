@@ -62,8 +62,11 @@ export async function exportPdf(doc: KronoDocument, options: PdfOptions): Promis
   // n'ont pas « ᵉ » (docs/spec-gaps.md §8). `subset` ne garde que les glyphes
   // employés, si bien qu'une frise n'emporte que quelques kilo-octets.
   pdf.registerFontkit(fontkit);
-  const font = await pdf.embedFont(EMBEDDED_FONTS.regular(), { subset: true });
-  const bold = await pdf.embedFont(EMBEDDED_FONTS.semibold(), { subset: true });
+  // La fonte du thème, la même qu'à l'écran : c'est tout l'objet de la
+  // seconde facette de M4 (ajout 2) — un Parchemin imprimé en Garamond.
+  const face = theme.face;
+  const font = await pdf.embedFont(EMBEDDED_FONTS.regular(face), { subset: true });
+  const bold = await pdf.embedFont(EMBEDDED_FONTS.semibold(face), { subset: true });
   const images = await embedImages(pdf, scene.events.flatMap((event) => event.imageSrc === undefined ? [] : [event.imageSrc]));
 
   const scenes: { scene: typeof scene; caption?: string }[] = [

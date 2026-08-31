@@ -11,7 +11,9 @@ import { formatDate, formatYear, toFractionalYear } from '../core/dates';
 import { itemStart, maskOf } from '../core/document';
 import { hides } from '../core/pedagogy';
 import type { EventItem, Item, KronoDocument, Lane, MaskKind, PeriodItem } from '../core/types';
-import { approximateMeasurer, cachedMeasurer, type Measurer } from './measure';
+import { approximateMeasurer, cachedMeasurer, foldForFace, forFace, missingChars, type Measurer } from './measure';
+import { themeById } from '../themes';
+import type { FaceId } from '../shared/faces';
 import {
   AXIS_BAND_HEIGHT,
   CANVAS_PADDING,
@@ -71,7 +73,11 @@ const MAX_YEAR_STEP_FOR_DATES = 10;
 const BRACKET_LABEL_HEIGHT = 20;
 
 export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions = {}): SceneGraph {
-  const measurer = cachedMeasurer(options.measurer ?? approximateMeasurer);
+  // La fonte du thème est résolue **ici**, une fois : elle décide de la
+  // largeur des libellés, donc de la géométrie, donc elle appartient à la mise
+  // en page et non au seul rendu (PLAN.md M4, ajout 2).
+  const face = themeById(doc.themeId).face;
+  const measurer = cachedMeasurer(forFace(options.measurer ?? approximateMeasurer, face));
   const masks = options.worksheet === true ? maskLookup(doc) : undefined;
   const lanes: SceneLane[] = [];
   const events: SceneEvent[] = [];
@@ -142,7 +148,7 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
     x1: segment.x1 - scale.pan,
   }));
 
-  return {
+  const scene: SceneGraph = {
     width: scale.width,
     height,
     baselineY,
@@ -153,6 +159,31 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
     ...(title ? { title } : {}),
     coupures,
     axisSegments,
+  };
+  // Ce que la fonte ne porte pas est remplacé sur la scène finie, à l'écran
+  // comme à l'impression. Les remplacements ne font que **rétrécir** le texte,
+  // donc les largeurs déjà mesurées restent des majorants : aucune puce ne
+  // devient trop étroite.
+  return missingChars(face) === '' ? scene : foldScene(scene, face);
+}
+
+/** Réécrit toute la scène pour une fonte incomplète (voir `foldForFace`). */
+function foldScene(scene: SceneGraph, face: FaceId): SceneGraph {
+  const fold = (text: string): string => foldForFace(text, face);
+  return {
+    ...scene,
+    events: scene.events.map((event) => ({ ...event, label: fold(event.label), dateLabel: fold(event.dateLabel) })),
+    periods: scene.periods.map((period) => ({ ...period, label: fold(period.label), datesLabel: fold(period.datesLabel) })),
+    ticks: scene.ticks.map((tick) => (tick.label === undefined ? tick : { ...tick, label: fold(tick.label) })),
+    lanes: scene.lanes.map((lane) => ({ ...lane, name: fold(lane.name) })),
+    ...(scene.title === undefined ? {} : {
+      title: {
+        ...scene.title,
+        title: fold(scene.title.title),
+        ...(scene.title.subtitle === undefined ? {} : { subtitle: fold(scene.title.subtitle) }),
+        ...(scene.title.meta === undefined ? {} : { meta: fold(scene.title.meta) }),
+      },
+    }),
   };
 }
 

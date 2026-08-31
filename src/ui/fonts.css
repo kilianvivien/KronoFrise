@@ -1,0 +1,43 @@
+/**
+ * Fontes des thèmes — PLAN.md M4 (ajout 2), seconde facette.
+ *
+ * Les fichiers sont des sous-ensembles livrés avec l'application
+ * (`assets/fonts/`, licences SIL OFL à côté). Le navigateur ne les télécharge
+ * que si un thème les emploie : une frise en « Manuel scolaire » ne paie rien.
+ *
+ * Les intervalles de graisse sont volontaires. Nous ne livrons que deux
+ * fichiers par fonte ; en déclarant `400 500` et `600 700`, la graisse 500 des
+ * puces est rendue par le fichier « regular » **sans synthèse**, ce qui est
+ * exactement ce que mesure `layout/faceMetrics.ts`. Sans ces intervalles, le
+ * navigateur graissait artificiellement et le texte devenait plus large que la
+ * mesure — la puce débordait.
+ */
+
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../../assets/fonts/EBGaramond-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'EB Garamond';
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url('../../assets/fonts/EBGaramond-SemiBold.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 400 500;
+  font-display: swap;
+  src: url('../../assets/fonts/Caveat-Regular.ttf') format('truetype');
+}
+@font-face {
+  font-family: 'Caveat';
+  font-style: normal;
+  font-weight: 600 700;
+  font-display: swap;
+  src: url('../../assets/fonts/Caveat-Bold.ttf') format('truetype');
+}

@@ -196,6 +196,39 @@ describe('export PDF', () => {
     expect(plain.some((value) => value.includes('Chronologie de 1789'))).toBe(false);
   }, 20_000);
 
+  it('imprime chaque thème avec sa propre typographie', async () => {
+    // PLAN.md M4 (ajout 2), seconde facette : « qu'un thème puisse nommer sa
+    // typographie, avec le même fichier incorporé dans les exports ». Un
+    // Parchemin qui s'imprimerait en grotesque manquerait tout l'objet.
+    const parchemin = structuredClone(revolution);
+    parchemin.themeId = 'parchemin';
+    const objects = async (doc: typeof revolution) =>
+      (await PDFDocument.load(await exportPdf(doc, A4))).context
+        .enumerateIndirectObjects().map(([, object]) => String(object));
+
+    const serif = await objects(parchemin);
+    expect(serif.some((object) => object.includes('Garamond'))).toBe(true);
+    expect(serif.some((object) => object.includes('/FontFile2'))).toBe(true);
+
+    // Le thème par défaut garde Inter, la remplaçante de la fonte du système.
+    const sans = await objects(revolution);
+    expect(sans.some((object) => object.includes('Inter'))).toBe(true);
+    expect(sans.some((object) => object.includes('Garamond'))).toBe(false);
+  }, 20_000);
+
+  it('remplace ce que la fonte manuscrite ne porte pas, au lieu d’un carré vide', async () => {
+    // Caveat n'a ni « ᵉ » ni l'espace fine insécable : sans remplacement, le
+    // PDF échouerait à l'encodage ou afficherait un glyphe manquant.
+    const craie = structuredClone(grandesPeriodes);
+    craie.themeId = 'craie';
+    const strings = pdfText(await exportPdf(craie, A4));
+    expect(strings.length).toBeGreaterThan(0);
+    expect(strings.some((value) => value.includes('\u1D49'))).toBe(false);
+    expect(strings.some((value) => value.includes('\u202F'))).toBe(false);
+    // Le texte reste lisible, pas amputé.
+    expect(strings.some((value) => /si[eè]cle/.test(value))).toBe(true);
+  }, 20_000);
+
   it('décale une tuile de motif sans la déformer', () => {
     expect(translatePath('M0 4H8', 10, 20)).toBe('M 10 24H 18');
     expect(roundedRectPath(0, 0, 10, 10, 0)).toContain('M 0 0');

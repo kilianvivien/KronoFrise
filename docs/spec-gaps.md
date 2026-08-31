@@ -511,15 +511,8 @@ Trois choses que le travail a apprises :
   **séparées** : les fondre faisait lire « POLITIQUE » là où le PDF dit
   « Avènement ».
 
-Reste ouverte la seconde facette de l'ajout 2 : **un thème qui nomme sa
-typographie** (Parchemin en serif, Craie en écriture à la craie). Elle n'est
-pas faite, et ce n'est pas un oubli : `layout/measure.ts` ne connaît qu'une
-table de chasses, celle de SF Pro. Un thème serif changerait les largeurs
-réelles sans changer les largeurs mesurées, et ferait déborder les libellés —
-exactement le défaut de §12.7, cette fois par construction. La faire
-proprement demande une table de chasses **par fonte**, engendrée depuis les
-fichiers désormais présents dans `assets/fonts/`, puis passée au moteur de
-mise en page. À planifier comme un travail à part entière.
+La seconde facette de l'ajout 2 — **un thème qui nomme sa typographie** — a
+été livrée ensuite ; voir §13.13.
 
 Le morceau d'export passe de 437 Ko à 1,3 Mo (fontkit et les deux graisses).
 Il est chargé paresseusement — il n'entre pas dans le coût d'ouverture — et
@@ -633,3 +626,66 @@ l'objet entier, et le construisait sur le document **capturé au rendu**. Le
 sous-titre disparaissait dès qu'on cochait « Auteur » dans la foulée, alors que
 son champ le montrait encore. `patchTitleBlock` repart de l'état courant du
 magasin ; le cas est figé par test.
+
+
+### 13.13 Typographie par thème : la fonte entre dans la géométrie
+
+Seconde facette de PLAN.md M4 (ajout 2) : « qu'un thème puisse nommer sa
+typographie, *Parchemin* en serif et *Craie* en écriture à la craie, avec le
+même fichier incorporé dans les exports SVG et PDF ».
+
+Le point qui commande tout le reste : **une fonte n'est pas une décision de
+rendu**. La largeur d'un libellé décide de la largeur de sa puce, donc de
+l'empilement, donc de la hauteur de la scène. La fonte est donc résolue à
+l'entrée de `layout()`, à partir du thème du document — pas passée par les
+appelants, qui auraient fini par l'oublier quelque part, et pas laissée au
+rendu, qui aurait dessiné une police mesurée pour une autre : le défaut de
+§12.7, cette fois par construction.
+
+**Les tables sont engendrées, pas relevées.** SF Pro Text n'a pas de fichier —
+c'est la police du système —, sa table reste donc un relevé au navigateur.
+Les fontes que nous livrons, elles, sont mesurées **dans leur propre fichier**
+par `pnpm metrics` : la table est juste par construction et le reste si l'on
+change de sous-ensemble. `faceMetrics.test.ts` confronte chaque table au
+fichier, glyphe par glyphe, sur tous les libellés des quatre fixtures.
+
+Décisions non spécifiées :
+
+- **Le mesureur du navigateur ne mesure pas ces fontes-là.** Mesurer au canevas
+  avant que la police soit téléchargée aurait figé la largeur du *repli*
+  (Georgia, cursive) dans une mise en page que rien ne recalculait ensuite.
+  Pour une fonte livrée, la table engendrée est la vérité — c'est le même
+  fichier que le navigateur affiche. Le canevas ne sert plus qu'à la police du
+  système, la seule qui n'ait pas de fichier.
+- **Deux graisses, et des intervalles `@font-face` explicites.** Nous livrons
+  400 et 600 ; en déclarant `font-weight: 400 500` et `600 700`, la graisse 500
+  des puces est rendue par le fichier « regular » **sans synthèse**, ce que la
+  table mesure exactement. Sans ces intervalles, le navigateur graissait
+  artificiellement et le texte débordait.
+- **Ce que la fonte ne porte pas est remplacé, à l'écran comme à
+  l'impression.** Les sous-ensembles d'EB Garamond et de Caveat n'ont pas
+  l'espace fine insécable (U+202F), que le français emploie pour les milliers ;
+  Caveat n'a pas non plus les lettres modificatives, si bien que « XVIIᵉ » y
+  afficherait un glyphe manquant. La liste des caractères absents est
+  **relevée dans la fonte** par le générateur, pas écrite à la main, et
+  `foldForFace` les remplace sur la scène finie — « XVIIe siècle » sur Craie,
+  « XVIIᵉ siècle » ailleurs. Un remplacement ne fait que rétrécir le texte : les
+  largeurs déjà mesurées restent des majorants.
+- **La tolérance de mesure dépend de la longueur.** La table additionne des
+  chasses ; le rendu applique en plus la crénelure, qui resserre. L'écart est
+  donc d'autant plus lâche que le texte est court — 5 % sur « v. 30 », moins de
+  4 % sur un vrai libellé. Le test sépare les deux cas plutôt que de relâcher
+  le seuil partout : c'est le libellé long qui ferait flotter une puce.
+- **Les fichiers ne sont pas chargés au démarrage.** Le navigateur ne
+  télécharge une fonte que si un thème l'emploie ; et la version en base64,
+  qui pèse un demi-mégaoctet, n'est atteignable que depuis les exports. La
+  règle `@font-face` du SVG exporté est **passée** à `renderToSvgString`, pas
+  calculée par lui : la calculer là aurait fait charger les polices dès la
+  première vignette de la bibliothèque — et aurait fait remonter `renderer/`
+  vers `export/`, à contresens des couches.
+
+Vérifié dans le navigateur : Parchemin en Garamond et Craie en Caveat, aucun
+libellé d'événement ne dépassant sa puce dans les trois thèmes (pire marge
+2,6 px *à l'intérieur*), l'exposant ordinal présent sur Manuel et Parchemin et
+replié sur Craie, et un SVG exporté ouvert **hors de l'application** qui
+s'affiche bien en Garamond depuis la police incorporée.

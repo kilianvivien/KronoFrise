@@ -3,6 +3,7 @@ import { antiquite } from '../core/fixtures';
 import { layout } from '../layout/layout';
 import { makeScale } from '../layout/scale';
 import { THEMES, JOURNAL, CRAIE, OFFICIELLE } from '../themes';
+import { exportSvg } from '../export/render';
 import { renderToSvgString } from './renderToSvgString';
 import { themeColors } from './themeColors';
 import { resolveToken } from '../ui/tokenValues';
@@ -50,4 +51,28 @@ it('expose six thèmes, tous nommés et d’identifiant unique (PLAN.md §3.4)',
   expect(THEMES.length).toBeGreaterThanOrEqual(6);
   expect(new Set(THEMES.map((theme) => theme.id)).size).toBe(THEMES.length);
   for (const theme of THEMES) expect(theme.name.length).toBeGreaterThan(0);
+});
+
+it('embarque la fonte du thème dans le SVG exporté', async () => {
+  // Un SVG ouvert sur une machine qui n'a pas EB Garamond doit tout de même
+  // s'afficher en Garamond : sans cela, « ce qui est exporté » cesse d'être
+  // « ce qui a été vu ». On passe par le vrai chemin d'export, celui qui
+  // décide d'y joindre la police.
+  const svg = await exportSvg({ ...antiquite, themeId: 'parchemin' }, { width: 1200 });
+  expect(svg).toContain('@font-face');
+  expect(svg).toContain('EB Garamond');
+  expect(svg).toContain('data:');
+  // Le thème par défaut suit la police du système : rien n'est incorporé.
+  expect(await exportSvg(antiquite, { width: 1200 })).not.toContain('@font-face');
+});
+
+it('mesure la scène avec la fonte du thème, pas avec celle par défaut', () => {
+  // C'est le cœur de la seconde facette : la fonte entre dans la géométrie.
+  const width = (themeId: string) => {
+    const doc = { ...antiquite, themeId };
+    const scene = layout(doc, makeScale(doc.axis, 1200));
+    return scene.events[0]!.chip.width;
+  };
+  expect(width('parchemin')).not.toBe(width('manuel-scolaire'));
+  expect(width('craie')).not.toBe(width('manuel-scolaire'));
 });

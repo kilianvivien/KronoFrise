@@ -1,4 +1,5 @@
 import { THEME_NAMES } from '../shared/strings';
+import { DEFAULT_FACE, type FaceId } from '../shared/faces';
 /**
  * Thèmes — données pures (PLAN.md §3.4). Un thème décrit l'apparence du
  * *document*, jamais celle du chrome. Les valeurs sont des références aux
@@ -22,10 +23,17 @@ export interface Theme {
   rulerInkMinor: string;
   /** nom des bandes */
   laneInk: string;
+  /**
+   * Typographie du document (PLAN.md M4, ajout 2). Elle entre dans la mise en
+   * page — pas seulement dans le rendu —, puisqu'elle décide de la largeur des
+   * libellés. Absente, c'est la fonte d'interface.
+   */
+  face: FaceId;
 }
 
 export const MANUEL_SCOLAIRE: Theme = {
   id: 'manuel-scolaire',
+  face: DEFAULT_FACE,
   name: THEME_NAMES.manuel,
   paper: 'var(--paper)',
   paperLine: 'var(--paper-line)',
@@ -35,8 +43,8 @@ export const MANUEL_SCOLAIRE: Theme = {
   laneInk: 'var(--text-tertiary)',
 };
 
-export const CRAIE: Theme = { ...MANUEL_SCOLAIRE, id: 'craie', name: THEME_NAMES.craie, paper: 'var(--chalk-paper)', paperLine: 'var(--chalk-line)', axisInk: 'var(--chalk-ink)', rulerInk: 'var(--chalk-ink)', rulerInkMinor: 'var(--chalk-muted)', laneInk: 'var(--chalk-muted)' };
-export const PARCHEMIN: Theme = { ...MANUEL_SCOLAIRE, id: 'parchemin', name: THEME_NAMES.parchemin, paper: 'var(--parchment-paper)', paperLine: 'var(--parchment-line)', axisInk: 'var(--parchment-ink)', rulerInk: 'var(--parchment-ink)', rulerInkMinor: 'var(--parchment-muted)', laneInk: 'var(--parchment-muted)' };
+export const CRAIE: Theme = { ...MANUEL_SCOLAIRE, id: 'craie', name: THEME_NAMES.craie, face: 'craie', paper: 'var(--chalk-paper)', paperLine: 'var(--chalk-line)', axisInk: 'var(--chalk-ink)', rulerInk: 'var(--chalk-ink)', rulerInkMinor: 'var(--chalk-muted)', laneInk: 'var(--chalk-muted)' };
+export const PARCHEMIN: Theme = { ...MANUEL_SCOLAIRE, id: 'parchemin', name: THEME_NAMES.parchemin, face: 'garamond', paper: 'var(--parchment-paper)', paperLine: 'var(--parchment-line)', axisInk: 'var(--parchment-ink)', rulerInk: 'var(--parchment-ink)', rulerInkMinor: 'var(--parchment-muted)', laneInk: 'var(--parchment-muted)' };
 export const JOURNAL: Theme = { ...MANUEL_SCOLAIRE, id: 'journal', name: THEME_NAMES.journal, paper: 'var(--journal-paper)', paperLine: 'var(--journal-line)', axisInk: 'var(--journal-ink)', rulerInk: 'var(--journal-ink)', rulerInkMinor: 'var(--journal-ink)', laneInk: 'var(--journal-ink)' };
 /**
  * SPEC? PLAN.md §3.4 nomme cinq thèmes et en demande « 6 à 8 ».

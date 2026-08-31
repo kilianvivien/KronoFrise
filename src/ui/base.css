@@ -1,5 +1,6 @@
 /* Base reset — DESIGN.md §2 type usage. No colors defined here: tokens only. */
 @import './tokens.css';
+@import './fonts.css';
 
 *, *::before, *::after { box-sizing: border-box; }
 

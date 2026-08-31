@@ -37,12 +37,18 @@ export function exportScene(doc: KronoDocument, options: SceneOptions): SceneGra
 /** SVG autonome : le fichier s'ouvre correctement hors de l'application. */
 export async function exportSvg(doc: KronoDocument, options: SceneOptions): Promise<string> {
   const { renderToSvgString } = await import('../renderer/renderToSvgString');
+  const theme = themeById(doc.themeId);
+  // La fonte du thème voyage avec le fichier : un SVG ouvert sur une machine
+  // qui n'a pas EB Garamond doit tout de même s'afficher en Garamond, sinon
+  // « ce qui est exporté » cesse d'être « ce qui a été vu ». Le PNG hérite de
+  // la règle, puisqu'il est rasterisé depuis ce SVG.
+  const { faceFontRule } = await import('./fonts');
   return renderToSvgString({
     scene: exportScene(doc, options),
     title: doc.meta.title,
-    theme: themeById(doc.themeId),
+    theme,
     ...(options.transparent === true ? { transparent: true } : {}),
-  });
+  }, faceFontRule(theme.face));
 }
 
 export interface PngOptions extends SceneOptions {

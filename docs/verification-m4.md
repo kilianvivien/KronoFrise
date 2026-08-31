@@ -5,7 +5,7 @@ tranché le 31 août 2026 : le web d'abord, Tauri dans une session dédiée.
 
 ## Automatisé
 
-- `pnpm test` : **396 tests**, tous réussis. `pnpm lint` et `pnpm build` :
+- `pnpm test` : **410 tests**, tous réussis. `pnpm lint` et `pnpm build` :
   propres, TypeScript strict, aucun `any`.
 - `pnpm bench` mesure la mise en page hors navigateur.
 
@@ -21,7 +21,10 @@ présents, typographie française complète, chasses tenant dans les boîtes
 mesurées), exposants ordinaux dans le **flux du PDF réel**, dégradé (arrêts
 lisibles sur les six thèmes, couches ordonnées, bandes comptées dans le PDF),
 bloc de titre (bandes repoussées, coupures décalées, commande inversible,
-modification partielle qui ne perd rien).
+modification partielle qui ne perd rien), tables de chasses engendrées
+(confrontées au fichier de police, glyphe par glyphe, sur tous les libellés des
+fixtures ; caractères absents relevés dans la fonte ; fonte incorporée au PDF
+et au SVG selon le thème).
 
 ## Navigateur réel
 
@@ -49,6 +52,12 @@ dit rien de l'expérience réelle.
   ancrage sur le bouton Événement puis sur Présentation, saut de l'étape
   « nommer » quand l'événement est nommé à sa création, carte finale, et
   « Passer » qui tient au rechargement.
+- **Typographie par thème** : Parchemin en EB Garamond, Craie en Caveat,
+  chargées seulement quand le thème les emploie. Aucun libellé d'événement ne
+  dépasse sa puce dans les trois thèmes (pire marge : 2,6 px *à l'intérieur*).
+  L'exposant ordinal s'affiche sur Manuel et Parchemin, et se replie en
+  « XVIIe » sur Craie, dont la fonte ne le porte pas. Un SVG exporté, ouvert
+  **hors de l'application**, s'affiche en Garamond depuis la police incorporée.
 - **Transitions** : jetons résolus (140 ms `ease-out`), transitions présentes
   sur la barre d'outils et le plan, `@starting-style` mesuré à l'œuvre
   (opacité 0 → 0,10 après deux images → 1), notification saisie en plein fondu.
@@ -74,10 +83,6 @@ dit rien de l'expérience réelle.
   même scène, mêmes fonctions de forme que le SVG, qui lui est inspecté, plus
   la lecture du flux du PDF, désormais **décodé par les tables `ToUnicode`**
   comme le ferait un lecteur.
-- **La typographie par thème n'est pas faite** — seconde facette de l'ajout 2.
-  Elle demande une table de chasses par fonte dans `layout/measure.ts`, faute
-  de quoi un thème serif ferait déborder les libellés. Voir
-  docs/spec-gaps.md §13.9.
 - **Les positions des éléments ne s'animent pas après un dépôt** (DESIGN.md
   §8). Le canevas pose ses éléments en coordonnées absolues, que le CSS ne sait
   pas interpoler ; il faudrait des groupes positionnés par `transform`, une

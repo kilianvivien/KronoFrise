@@ -1,13 +1,17 @@
 import type { KronoDocument } from '../core/types';
 import { layout } from './layout';
-import { approximateMeasurer, type Measurer } from './measure';
+import { approximateMeasurer, forFace, type Measurer } from './measure';
+import { themeById } from '../themes';
 import { makeScale, type ScaleInsets } from './scale';
 
 /** Fit label footprints, not just dates. Insets are camera geometry, never data. */
-export function fitInsets(doc: KronoDocument, width: number, measurer: Measurer = approximateMeasurer): ScaleInsets {
+export function fitInsets(doc: KronoDocument, width: number, raw: Measurer = approximateMeasurer): ScaleInsets {
+  // Même fonte que `layout()`, sans quoi les marges réservées ne
+  // correspondraient pas aux libellés réellement dessinés.
+  const measurer = forFace(raw, themeById(doc.themeId).face);
   const insets = { left: 16, right: 16 };
   for (let pass = 0; pass < 16; pass++) {
-    const scale = makeScale(doc.axis, width, 0, 1, insets), scene = layout(doc, scale, { measurer });
+    const scale = makeScale(doc.axis, width, 0, 1, insets), scene = layout(doc, scale, { measurer: raw });
     let left = 8, right = width - 8;
     for (const event of scene.events) {
       left = Math.min(left, event.chip.x); right = Math.max(right, event.chip.x + event.chip.width);

@@ -9,6 +9,7 @@ import type { CSSProperties, JSX, ReactNode } from 'react';
 import { resolveToken } from '../ui/tokenValues';
 import type { SceneGraph } from '../layout/scene';
 import { MANUEL_SCOLAIRE, type Theme } from '../themes/index';
+import { faceById } from '../shared/faces';
 import { EventConnector, EventNode } from './EventNode';
 import { Lanes } from './Lanes';
 import { PeriodNode } from './PeriodNode';
@@ -37,7 +38,7 @@ export function Frise({ scene, theme = MANUEL_SCOLAIRE, title, children, transpa
       viewBox={`0 0 ${scene.width} ${scene.height}`}
       role={children ? "group" : "img"}
       aria-label={title}
-      style={{ display: 'block', ...(transparent ? {} : { background: resolveToken(theme.paper) }), '--paper': resolveToken(theme.paper), '--paper-line': resolveToken(theme.paperLine), '--text-primary': resolveToken(theme.axisInk), '--text-secondary': resolveToken(theme.rulerInk), '--text-tertiary': resolveToken(theme.rulerInkMinor) } as CSSProperties}
+      style={{ display: 'block', ...(transparent ? {} : { background: resolveToken(theme.paper) }), '--paper': resolveToken(theme.paper), '--paper-line': resolveToken(theme.paperLine), '--text-primary': resolveToken(theme.axisInk), '--text-secondary': resolveToken(theme.rulerInk), '--text-tertiary': resolveToken(theme.rulerInkMinor), '--font-doc': faceById(theme.face).family } as CSSProperties}
     >
       <title>{title}</title>
       {theme.id === 'journal' && <defs><filter id="journal-monochrome"><feColorMatrix type="saturate" values="0" /></filter></defs>}

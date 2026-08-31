@@ -11,6 +11,14 @@ import { MASK_DASH } from './shapes';
 import { TITLE_FONT_SIZE, TITLE_META_SIZE, TITLE_SUBTITLE_SIZE } from '../layout/metrics';
 
 export const FONT_UI = 'var(--font-ui)';
+/**
+ * Typographie du **document**. `Frise` pose `--font-doc` d'après la fonte du
+ * thème ; à défaut, on retombe sur celle de l'interface. Passer par une
+ * variable évite de faire descendre le thème jusque dans chaque style, et vaut
+ * aussi bien à l'écran que dans le SVG exporté, où la variable est écrite en
+ * ligne sur la balise `<svg>`.
+ */
+export const FONT_DOC = 'var(--font-doc, var(--font-ui))';
 export const FS_UI = 13;
 export const FS_CAPTION = 11;
 
@@ -32,7 +40,7 @@ export const tickMinorStyle: CSSProperties = {
 
 export const tickLabelStyle: CSSProperties = {
   fill: 'var(--text-secondary)',
-  fontFamily: FONT_UI,
+  fontFamily: FONT_DOC,
   fontSize: FS_CAPTION,
   fontVariantNumeric: 'tabular-nums',
   textAnchor: 'middle',
@@ -52,7 +60,7 @@ export const coupureStyle: CSSProperties = {
 
 export const laneNameStyle: CSSProperties = {
   fill: 'var(--text-tertiary)',
-  fontFamily: FONT_UI,
+  fontFamily: FONT_DOC,
   fontSize: FS_CAPTION,
   fontWeight: 600,
   letterSpacing: '0.06em',
@@ -67,7 +75,7 @@ export const laneBoundaryStyle: CSSProperties = {
 export function chipTextStyle(color: string): CSSProperties {
   return {
     fill: color,
-    fontFamily: FONT_UI,
+    fontFamily: FONT_DOC,
     fontSize: FS_UI,
     fontWeight: 500,
   };
@@ -76,7 +84,7 @@ export function chipTextStyle(color: string): CSSProperties {
 export function chipDateStyle(color: string): CSSProperties {
   return {
     fill: color,
-    fontFamily: FONT_UI,
+    fontFamily: FONT_DOC,
     fontSize: FS_CAPTION,
     fontVariantNumeric: 'tabular-nums',
     opacity: 0.7,
@@ -86,7 +94,7 @@ export function chipDateStyle(color: string): CSSProperties {
 export function periodLabelStyle(color: string): CSSProperties {
   return {
     fill: color,
-    fontFamily: FONT_UI,
+    fontFamily: FONT_DOC,
     fontSize: FS_UI,
     fontWeight: 600,
     textAnchor: 'middle',
@@ -96,7 +104,7 @@ export function periodLabelStyle(color: string): CSSProperties {
 export function periodDatesStyle(color: string): CSSProperties {
   return {
     fill: color,
-    fontFamily: FONT_UI,
+    fontFamily: FONT_DOC,
     fontSize: FS_CAPTION,
     fontVariantNumeric: 'tabular-nums',
     opacity: 0.75,
@@ -113,20 +121,20 @@ export function periodDatesStyle(color: string): CSSProperties {
  */
 export const titleStyle: CSSProperties = {
   fill: 'var(--text-primary)',
-  fontFamily: FONT_UI,
+  fontFamily: FONT_DOC,
   fontSize: TITLE_FONT_SIZE,
   fontWeight: 600,
 };
 
 export const titleSubtitleStyle: CSSProperties = {
   fill: 'var(--text-secondary)',
-  fontFamily: FONT_UI,
+  fontFamily: FONT_DOC,
   fontSize: TITLE_SUBTITLE_SIZE,
 };
 
 export const titleMetaStyle: CSSProperties = {
   fill: 'var(--text-tertiary)',
-  fontFamily: FONT_UI,
+  fontFamily: FONT_DOC,
   fontSize: TITLE_META_SIZE,
   fontVariantNumeric: 'tabular-nums',
 };

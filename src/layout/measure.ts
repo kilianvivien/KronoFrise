@@ -5,9 +5,30 @@
  * ci-dessous.
  */
 
+import { DEFAULT_FACE, faceById, type FaceId } from '../shared/faces';
+import { GENERATED_FACES } from './faceMetrics';
+
 export interface Measurer {
-  /** largeur en pixels d'un texte, pour une taille et une graisse données */
-  measure(text: string, fontSize: number, weight?: number): number;
+  /**
+   * Largeur en pixels d'un texte, pour une taille, une graisse et une fonte.
+   *
+   * `face` est optionnel pour que les appelants qui n'en ont qu'une — les
+   * tests, la fonte d'interface — restent lisibles ; `forFace` le fige une
+   * fois pour toutes plutôt que de le faire traverser le moteur.
+   */
+  measure(text: string, fontSize: number, weight?: number, face?: FaceId): number;
+}
+
+/**
+ * Fige la fonte d'un mesureur.
+ *
+ * Le moteur de mise en page mesure à une trentaine d'endroits ; leur faire
+ * tous porter la fonte aurait multiplié les occasions de l'oublier — et un
+ * oubli ne se voit pas, il décale seulement une puce. La fonte est donc
+ * résolue une fois, à l'entrée de `layout()`.
+ */
+export function forFace(inner: Measurer, face: FaceId): Measurer {
+  return { measure: (text, fontSize, weight) => inner.measure(text, fontSize, weight, face) };
 }
 
 /**
@@ -112,8 +133,77 @@ const SAFETY = 1.01;
 const TRACKING_PER_PX = 0.006;
 const TABLE_SIZE = 13;
 
+/** Tables des fontes livrées : deux graisses réelles, pas un facteur. */
+const GENERATED = new Map<string, { regular: Map<string, number>; bold: Map<string, number>; fallback: number; missing: string }>();
+for (const [key, face] of Object.entries(GENERATED_FACES)) {
+  const build = (groups: readonly (readonly [string, number])[]): Map<string, number> => {
+    const map = new Map<string, number>();
+    for (const [chars, em] of groups) for (const char of chars) map.set(char, em);
+    return map;
+  };
+  GENERATED.set(key, {
+    regular: build(face.regular),
+    bold: build(face.bold),
+    fallback: face.fallback,
+    missing: face.missing,
+  });
+}
+
+/**
+ * Remplacement sûr d'un caractère qu'une fonte d'affichage ne porte pas.
+ *
+ * Les sous-ensembles d'EB Garamond et de Caveat n'ont ni l'espace fine
+ * insécable ni, pour la seconde, les lettres modificatives. Laissées telles
+ * quelles, elles s'affichaient avec le glyphe manquant — plus large de moitié
+ * que ce que la table annonçait, si bien que la mesure et le dessin ne
+ * parlaient plus de la même chaîne.
+ */
+const SUBSTITUTIONS: Record<string, string> = {
+  'ᵉ': 'e', 'ʳ': 'r',
+  '\u202F': ' ', '\u00A0': ' ',
+  '–': '-', '—': '-', '…': '...', '’': "'",
+  '«': '"', '»': '"',
+  'œ': 'oe', 'Œ': 'OE', 'æ': 'ae', 'Æ': 'AE',
+};
+
+/** Caractères que cette fonte ne porte pas ; vide pour la fonte du système. */
+export function missingChars(face: FaceId = DEFAULT_FACE): string {
+  const table = faceById(face).table;
+  return table === undefined ? '' : GENERATED.get(table)?.missing ?? '';
+}
+
+/**
+ * Réécrit un texte pour une fonte donnée, en remplaçant ce qu'elle ne porte
+ * pas. Appliqué à l'écran **et** à l'impression, pour que les deux disent la
+ * même chose ; et toujours après la mesure, puisque les remplacements ne font
+ * que rétrécir le texte — les largeurs restent donc des majorants.
+ */
+export function foldForFace(text: string, face: FaceId = DEFAULT_FACE): string {
+  const missing = missingChars(face);
+  if (missing === '') return text;
+  // « ᵉʳ » se lit « er » : les remplacer un à un donnerait le même résultat,
+  // mais l'ordre explicite dit l'intention.
+  let out = missing.includes('ᵉ') && missing.includes('ʳ') ? text.replace(/\u1D49\u02B3/g, 'er') : text;
+  for (const char of missing) out = out.split(char).join(SUBSTITUTIONS[char] ?? '');
+  return out;
+}
+
 export const approximateMeasurer: Measurer = {
-  measure(text: string, fontSize: number, weight = 400): number {
+  measure(text: string, fontSize: number, weight = 400, face: FaceId = DEFAULT_FACE): number {
+    const table = faceById(face).table;
+    if (table !== undefined) {
+      const generated = GENERATED.get(table);
+      if (generated !== undefined) {
+        // La graisse 500 est rendue par le fichier « regular » : c'est la
+        // règle d'appariement CSS quand seules 400 et 600 sont déclarées, et
+        // la mesure suit donc exactement ce que le navigateur affiche.
+        const widths = weight >= 600 ? generated.bold : generated.regular;
+        let em = 0;
+        for (const char of text) em += widths.get(char) ?? generated.fallback;
+        // Aucun terme de taille optique : ces fontes sont statiques.
+        return em * fontSize * SAFETY;
+      }
+    }
     let em = 0;
     let glyphs = 0;
     for (const char of text) { em += WIDTHS.get(char) ?? FALLBACK; glyphs++; }
@@ -127,11 +217,11 @@ export const approximateMeasurer: Measurer = {
 export function cachedMeasurer(inner: Measurer): Measurer {
   const cache = new Map<string, number>();
   return {
-    measure(text, fontSize, weight = 400) {
-      const key = `${fontSize}|${weight}|${text}`;
+    measure(text, fontSize, weight = 400, face = DEFAULT_FACE) {
+      const key = `${face}|${fontSize}|${weight}|${text}`;
       const hit = cache.get(key);
       if (hit !== undefined) return hit;
-      const width = inner.measure(text, fontSize, weight);
+      const width = inner.measure(text, fontSize, weight, face);
       cache.set(key, width);
       return width;
     },

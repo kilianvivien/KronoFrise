@@ -19,8 +19,13 @@
  * ferait déborder les libellés à l'impression sans rien changer à l'écran —
  * le défaut de docs/spec-gaps.md §12.7, mais visible seulement sur papier.
  */
-import regular from '../../assets/fonts/Inter-Regular.ttf?inline';
-import semibold from '../../assets/fonts/Inter-SemiBold.ttf?inline';
+import interRegular from '../../assets/fonts/Inter-Regular.ttf?inline';
+import interSemiBold from '../../assets/fonts/Inter-SemiBold.ttf?inline';
+import garamondRegular from '../../assets/fonts/EBGaramond-Regular.ttf?inline';
+import garamondSemiBold from '../../assets/fonts/EBGaramond-SemiBold.ttf?inline';
+import craieRegular from '../../assets/fonts/Caveat-Regular.ttf?inline';
+import craieBold from '../../assets/fonts/Caveat-Bold.ttf?inline';
+import { faceById, type FaceId } from '../shared/faces';
 
 function decode(dataUrl: string): Uint8Array {
   const base64 = dataUrl.slice(dataUrl.indexOf(',') + 1);
@@ -30,12 +35,43 @@ function decode(dataUrl: string): Uint8Array {
   return bytes;
 }
 
+/**
+ * Les fichiers de chaque fonte, en data URL et en octets.
+ *
+ * La fonte d'interface n'a pas de fichier — c'est celle du système. Inter la
+ * remplace **à l'impression seulement**, parce que ses chasses tiennent dans
+ * les boîtes mesurées avec les métriques de SF Pro (`fonts.test.ts`). Les
+ * fontes de thème, elles, sont les mêmes à l'écran et sur le papier : la table
+ * de `layout/faceMetrics.ts` est relevée dans ces fichiers.
+ */
+const FILES: Record<FaceId, { regular: string; bold: string; family: string }> = {
+  ui: { regular: interRegular, bold: interSemiBold, family: 'Inter' },
+  garamond: { regular: garamondRegular, bold: garamondSemiBold, family: 'EB Garamond' },
+  craie: { regular: craieRegular, bold: craieBold, family: 'Caveat' },
+};
+
 export const EMBEDDED_FONTS = {
   /** graisse 400/500 — libellés, dates, graduations */
-  regular: () => decode(regular),
+  regular: (face: FaceId = 'ui') => decode(FILES[face].regular),
   /** graisse 600 — libellés de période, en-têtes */
-  semibold: () => decode(semibold),
+  semibold: (face: FaceId = 'ui') => decode(FILES[face].bold),
 } as const;
 
 /** Nom de la famille incorporée, pour la règle `@font-face` des SVG exportés. */
-export const EMBEDDED_FAMILY = 'Inter';
+export function embeddedFamily(face: FaceId = 'ui'): string {
+  return FILES[face].family;
+}
+
+/**
+ * Règle `@font-face` autonome pour un SVG exporté : la police y voyage en
+ * data URL, si bien que le fichier s'ouvre correctement sur une machine qui ne
+ * l'a pas. Rien n'est incorporé pour la fonte d'interface — le SVG doit alors
+ * suivre la police du système, comme à l'écran.
+ */
+export function faceFontRule(face: FaceId): string {
+  if (faceById(face).table === undefined) return '';
+  const files = FILES[face];
+  return [400, 600].map((weight) => `@font-face{font-family:'${files.family}';font-style:normal;`
+    + `font-weight:${weight === 400 ? '400 500' : '600 700'};`
+    + `src:url(${weight === 400 ? files.regular : files.bold}) format('truetype');}`).join('');
+}
