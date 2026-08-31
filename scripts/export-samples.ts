@@ -11,6 +11,6 @@ for (const { file, document } of FIXTURES) {
   writeFileSync(`${out}/${name}.pdf`, await exportPdf(document, { size: 'a4', orientation: 'landscape', wall: false }));
   writeFileSync(`${out}/${name}-mural.pdf`, await exportPdf(document, { size: 'a4', orientation: 'landscape', wall: true, pages: 3 }));
   writeFileSync(`${out}/${name}.svg`, await exportSvg(document, { width: 1600 }));
-  writeFileSync(`${out}/${name}.html`, await exportHtml(document, { width: 1600 }));
+  writeFileSync(`${out}/${name}.html`, await exportHtml(document, { width: 1200 }));
   console.log('écrit', name);
 }

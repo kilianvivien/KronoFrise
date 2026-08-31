@@ -290,6 +290,31 @@ faut-il adopter un paquet (Radix Icons, Lucide) ?
   une quinzaine de glyphes génériques (annuler, dossier, disquette, loupe,
   corbeille…) que nous dessinons déjà.
 
-Recommandation : garder le jeu maison, et n'adopter Lucide que si l'on veut
-couvrir rapidement beaucoup de commandes nouvelles — en alignant alors les
-glyphes du domaine sur sa grille. À trancher par Kilian.
+**Tranché par Kilian le 31 août 2026 : Lucide est adopté**, selon la
+recommandation ci-dessus. `lucide-react` fournit les glyphes génériques ;
+`ui/icons.tsx` garde les glyphes du métier — événement, période, barre,
+accolade, flèche, bande, préréglage, fiche à compléter, frise murale — et les
+**redessine sur la grille de Lucide** (`viewBox 0 0 24 24`, trait 2, bouts
+arrondis), pour que les deux familles aient exactement le même trait à 16 px.
+`lucide-react` est ajouté à la liste fermée de PLAN.md §8.4 ; il s'élague
+correctement (environ 6 Ko pour la trentaine de glyphes utilisés).
+
+### 12.7 Mesure du texte : une moyenne ne suffisait pas
+
+Le texte débordait de sa puce sur les pages exportées (signalé par Kilian sur
+« Naissance de l'écriture »). Cause : `layout/measure.ts` estimait la largeur
+par une chasse moyenne, qui sous-estimait de plus de 10 % un mot riche en
+lettres larges. La largeur d'une puce vient de cette mesure : une
+sous-estimation se voit, une surestimation ne fait qu'un blanc.
+
+`measure.ts` porte désormais la **chasse réelle de chaque glyphe**, relevée
+dans le navigateur sur la police d'interface (SF Pro Text, graisse 500), plus :
+un facteur de graisse pour 400 et 600, un terme d'**approche optique** (sous
+13 px la police élargit d'environ 0,006 em par point manquant — sans lui les
+dates en 11 px débordaient), une marge de sûreté de 1 %, et une largeur de
+repli pour les caractères hors table. `measure.test.ts` compare la table à des
+largeurs réelles : jamais en dessous, jamais plus de 4 % au-dessus.
+
+Le navigateur continue de mesurer exactement (canvas) ; cette table sert aux
+rendus sans DOM — tests, script d'exemples, et plus tard un export en ligne de
+commande.

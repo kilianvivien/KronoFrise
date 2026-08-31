@@ -93,3 +93,26 @@ belles icônes ».
   présentation, navigateur de frises, boîte d'export, page web exportée.
 - Les couleurs de repli de la page web exportée sont désormais résolues depuis
   `tokens.css` : plus aucun hexadécimal recopié hors des fichiers de jetons.
+
+## Défauts de la page web exportée — 31 août 2026
+
+Signalés par Kilian, corrigés et vérifiés dans le navigateur :
+
+- **Texte débordant de sa puce** : la mesure sans DOM sous-estimait la largeur
+  (docs/spec-gaps.md §12.7). Après correction, aucun libellé d'événement ne
+  dépasse sa boîte dans les quatre fixtures — mesuré dans le DOM exporté, le
+  pire cas finit 7 px à l'intérieur du rembourrage.
+- **Connecteurs tracés par-dessus les puces voisines** : ils passent désormais
+  dans une passe de fond, derrière tous les éléments — à l'écran, en SVG, en
+  PNG et en PDF, puisque c'est le même ordre de dessin.
+- **Frise flottant entre deux bandes vides** : la vue suit le rapport de la
+  fenêtre et la page est mise en page à 1200 px, ce qui donne un texte lisible
+  au lieu d'un plan écrasé. La vue se recale quand la fenêtre change de taille.
+- **Glisser sélectionnait le texte** de la frise : sélection désactivée sur la
+  scène.
+- **Pas trop zoomé** : un pas montre au moins un tiers de la frise et garde la
+  règle dans le cadre, sinon on ne savait plus à quelle époque on se trouvait.
+  Le mode Présentation de l'application suit la même règle (30 % de l'axe).
+- La fiche d'élément ne chevauche plus la barre de commandes, la ligne d'aide
+  ne bouscule plus la barre, et les boutons portent les icônes de
+  l'application, rendues depuis `ui/icons.tsx`.

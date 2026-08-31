@@ -13,11 +13,23 @@ export const VIEWER_SCRIPT = String.raw`
   var data = window.__KRONO__;
   var svg = document.querySelector('#frise svg');
   if (!svg || !data) return;
+  var stage = document.getElementById('frise');
   var base = { x: 0, y: 0, w: data.width, h: data.height };
   var view = { x: 0, y: 0, w: data.width, h: data.height };
   var step = -1;
   var animation = null;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /**
+   * Rapport de la fenêtre, pas celui de la frise : la vue remplit la page au
+   * lieu de flotter entre deux bandes vides. Le papier déborde la scène, et le
+   * fond de page porte la même couleur : la feuille paraît continue.
+   */
+  function ratio() {
+    var box = stage.getBoundingClientRect();
+    return box.height > 0 ? box.width / box.height : base.w / base.h;
+  }
+  function heightFor(width) { return width / ratio(); }
 
   var highlight = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
   highlight.setAttribute('class', 'krono-highlight');
@@ -31,11 +43,14 @@ export const VIEWER_SCRIPT = String.raw`
   function clamp(next) {
     var minW = base.w / 40;
     next.w = Math.max(minW, Math.min(base.w, next.w));
-    next.h = next.w * (base.h / base.w);
+    next.h = heightFor(next.w);
     next.x = Math.max(-base.w * 0.25, Math.min(base.w * 1.25 - next.w, next.x));
-    next.y = Math.max(-base.h * 0.25, Math.min(base.h * 1.25 - next.h, next.y));
+    // Verticalement, la scène est centrée tant qu'elle tient dans la vue.
+    if (next.h >= base.h) next.y = (base.h - next.h) / 2;
+    else next.y = Math.max(-base.h * 0.1, Math.min(base.h * 1.1 - next.h, next.y));
     return next;
   }
+  function overview() { return clamp({ x: 0, y: 0, w: base.w, h: heightFor(base.w) }); }
   function animate(target) {
     if (animation) cancelAnimationFrame(animation);
     target = clamp(target);
@@ -61,7 +76,7 @@ export const VIEWER_SCRIPT = String.raw`
       highlight.style.display = 'none';
       card.hidden = true;
       counter.textContent = data.strings.overview;
-      animate({ x: 0, y: 0, w: base.w, h: base.h });
+      animate(overview());
       return;
     }
     var item = data.items[step];
@@ -73,7 +88,9 @@ export const VIEWER_SCRIPT = String.raw`
     counter.textContent = data.strings.position.replace('{index}', step + 1).replace('{total}', data.items.length);
     card.hidden = false;
     card.querySelector('h2').textContent = item.label;
-    card.querySelector('.krono-dates').textContent = item.dates;
+    var dates = card.querySelector('.krono-dates');
+    dates.textContent = item.dates;
+    dates.hidden = !item.dates;
     var description = card.querySelector('.krono-description');
     description.textContent = item.description || '';
     description.hidden = !item.description;
@@ -83,13 +100,15 @@ export const VIEWER_SCRIPT = String.raw`
     else { picture.removeAttribute('src'); picture.hidden = true; }
     // La fenêtre garde le rapport de la scène : on centre donc l'élément
     // dans les deux sens, sinon un zoom horizontal le ferait sortir par le bas.
-    var width = Math.max(item.width * 2.5, base.w / 6);
-    var height = width * (base.h / base.w);
-    animate({
-      x: item.x + item.width / 2 - width / 2,
-      y: item.y + item.height / 2 - height / 2,
-      w: width, h: height
-    });
+    // Jamais moins d'un tiers de la frise : sur un segment comprimé, une barre
+    // étroite ferait sinon un zoom démesuré, sans repères autour.
+    var width = Math.max(item.width * 2.5, base.w / 3.2);
+    var height = heightFor(width);
+    // Bas de la vue : la règle et ses libellés restent lisibles. Si l'élément
+    // ne tient pas au-dessus, c'est lui qui décide — il est le sujet du pas.
+    var y = (data.baseline + 56) - height;
+    if (item.y < y + 8) y = item.y - 8;
+    animate({ x: item.x + item.width / 2 - width / 2, y: y, w: width, h: height });
   }
 
   document.getElementById('krono-prev').addEventListener('click', function () { show(step - 1); });
@@ -113,7 +132,6 @@ export const VIEWER_SCRIPT = String.raw`
     else if (event.key === 'End') { event.preventDefault(); show(data.items.length - 1); }
   });
 
-  var stage = document.getElementById('frise');
   stage.addEventListener('wheel', function (event) {
     event.preventDefault();
     var rect = svg.getBoundingClientRect();
@@ -124,6 +142,13 @@ export const VIEWER_SCRIPT = String.raw`
     if (animation) cancelAnimationFrame(animation);
     view = next; apply();
   }, { passive: false });
+
+  // La fenêtre change de forme : la vue suit, sinon l'image se déforme.
+  var resize = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(resize);
+    resize = setTimeout(function () { view = clamp(view); apply(); }, 100);
+  });
 
   var drag = null;
   stage.addEventListener('pointerdown', function (event) {
@@ -150,6 +175,7 @@ export const VIEWER_SCRIPT = String.raw`
     for (var i = 0; i < data.items.length; i++) if (data.items[i].id === id) { show(i); return; }
   });
 
+  view = overview();
   apply();
   show(-1);
 })();

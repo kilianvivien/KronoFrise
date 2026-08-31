@@ -20,8 +20,12 @@ export const OVERVIEW: Camera = { zoom: 1, pan: 0 };
 
 /** Une période occupe au plus cette part de la vue : elle garde son contexte. */
 const SPAN_SHARE = 0.62;
-/** Un événement ponctuel n'a pas de largeur : on montre cette part de l'axe. */
-const EVENT_SHARE = 0.16;
+/**
+ * Un événement ponctuel n'a pas de largeur : on montre cette part de l'axe.
+ * Assez serré pour le mettre en valeur, assez large pour garder des repères —
+ * un zoom plus fort donnait un texte démesuré sur les segments comprimés.
+ */
+const EVENT_SHARE = 0.3;
 /** Au-delà, le texte reste net mais la frise n'a plus de repères. */
 const MAX_ZOOM = 60;
 

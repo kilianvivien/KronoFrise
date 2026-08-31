@@ -9,7 +9,7 @@ import type { CSSProperties, JSX, ReactNode } from 'react';
 import { resolveToken } from '../ui/tokenValues';
 import type { SceneGraph } from '../layout/scene';
 import { MANUEL_SCOLAIRE, type Theme } from '../themes/index';
-import { EventNode } from './EventNode';
+import { EventConnector, EventNode } from './EventNode';
 import { Lanes } from './Lanes';
 import { PeriodNode } from './PeriodNode';
 import { Ruler } from './Ruler';
@@ -42,6 +42,10 @@ export function Frise({ scene, theme = MANUEL_SCOLAIRE, title, children, transpa
       {theme.id === 'journal' && <defs><filter id="journal-monochrome"><feColorMatrix type="saturate" values="0" /></filter></defs>}
       {!transparent && <rect x={0} y={0} width={scene.width} height={scene.height} fill={theme.paper} />}
       <Lanes scene={scene} theme={theme} />
+      {/* Les connecteurs d'abord : ils passent derrière toutes les puces. */}
+      <g aria-hidden="true">
+        {scene.events.map((event) => <EventConnector key={event.itemId} event={event} theme={theme} />)}
+      </g>
       {[
         ...scene.periods.map((period) => ({ id: period.itemId, x: period.x0, node: <PeriodNode key={period.itemId} period={period} theme={theme} /> })),
         ...scene.events.map((event) => ({ id: event.itemId, x: event.x, node: <EventNode key={event.itemId} event={event} theme={theme} /> })),

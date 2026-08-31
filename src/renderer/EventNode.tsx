@@ -18,6 +18,27 @@ import {
 } from './shapes';
 import { chipDateStyle, chipTextStyle, maskedChipStyle } from './style';
 
+/**
+ * Le connecteur d'un événement — tracé **avant** toutes les puces, dans une
+ * passe séparée : un trait qui monte vers une rangée haute traversait sinon
+ * les puces des rangées basses dessinées après lui.
+ */
+export function EventConnector({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEvent; theme?: Theme }): JSX.Element {
+  const { base } = themeColors(event.color, theme);
+  return (
+    <line
+      x1={event.x}
+      x2={event.x}
+      y1={event.dotY}
+      y2={event.chip.y + event.chip.height}
+      stroke={base}
+      strokeWidth={1}
+      strokeOpacity={CONNECTOR_OPACITY}
+      {...(event.circa ? { strokeDasharray: CIRCA_DASH } : {})}
+    />
+  );
+}
+
 export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEvent; theme?: Theme }): JSX.Element {
   const patternId = `event-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
   const paint = fillPaint(event.color, theme, event.fillStyle, patternId);
@@ -28,7 +49,6 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
     ? { base: paint.base, fill: 'var(--paper)', text: themeColors(event.color, theme).text }
     : paint;
   const hasImage = event.imageSrc !== undefined;
-  const chipBottom = event.chip.y + event.chip.height;
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
   // Le nom accessible suit le masque : la fiche ne souffle pas la réponse.
   const label = EDITOR.eventAccessible(
@@ -39,17 +59,6 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
   return (
     <g data-item-id={event.itemId} role="button" aria-label={label} tabIndex={0}>
       <FillPattern id={patternId} style={event.fillStyle} color={event.color} theme={theme} />
-      <line
-        x1={event.x}
-        x2={event.x}
-        y1={event.dotY}
-        y2={chipBottom}
-        stroke={base}
-        strokeWidth={1}
-        strokeOpacity={CONNECTOR_OPACITY}
-        {...(event.circa ? { strokeDasharray: CIRCA_DASH } : {})}
-      />
-
       <rect
         x={event.chip.x}
         y={event.chip.y}

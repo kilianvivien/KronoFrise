@@ -15,12 +15,23 @@ import type { Item, KronoDocument } from '../core/types';
 import type { SceneGraph } from '../layout/scene';
 import { EDITOR, VIEWER } from '../ui/strings';
 import { resolveToken } from '../ui/tokenValues';
+import type { IconName } from '../ui/icons';
 import { exportScene, exportSvg, type SceneOptions } from './render';
 
 export interface HtmlOptions extends SceneOptions {
   /** fiche élève : la page exportée porte les mêmes masques */
   worksheet?: boolean;
 }
+
+/**
+ * Largeur de mise en page de la page exportée. Elle décide de la taille
+ * apparente du texte : la vue d'ensemble montre toute cette largeur, donc plus
+ * elle est grande, plus les libellés sont petits à l'écran. 1200 px place un
+ * libellé de 13 px à environ 12 px dans une fenêtre d'ordinateur portable.
+ * La hauteur reste naturelle : gonfler la scène ne ferait que pousser les
+ * éléments au bas d'une bande vide.
+ */
+export const VIEWER_WIDTH = 1200;
 
 interface ViewerItem {
   id: string;
@@ -83,12 +94,19 @@ function maskOfItem(doc: KronoDocument, itemId: string): 'label' | 'date' | 'bot
 
 export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Promise<string> {
   const { VIEWER_SCRIPT } = await import('./viewerScript');
-  const scene = exportScene(doc, options);
-  const svg = await exportSvg(doc, options);
+  // Les icônes de la page exportée sont **les mêmes** que celles de
+  // l'application : elles sont rendues ici en balisage, jamais redessinées.
+  const icons = await iconMarkup(['back', 'chevronRight', 'zoomOut', 'zoomIn', 'fit', 'present']);
+  const page = { ...options, width: options.width };
+  const scene = exportScene(doc, page);
+  const svg = await exportSvg(doc, page);
   const data = {
     width: scene.width,
     height: scene.height,
-    items: viewerItems(doc, scene, options.worksheet === true),
+    // Le visionneur garde la ligne du temps dans le cadre : sans elle, un zoom
+    // sur un élément ne dit plus à quelle époque on se trouve.
+    baseline: scene.baselineY,
+    items: viewerItems(doc, scene, page.worksheet === true),
     strings: {
       overview: VIEWER.overview,
       position: VIEWER.position(0, 0).replace('0 / 0', '{index} / {total}'),
@@ -112,13 +130,13 @@ export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Prom
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
     font-size: 13px; color: var(--text-primary, ${token('--text-primary')}); background: var(--paper, ${token('--paper')});
   }
-  #frise { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; cursor: grab; }
+  #frise { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none; }
   #frise.krono-dragging { cursor: grabbing; }
   #frise svg { width: 100%; height: 100%; }
   #frise [data-item-id] { cursor: pointer; }
   .krono-highlight { fill: none; stroke: var(--accent, ${token('--accent')}); stroke-width: 2.5px; pointer-events: none; }
   #krono-card {
-    position: absolute; left: 24px; bottom: 24px; max-width: 380px; padding: 16px;
+    position: fixed; left: 24px; bottom: 64px; max-width: min(380px, calc(100vw - 48px)); padding: 16px;
     background: var(--field-bg, ${token('--field-bg')}); border: 1px solid var(--hairline, ${token('--hairline')});
     border-radius: 10px; box-shadow: 0 4px 16px rgba(44, 41, 37, .14);
   }
@@ -126,16 +144,23 @@ export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Prom
   #krono-card p { margin: 0 0 8px; color: var(--text-secondary, ${token('--text-secondary')}); }
   #krono-card img { display: block; width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 12px; }
   footer {
-    display: flex; align-items: center; gap: 8px; padding: 8px 12px;
+    display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px 12px;
     background: var(--chrome-bg, ${token('--chrome-bg')}); border-top: 1px solid var(--hairline, ${token('--hairline')});
   }
   footer button {
+    display: inline-flex; align-items: center; gap: 6px;
     min-width: 28px; height: 28px; padding: 0 10px; font: inherit; color: inherit; cursor: pointer;
     background: var(--field-bg, ${token('--field-bg')}); border: 1px solid var(--hairline, ${token('--hairline')}); border-radius: 6px;
   }
+  footer button.icon { padding: 0; justify-content: center; }
+  footer button:disabled { opacity: .4; pointer-events: none; }
+  footer svg { flex: 0 0 16px; }
   footer button:hover { background: var(--chrome-bg-inset, ${token('--chrome-bg-inset')}); }
   #krono-counter { min-width: 110px; text-align: center; color: var(--text-secondary, ${token('--text-secondary')}); font-variant-numeric: tabular-nums; }
-  .krono-help { flex: 1; color: var(--text-tertiary, ${token('--text-tertiary')}); font-size: 11px; }
+  .krono-help {
+    flex: 1; min-width: 0; color: var(--text-tertiary, ${token('--text-tertiary')}); font-size: 11px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
   .krono-made { color: var(--text-tertiary, ${token('--text-tertiary')}); font-size: 11px; }
   @media print {
     footer, #krono-card { display: none; }
@@ -147,18 +172,18 @@ export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Prom
 <main id="frise">${svg}</main>
 <aside id="krono-card" hidden>
   <h2></h2>
-  <p class="krono-dates"></p>
+  <p class="krono-dates" hidden></p>
   <p class="krono-description"></p>
   <img alt="" hidden>
 </aside>
 <footer>
-  <button id="krono-prev" type="button" aria-label="${escapeHtml(VIEWER.previous)}">←</button>
+  <button id="krono-prev" class="icon" type="button" aria-label="${escapeHtml(VIEWER.previous)}" title="${escapeHtml(VIEWER.previous)}">${icons.back}</button>
   <span id="krono-counter" role="status"></span>
-  <button id="krono-next" type="button" aria-label="${escapeHtml(VIEWER.next)}">→</button>
-  <button id="krono-fit" type="button">${escapeHtml(VIEWER.fit)}</button>
-  <button id="krono-out" type="button" aria-label="${escapeHtml(VIEWER.zoomOut)}">−</button>
-  <button id="krono-in" type="button" aria-label="${escapeHtml(VIEWER.zoomIn)}">+</button>
-  <button id="krono-full" type="button">${escapeHtml(VIEWER.fullscreen)}</button>
+  <button id="krono-next" class="icon" type="button" aria-label="${escapeHtml(VIEWER.next)}" title="${escapeHtml(VIEWER.next)}">${icons.chevronRight}</button>
+  <button id="krono-fit" type="button">${icons.fit}${escapeHtml(VIEWER.fit)}</button>
+  <button id="krono-out" class="icon" type="button" aria-label="${escapeHtml(VIEWER.zoomOut)}" title="${escapeHtml(VIEWER.zoomOut)}">${icons.zoomOut}</button>
+  <button id="krono-in" class="icon" type="button" aria-label="${escapeHtml(VIEWER.zoomIn)}" title="${escapeHtml(VIEWER.zoomIn)}">${icons.zoomIn}</button>
+  <button id="krono-full" type="button">${icons.present}${escapeHtml(VIEWER.fullscreen)}</button>
   <span class="krono-help">${escapeHtml(VIEWER.help)}</span>
   <span class="krono-made">${escapeHtml(VIEWER.madeWith)}</span>
 </footer>
@@ -167,4 +192,14 @@ export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Prom
 </body>
 </html>
 `;
+}
+
+/** Rend des icônes de `ui/icons.tsx` en balisage SVG pour la page exportée. */
+async function iconMarkup<T extends IconName>(names: readonly T[]): Promise<Record<T, string>> {
+  const [{ createElement }, { renderToStaticMarkup }, { Icon }] = await Promise.all([
+    import('react'), import('react-dom/server'), import('../ui/icons'),
+  ]);
+  const markup = {} as Record<T, string>;
+  for (const name of names) markup[name] = renderToStaticMarkup(createElement(Icon, { name }));
+  return markup;
 }

@@ -195,6 +195,8 @@ export function translatePath(path: string, dx: number, dy: number): string {
 
 export function drawScene(context: PdfContext, scene: SceneGraph): void {
   drawLanes(context, scene);
+  // Même ordre qu'à l'écran : les connecteurs passent derrière les puces.
+  for (const event of scene.events) drawConnector(context, event);
   // Même ordre qu'à l'écran : périodes et événements triés par abscisse.
   const nodes = [
     ...scene.periods.map((period) => ({ id: period.itemId, x: period.x0, draw: () => drawPeriod(context, period) })),
@@ -282,12 +284,7 @@ function drawEvent(context: PdfContext, event: SceneEvent): void {
   const fill = masked ? theme.paper : paint.fill;
   const text = masked ? themeColors(event.color, theme).text : paint.text;
   const hasImage = event.imageSrc !== undefined;
-  const chipBottom = event.chip.y + event.chip.height;
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
-
-  drawLine(context, event.x, event.dotY, event.x, chipBottom, {
-    stroke: base, lineWidth: 1, opacity: CONNECTOR_OPACITY, ...(event.circa ? { dash: [2, 4] } : {}),
-  });
 
   const patterned = event.fillStyle !== undefined && patternTile(event.fillStyle) !== undefined;
   drawRect(context, event.chip.x, event.chip.y, event.chip.width, event.chip.height, {
@@ -326,6 +323,13 @@ function drawEvent(context: PdfContext, event: SceneEvent): void {
   }
 
   drawCircle(context, event.x, event.dotY, EVENT_DOT_SIZE / 2, { fill: base, stroke: theme.paper, lineWidth: 1.5 });
+}
+
+function drawConnector(context: PdfContext, event: SceneEvent): void {
+  const { base } = themeColors(event.color, context.theme);
+  drawLine(context, event.x, event.dotY, event.x, event.chip.y + event.chip.height, {
+    stroke: base, lineWidth: 1, opacity: CONNECTOR_OPACITY, ...(event.circa ? { dash: [2, 4] } : {}),
+  });
 }
 
 function drawMaskLine(context: PdfContext, px: number, py: number, width: number): void {

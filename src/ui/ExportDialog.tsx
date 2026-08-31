@@ -10,9 +10,6 @@ import { useStore } from 'zustand';
 import { editorStore } from '../store/editor';
 import { downloadBlob } from '../export/download';
 import { exportFilename, exportPng, exportScene, exportSvg } from '../export/render';
-import { exportHtml } from '../export/html';
-import { exportPdf } from '../export/pdf';
-import { exportExercise } from '../export/exercise';
 import { paginate, sceneHeightFor, sceneWidthFor, type Orientation, type PageSize } from '../export/paper';
 import { canvasMeasurer } from './measureText';
 import { Check, Choices } from './fields';
@@ -65,12 +62,16 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
     setError(null);
     try {
       if (format === 'pdf') {
+        // pdf-lib et le rendu headless ne se chargent qu'à l'export : la
+        // première ouverture de l'éditeur n'a pas à les payer.
+        const [{ exportPdf }, { exportExercise }] = await Promise.all([import('../export/pdf'), import('../export/exercise')]);
         const settings = { ...paper, pages, worksheet, answerKey, measurer: canvasMeasurer };
         const bytes = exercise ? await exportExercise(doc, settings) : await exportPdf(doc, settings);
         const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
         if (await downloadBlob(blob, exportFilename(doc, 'pdf', 'frise'), EXPORT.pdf, 'application/pdf', '.pdf')) onDone(EXPORT.done);
       } else if (format === 'html') {
-        const html = await exportHtml(doc, { width: IMAGE_WIDTH, worksheet, measurer: canvasMeasurer });
+        const { exportHtml, VIEWER_WIDTH } = await import('../export/html');
+        const html = await exportHtml(doc, { width: VIEWER_WIDTH, worksheet, measurer: canvasMeasurer });
         const blob = new Blob([html], { type: 'text/html' });
         if (await downloadBlob(blob, exportFilename(doc, 'html', 'frise'), EXPORT.html, 'text/html', '.html')) onDone(EXPORT.done);
       } else if (format === 'svg') {
