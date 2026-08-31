@@ -5,7 +5,7 @@ import type { Axis } from '../core/types';
 import { makeScale } from './scale';
 import { MAX_MINOR_PER_MAJOR, MIN_MAJOR_STEP_PX } from './metrics';
 import { approximateMeasurer } from './measure';
-import { chooseStep, levelOfStep, type Tick } from './ticks';
+import { chooseStep, levelOfStep, separateLabels, tickLabelBox, type Tick } from './ticks';
 
 const WIDTH = 1200;
 
@@ -85,6 +85,42 @@ describe('anti-chevauchement des libellés', () => {
       }
     },
   );
+
+  // Le défaut trouvé en regardant enfin le PDF : « XXᵉ siècle » et
+  // « XXIᵉ siècle » se touchaient au bord droit d'une page A4. Les libellés ne
+  // se chevauchaient pas *avant* calage — c'est le calage qui les rapprochait.
+  it.each([420, 620, 842, 1200, 1600])(
+    'largeur %i : deux libellés dessinés ne se recouvrent jamais, calage en bord compris',
+    (width) => {
+      for (const axis of axes) {
+        for (const [pan, zoom] of views) {
+          const ticks = labelled(makeScale(axis, width, pan, zoom).visibleTicks());
+          const boxes = ticks.map((tick) => tickLabelBox(tick, width, approximateMeasurer));
+          for (let i = 1; i < boxes.length; i++) {
+            expect(boxes[i]!.left).toBeGreaterThanOrEqual(boxes[i - 1]!.right);
+          }
+        }
+      }
+    },
+  );
+
+  it('garde le libellé de bord et sacrifie son voisin, jamais l’inverse', () => {
+    // Le cas vu sur le PDF : « XXIᵉ siècle », calé contre le bord droit,
+    // recouvrait « XXᵉ siècle ». C'est le voisin qui cède, pas la borne.
+    const width = 1200;
+    const tick = (x: number, label: string): Tick => ({ t: x, x, major: true, level: 'century', label, segmentIndex: 0 });
+    const ticks = [tick(1150, 'XXᵉ siècle'), tick(1195, 'XXIᵉ siècle')];
+    separateLabels(ticks, width, approximateMeasurer);
+    expect(ticks[0]!.label).toBeUndefined();
+    expect(ticks[1]!.label).toBe('XXIᵉ siècle');
+  });
+
+  it('au milieu du canevas, c’est le second qui s’efface', () => {
+    const tick = (x: number, label: string): Tick => ({ t: x, x, major: true, level: 'century', label, segmentIndex: 0 });
+    const ticks = [tick(600, 'XVIIᵉ siècle'), tick(620, 'XVIIIᵉ siècle'), tick(900, 'XIXᵉ siècle')];
+    separateLabels(ticks, 1200, approximateMeasurer);
+    expect(ticks.map((entry) => entry.label)).toEqual(['XVIIᵉ siècle', undefined, 'XIXᵉ siècle']);
+  });
 
   it('ne dessine jamais plus de 10 mineures entre deux majeures', () => {
     for (const zoom of [1, 3, 12, 90]) {

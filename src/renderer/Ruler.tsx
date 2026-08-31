@@ -11,7 +11,10 @@ import {
 } from '../layout/metrics';
 import type { SceneGraph } from '../layout/scene';
 import { baselineStyle, coupureStyle, tickLabelStyle, tickMajorStyle, tickMinorStyle } from './style';
-import { clampTickLabelX, coupureStrokes, tickAnchor } from './shapes';
+import { coupureStrokes } from './shapes';
+// Le calage en bord de canevas est une décision de mise en page — c'est elle
+// qui écarte les libellés qui se recouvreraient une fois calés (layout/ticks).
+import { clampTickLabelX, tickAnchor } from '../layout/ticks';
 
 export function Ruler({ scene }: { scene: SceneGraph }): JSX.Element {
   const y = scene.baselineY;

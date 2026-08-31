@@ -67,6 +67,74 @@ export function chooseStep(pxPerYear: number, level?: TickLevel): number {
   return candidates[candidates.length - 1] ?? STEPS[STEPS.length - 1] ?? 1;
 }
 
+/* ---- calage des libellés en bord de canevas ---- */
+
+/**
+ * Un libellé posé en bord de canevas se cale contre le bord au lieu d'être
+ * coupé en deux : sans cela, la date de début d'un segment très comprimé
+ * (« 3 000 000 av. J.-C. ») serait invisible.
+ *
+ * Ces trois fonctions décident d'une **position**, pas d'un style : elles
+ * vivent donc ici, avec la mise en page qui doit en tenir compte pour écarter
+ * les libellés qui se recouvriraient une fois calés. Le rendu SVG et
+ * l'exporteur PDF les appellent tous les deux, sans rien recalculer.
+ */
+export const EDGE_ZONE = 48;
+
+export function tickAnchor(x: number, width: number): 'start' | 'middle' | 'end' {
+  if (x < EDGE_ZONE) return 'start';
+  if (x > width - EDGE_ZONE) return 'end';
+  return 'middle';
+}
+
+export function clampTickLabelX(x: number, width: number): number {
+  if (x < EDGE_ZONE) return Math.max(x, 2);
+  if (x > width - EDGE_ZONE) return Math.min(x, width - 2);
+  return x;
+}
+
+/** La boîte réellement occupée par un libellé, calage compris. */
+export function tickLabelBox(tick: Tick, width: number, measurer: Measurer): { left: number; right: number } {
+  const size = measurer.measure(tick.label ?? '', CAPTION_FONT_SIZE);
+  const x = clampTickLabelX(tick.x, width);
+  const anchor = tickAnchor(tick.x, width);
+  const left = anchor === 'start' ? x : anchor === 'end' ? x - size : x - size / 2;
+  return { left, right: left + size };
+}
+
+/**
+ * Dernière passe, sur les positions **réellement dessinées**.
+ *
+ * `thinLabels` compare des abscisses de graduation, avant calage : un libellé
+ * ramené contre le bord droit recouvrait donc son voisin, et deux libellés de
+ * part et d'autre d'une coupure, amincis chacun de son côté, pouvaient se
+ * toucher. On les confronte ici tels qu'ils seront dessinés.
+ *
+ * SPEC? Quand deux libellés se recouvrent, DESIGN.md §4 ne dit pas lequel
+ * disparaît. Retenu : **celui de bord l'emporte**, c'est lui qui porte la date
+ * de début ou de fin de la frise — la perdre laisserait l'axe sans borne.
+ */
+export function separateLabels(ticks: Tick[], width: number, measurer: Measurer): void {
+  const kept: { right: number; tick: Tick; pinned: boolean }[] = [];
+  for (const tick of ticks) {
+    if (tick.label === undefined) continue;
+    const box = tickLabelBox(tick, width, measurer);
+    const pinned = tickAnchor(tick.x, width) !== 'middle';
+    let last = kept[kept.length - 1];
+    while (last !== undefined && box.left < last.right + EDGE_LABEL_GAP) {
+      if (!pinned || last.pinned) { tick.label = undefined; break; }
+      // Le voisin cède la place au libellé de bord.
+      last.tick.label = undefined;
+      kept.pop();
+      last = kept[kept.length - 1];
+    }
+    if (tick.label !== undefined) kept.push({ right: box.right, tick, pinned });
+  }
+}
+
+/** Écart minimal entre deux libellés dessinés : moins, ils se touchent. */
+const EDGE_LABEL_GAP = 2;
+
 export function buildTicks(
   scale: Scale,
   level?: TickLevel,
@@ -145,7 +213,9 @@ export function buildTicks(
     ticks.push(...majors);
   }
 
-  return ticks.sort((a, b) => a.x - b.x);
+  ticks.sort((a, b) => a.x - b.x);
+  separateLabels(ticks, scale.width, measurer);
+  return ticks;
 }
 
 interface GridRange {

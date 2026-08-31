@@ -11,6 +11,7 @@ import { exportPdf } from './pdf';
 import { roundedRectPath, toPdfText, translatePath } from './pdfScene';
 import { pageDimensions } from './paper';
 import { GRADIENT_BANDS, gradientLayers } from '../renderer/shapes';
+import { FILL_STYLES } from '../core/types';
 import { inflateSync } from 'node:zlib';
 
 /**
@@ -230,10 +231,31 @@ describe('export PDF', () => {
   }, 20_000);
 
   it('décale une tuile de motif sans la déformer', () => {
-    expect(translatePath('M0 4H8', 10, 20)).toBe('M 10 24H 18');
+    expect(translatePath('M 0 4 H 8', 10, 20)).toBe('M 10 24 H 18');
     expect(roundedRectPath(0, 0, 10, 10, 0)).toContain('M 0 0');
     expect(roundedRectPath(0, 0, 10, 10, 4)).toContain('A 4 4');
   });
+
+  it('décale aussi un chemin écrit à la manière compacte du SVG', () => {
+    // « L2-2 », « L2,-2 » et « L 2 -2 » sont le même segment. La forme compacte
+    // laissait sa seconde coordonnée derrière, et pdf-lib recevait un `L`
+    // amputé : l'export s'arrêtait sur une erreur (docs/spec-gaps.md §13.15).
+    expect(translatePath('M-2 2L2-2', 10, 20)).toBe('M 8 22L 12 18');
+    expect(translatePath('M-2 2L2,-2', 10, 20)).toBe('M 8 22L 12 18');
+  });
+
+  it.each(FILL_STYLES)('imprime une période « %s » sans échouer', async (fillStyle) => {
+    // Le défaut trouvé en regardant enfin le PDF : les hachures faisaient
+    // *échouer* l'export, pas seulement mal dessiner. Les neuf remplissages
+    // sont donc exportés pour de bon, un par un.
+    const doc = apply(revolution, {
+      name: 'updateItems', label: 'fill',
+      patches: revolution.items.map((item) => ({ itemId: item.id, patch: { fillStyle } })),
+    });
+    const bytes = await exportPdf(doc, { size: 'a4', orientation: 'landscape', wall: false });
+    expect((await PDFDocument.load(bytes)).getPageCount()).toBe(1);
+    expect(streamsOf(bytes).length).toBeGreaterThan(0);
+  }, 20_000);
 });
 
 describe('fiche élève imprimée', () => {

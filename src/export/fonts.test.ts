@@ -3,7 +3,29 @@ import fontkit from '@pdf-lib/fontkit';
 import { formatDate } from '../core/dates';
 import { antiquite, grandesPeriodes, revolution, stress } from '../core/fixtures/index';
 import { approximateMeasurer } from '../layout/measure';
+import { layout } from '../layout/layout';
+import { makeScale } from '../layout/scale';
+import type { SceneGraph } from '../layout/scene';
+import { themeById } from '../themes';
 import { EMBEDDED_FONTS } from './fonts';
+
+/** Un document qui porte un bloc de titre complet : titre, sous-titre, auteur, date. */
+const titled = {
+  ...revolution,
+  meta: { ...revolution.meta, author: 'Kilian Vivien' },
+  titleBlock: { align: 'center' as const, subtitle: 'Cycle 4 — cinquième', author: true, date: true },
+};
+
+/** Tout le texte d'une scène, dans l'ordre où il se dessine. */
+function sceneStrings(scene: SceneGraph): string[] {
+  return [
+    ...scene.lanes.map((lane) => lane.name),
+    ...scene.events.flatMap((event) => [event.label, event.dateLabel]),
+    ...scene.periods.flatMap((period) => [period.label, period.datesLabel]),
+    ...scene.ticks.flatMap((tick) => (tick.label === undefined ? [] : [tick.label])),
+    ...(scene.title ? [scene.title.title, scene.title.subtitle ?? '', scene.title.meta ?? ''] : []),
+  ].filter((text) => text !== '');
+}
 
 interface Face {
   unitsPerEm: number;
@@ -52,6 +74,33 @@ describe('polices incorporées', () => {
     for (const [name, font] of FACES) {
       for (const char of 'àâäçéèêëîïôöùûüÿœæÀÂÇÉÈÊËÎÏÔÖÙÛÜŸŒÆ’–—…«»° ') {
         expect(`${name} ${char} ${font.hasGlyphForCodePoint(char.codePointAt(0)!)}`).toBe(`${name} ${char} true`);
+      }
+    }
+  });
+
+  it('écrivent tout ce que la scène dit, thème par thème', () => {
+    // Le garde-fou général : plutôt qu'une liste de caractères tenue à la main,
+    // on relit **les scènes elles-mêmes** — libellés, dates, graduations, noms
+    // de bandes, bloc de titre — et l'on exige que la fonte du thème sache
+    // écrire chaque caractère. C'est ce qui manquait quand le point médian du
+    // bloc de titre s'imprimait en rectangle vide (docs/spec-gaps.md §13.15).
+    for (const themeId of ['manuel-scolaire', 'parchemin', 'craie']) {
+      const faceId = themeById(themeId).face;
+      const fonts = [
+        ['normale', face(EMBEDDED_FONTS.regular(faceId))] as const,
+        ['demi-grasse', face(EMBEDDED_FONTS.semibold(faceId))] as const,
+      ];
+      for (const doc of [...[antiquite, grandesPeriodes, revolution], titled]) {
+        const scene = layout({ ...doc, themeId }, makeScale(doc.axis, 1200));
+        for (const text of sceneStrings(scene)) {
+          for (const char of text) {
+            for (const [weight, font] of fonts) {
+              const code = char.codePointAt(0)!;
+              expect(`${themeId} ${weight} ${JSON.stringify(char)} ${font.hasGlyphForCodePoint(code)}`)
+                .toBe(`${themeId} ${weight} ${JSON.stringify(char)} true`);
+            }
+          }
+        }
       }
     }
   });

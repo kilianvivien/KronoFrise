@@ -5,7 +5,7 @@ tranché le 31 août 2026 : le web d'abord, Tauri dans une session dédiée.
 
 ## Automatisé
 
-- `pnpm test` : **452 tests**, tous réussis. `pnpm lint` et `pnpm build` :
+- `pnpm test` : **470 tests**, tous réussis. `pnpm lint` et `pnpm build` :
   propres, TypeScript strict, aucun `any`.
 - `pnpm bench` mesure la mise en page hors navigateur.
 
@@ -67,7 +67,7 @@ dit rien de l'expérience réelle.
   (opacité 0 → 0,10 après deux images → 1), notification saisie en plein fondu.
 - **Dégradé** : 19 dégradés rendus sur une frise entière, arrêts
   #E4E9EE → #A6B7C7 sur une puce de 165 px.
-- **Bloc de titre** : titre, sous-titre et « Kilian Vivien · 30 août 2026 »
+- **Bloc de titre** : titre, sous-titre et « Kilian Vivien — 30 août 2026 »
   centrés au-dessus de la frise, bandes repoussées.
 - **Réorganisation après un dépôt** (DESIGN.md §8), mesurée image par image sur
   le build de production : un événement glissé sur son voisin repousse celui-ci
@@ -84,6 +84,27 @@ dit rien de l'expérience réelle.
   retard.
 - Aucune erreur console sur l'ensemble des parcours.
 
+## Le PDF, enfin regardé
+
+Un rastériseur (PyMuPDF) est installé **comme outil de vérification** — il
+n'entre pas dans les dépendances de l'application (PLAN.md §8.4 est intacte).
+Chaque page des quatre fixtures, plus une frise de démonstration portant les
+neuf remplissages, les trois formes, les bords flous et le bloc de titre, sur
+les six thèmes, a été rendue en image et examinée.
+
+Quatre défauts trouvés, tous corrigés et couverts par des tests
+(docs/spec-gaps.md §13.15) : l'export **échouait** sur les hachures et le
+croisillon ; les motifs débordaient de leur barre d'une frange de dix pixels ;
+« XXᵉ siècle » et « XXIᵉ siècle » se touchaient au bord droit d'une page A4 ;
+le point médian du bloc de titre, absent des trois fontes livrées, s'imprimait
+en rectangle vide.
+
+Vérifié bon à l'image : les coupures ⫽ et les densités par segment de
+`grandes-periodes`, les exposants ordinaux (imprimés sur Manuel et Parchemin,
+repliés sur Craie), les six thèmes, le dégradé en seize bandes, les bords flous,
+l'accolade, la flèche, la frise murale à trois pages avec repères d'assemblage
+et pagination, la fiche élève et son corrigé à la suite.
+
 ## Limites
 
 - **Tauri n'est pas commencé** : décision de Kilian, session dédiée. La
@@ -95,11 +116,10 @@ dit rien de l'expérience réelle.
   réel** chargé dans un contexte de worker (`src/pwa/swHarness.ts`).
   L'installation sur un navigateur réel et l'invite « Installer l'application »
   restent à confirmer.
-- **Le rendu visuel du PDF n'est toujours pas inspecté à l'œil** (limite
-  héritée de M3 : pas de rastériseur installé). Le contrôle reste indirect —
-  même scène, mêmes fonctions de forme que le SVG, qui lui est inspecté, plus
-  la lecture du flux du PDF, désormais **décodé par les tables `ToUnicode`**
-  comme le ferait un lecteur.
+- **Aucune page n'a encore été imprimée sur du papier.** Le rendu du PDF est
+  désormais regardé (voir ci-dessus), mais l'écart entre l'écran et une
+  photocopieuse de collège — le thème *Journal* est fait pour elle — reste à
+  éprouver en vrai.
 - Le glissement du bloc de titre entre haut-gauche et haut-centre est rendu par
   un contrôle segmenté, pas par un geste (docs/spec-gaps.md §13.12).
 - Aucun essai sur matériel tactile, ni impression papier réelle.

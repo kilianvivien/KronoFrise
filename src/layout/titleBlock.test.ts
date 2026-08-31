@@ -53,7 +53,9 @@ describe('bloc de titre', () => {
     const full = sceneOf(docWith({ align: 'left', subtitle: 'De 1789 à 1799', author: true, date: true })).title!;
     expect(full.subtitle).toBe('De 1789 à 1799');
     // Auteur et date sur une seule ligne, à la française.
-    expect(full.meta).toBe('Kilian Vivien · 31 août 2026');
+    // Cadratin et non point médian : aucune fonte incorporée ne porte « · »,
+    // qui s'imprimait en glyphe manquant (docs/spec-gaps.md §13.15).
+    expect(full.meta).toBe('Kilian Vivien — 31 août 2026');
     expect(full.height).toBeGreaterThan(minimal.height);
   });
 

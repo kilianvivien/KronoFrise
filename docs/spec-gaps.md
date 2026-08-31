@@ -748,3 +748,60 @@ production réécrit `140ms` en `.14s`. Lire le nombre sans son unité donnait u
 animation de 0,14 ms — c'est-à-dire le saut d'avant, publié à chaque fois et
 jamais reproductible en développement. `cssMilliseconds` lit maintenant l'unité,
 et le test couvre les deux écritures d'une même durée.
+
+### 13.15 Le PDF enfin regardé : quatre défauts que seul l'œil trouve
+
+Limite héritée de M3, répétée dans les deux vérifications suivantes : « le
+rendu visuel du PDF n'est pas inspecté à l'œil, faute de rastériseur ». Elle
+tombe — PyMuPDF, *outil de vérification* et non dépendance de l'application
+(§8.4 est intacte : rien n'entre dans `package.json`), rend chaque page en
+image, et les quatre fixtures plus une frise de démonstration portant les neuf
+remplissages, les trois formes, les bords flous, le bloc de titre et les six
+thèmes ont enfin été **regardées**.
+
+Le contrôle indirect — même scène, mêmes fonctions de forme, lecture du flux —
+avait laissé passer quatre défauts. Aucun n'est une erreur de calcul : tous
+naissent là où le PDF n'a *pas* la primitive que le SVG a.
+
+1. **Les hachures faisaient échouer l'export.** Les tuiles de motif s'écrivaient
+   en chemin SVG compact (« M-2 2L2-2 ») ; le décalage de tuile ne lisait que la
+   forme espacée et laissait la seconde coordonnée derrière, si bien que pdf-lib
+   recevait un `L` amputé et **levait une erreur**. Un enseignant qui choisissait
+   « hachures » puis « Exporter en PDF » n'obtenait pas une page mal dessinée :
+   il n'obtenait rien. Corrigé des deux côtés — les chemins s'écrivent
+   séparateurs explicites, et le décalage lit aussi la forme compacte — et les
+   neuf remplissages sont désormais **exportés pour de bon** par le test, un
+   par un. Le test précédent ne dessinait que le remplissage par défaut.
+2. **Les motifs débordaient de leur forme.** En SVG, un `pattern` est découpé
+   par la forme sans qu'on ait rien à dire. Le PDF pave : les hachures, qui
+   sortent volontairement de leur tuile pour se raccorder, et la dernière
+   colonne de tuiles franchissaient le bord de la barre — une frange de dix
+   pixels tout autour. pdf-lib n'expose pas de découpe, mais il expose les
+   opérateurs : on empile `q`, le contour exact (rectangle arrondi en quatre
+   Béziers, ou polygone de la flèche), `W n`, puis on pave, puis `Q`.
+3. **Un libellé de règle calé contre le bord recouvrait son voisin.**
+   « XXᵉ siècle » et « XXIᵉ siècle » se touchaient au bord droit d'une page A4.
+   L'anti-chevauchement comparait des abscisses de graduation *avant* calage ;
+   le calage les rapprochait ensuite. La décision de calage remonte donc dans
+   `layout/ticks.ts`, avec la mise en page qui doit en tenir compte, et une
+   dernière passe confronte les libellés **tels qu'ils seront dessinés**. Quand
+   deux se recouvrent, celui de bord l'emporte : c'est lui qui porte la borne de
+   la frise. Le rendu SVG et l'exporteur PDF appellent la même fonction, comme
+   avant — elle a seulement changé d'étage.
+4. **Le point médian du bloc de titre s'imprimait en rectangle vide.**
+   « Kilian Vivien · 31 août 2026 » : aucune des trois fontes que nous livrons
+   ne porte U+00B7, et le sous-ensemble ne peut pas inventer un glyphe. Le
+   séparateur devient le **cadratin**, présent partout et de bonne typographie
+   française — le demi-cadratin étant déjà pris par les bornes d'une période.
+   Le garde-fou n'est plus une liste de caractères tenue à la main : le test
+   relit **les scènes elles-mêmes**, thème par thème, et exige que la fonte du
+   thème sache écrire chaque caractère qu'elles portent.
+
+Ce qui a été regardé et qui va bien : les coupures ⫽ et les densités par
+segment de `grandes-periodes`, les exposants ordinaux imprimés sur Manuel et
+Parchemin et repliés sur Craie, les six thèmes, le dégradé en bandes, les bords
+flous, l'accolade, la flèche, la frise murale à trois pages avec ses repères
+d'assemblage et sa pagination, la fiche élève et son corrigé à la suite.
+
+Reste une limite, mais elle a changé de nature : personne n'a encore **imprimé**
+une de ces pages sur du papier.

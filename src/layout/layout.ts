@@ -480,6 +480,17 @@ function finishPeriod(placed: PlacedPeriod, anchorY: number, rowHeight: number):
 /* Bloc de titre (PLAN.md M4, ajout 4)                                 */
 /* ------------------------------------------------------------------ */
 
+/**
+ * Séparateur de l'auteur et de la date.
+ *
+ * Un point médian « · » serait plus discret, mais aucune des fontes que nous
+ * incorporons ne le porte : il s'imprimait en glyphe manquant — un rectangle
+ * noir au milieu de l'en-tête (docs/spec-gaps.md §13.15). Le cadratin est de
+ * bonne typographie française, et présent dans les trois fontes. Le demi-cadratin
+ * est déjà pris : il sépare les deux bornes d'une période (« 1799 – 1815 »).
+ */
+const META_SEPARATOR = ' — ';
+
 /** Les lignes du bloc, dans l'ordre où elles se lisent. */
 function titleLines(doc: KronoDocument): { subtitle?: string; meta?: string } {
   const block = doc.titleBlock;
@@ -492,7 +503,7 @@ function titleLines(doc: KronoDocument): { subtitle?: string; meta?: string } {
   const subtitle = block.subtitle?.trim();
   return {
     ...(subtitle !== undefined && subtitle !== '' ? { subtitle } : {}),
-    ...(parts.length ? { meta: parts.join(' · ') } : {}),
+    ...(parts.length ? { meta: parts.join(META_SEPARATOR) } : {}),
   };
 }
 

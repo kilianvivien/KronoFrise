@@ -9,7 +9,11 @@
  * SPEC? Les polices standard PDF sont encodées en WinAnsi : « XVIIᵉ » est
  * replié en « XVIIe » à l'export (docs/spec-gaps.md §8).
  */
-import { degrees, rgb, type PDFFont, type PDFImage, type PDFPage } from 'pdf-lib';
+import {
+  appendBezierCurve, clip, closePath, degrees, endPath, lineTo, moveTo,
+  popGraphicsState, pushGraphicsState, rgb,
+  type PDFFont, type PDFImage, type PDFPage,
+} from 'pdf-lib';
 import {
   TICK_LABEL_GAP, TICK_MAJOR_HEIGHT, TICK_MINOR_HEIGHT,
   BASELINE_WIDTH, CANVAS_PADDING, EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP,
@@ -19,10 +23,13 @@ import type { SceneEvent, SceneGraph, ScenePeriod, SceneTitle } from '../layout/
 import { fillPaint, gradientPaint } from '../renderer/FillPattern';
 import {
   arrowPath, BAR_RADIUS, bracketPath, CARD_RADIUS, CHIP_PADDING_X, CHIP_RADIUS,
-  chipDateBaseline, chipLabelBaseline, clampTickLabelX, CONNECTOR_OPACITY, coupureStrokes,
+  chipDateBaseline, chipLabelBaseline, CONNECTOR_OPACITY, coupureStrokes,
   ARROW_HEAD, gradientLayers, LANE_COLOR_OPACITY, LANE_NAME_BASELINE, leftRoundedPath, MASK_BASELINE_DROP, patternTile,
-  PERIOD_LABEL_PADDING, STRIPE_OPACITY, tickAnchor,
+  PERIOD_LABEL_PADDING, STRIPE_OPACITY,
 } from '../renderer/shapes';
+// Le calage des libellés en bord de canevas appartient à la mise en page :
+// c'est elle qui a écarté ceux qui se recouvriraient une fois calés.
+import { clampTickLabelX, tickAnchor } from '../layout/ticks';
 import { themeColors } from '../renderer/themeColors';
 import { FS_CAPTION, FS_UI } from '../renderer/style';
 import type { Theme } from '../themes';
@@ -162,13 +169,68 @@ function drawCircle(context: PdfContext, cx: number, cy: number, radius: number,
 }
 
 /**
- * Motif de remplissage : la tuile de `shapes.ts` est répétée sur la boîte de
- * l'élément. Faute de motif natif en PDF, on pave — la géométrie reste
- * vectorielle et identique à celle de l'écran.
+ * Contour de découpe d'un motif : la forme même que le motif remplit.
+ *
+ * En SVG, un `pattern` est découpé par la forme sans qu'on ait rien à dire.
+ * Le PDF, lui, pave : les tuiles débordaient donc de la barre — les hachures
+ * sortent volontairement de leur tuile pour se raccorder d'une tuile à
+ * l'autre, et la dernière colonne dépassait d'une tuile entière
+ * (docs/spec-gaps.md §13.15).
  */
-function drawPattern(context: PdfContext, box: { x: number; y: number; width: number; height: number }, style: string, base: string): void {
+export type Outline =
+  | { kind: 'rounded'; x: number; y: number; width: number; height: number; radius: number }
+  | { kind: 'arrow'; x: number; y: number; width: number; height: number };
+
+/** Approche d'un quart de cercle par une courbe de Bézier. */
+const KAPPA = 0.5522847498307936;
+
+function outlineOperators(context: PdfContext, outline: Outline) {
+  const { frame } = context;
+  const px = (value: number): number => x(frame, value);
+  const py = (value: number): number => y(frame, value);
+  if (outline.kind === 'arrow') {
+    const body = Math.max(outline.width - ARROW_HEAD, 1);
+    const points: [number, number][] = [
+      [outline.x + body, outline.y],
+      [outline.x + outline.width, outline.y + outline.height / 2],
+      [outline.x + body, outline.y + outline.height],
+      [outline.x, outline.y + outline.height],
+    ];
+    return [
+      moveTo(px(outline.x), py(outline.y)),
+      ...points.map(([cx, cy]) => lineTo(px(cx), py(cy))),
+      closePath(),
+    ];
+  }
+  const radius = Math.max(0, Math.min(outline.radius, outline.width / 2, outline.height / 2));
+  const k = radius * KAPPA;
+  const left = outline.x;
+  const top = outline.y;
+  const right = left + outline.width;
+  const bottom = top + outline.height;
+  return [
+    moveTo(px(left + radius), py(top)),
+    lineTo(px(right - radius), py(top)),
+    appendBezierCurve(px(right - radius + k), py(top), px(right), py(top + radius - k), px(right), py(top + radius)),
+    lineTo(px(right), py(bottom - radius)),
+    appendBezierCurve(px(right), py(bottom - radius + k), px(right - radius + k), py(bottom), px(right - radius), py(bottom)),
+    lineTo(px(left + radius), py(bottom)),
+    appendBezierCurve(px(left + radius - k), py(bottom), px(left), py(bottom - radius + k), px(left), py(bottom - radius)),
+    lineTo(px(left), py(top + radius)),
+    appendBezierCurve(px(left), py(top + radius - k), px(left + radius - k), py(top), px(left + radius), py(top)),
+    closePath(),
+  ];
+}
+
+/**
+ * Motif de remplissage : la tuile de `shapes.ts` est répétée sur la boîte de
+ * l'élément, **découpée sur sa forme**. Faute de motif natif en PDF, on pave —
+ * la géométrie reste vectorielle et identique à celle de l'écran.
+ */
+function drawPattern(context: PdfContext, box: { x: number; y: number; width: number; height: number }, style: string, base: string, outline: Outline): void {
   const tile = patternTile(style as never);
   if (tile === undefined) return;
+  context.page.pushOperators(pushGraphicsState(), ...outlineOperators(context, outline), clip(), endPath());
   const columns = Math.ceil(box.width / tile.size);
   const rows = Math.ceil(box.height / tile.size);
   for (let column = 0; column < columns; column++) {
@@ -186,6 +248,7 @@ function drawPattern(context: PdfContext, box: { x: number; y: number; width: nu
       }
     }
   }
+  context.page.pushOperators(popGraphicsState());
 }
 
 /**
@@ -225,8 +288,15 @@ function drawGradient(
 }
 
 /** Décale un chemin de tuile : les tuiles n'utilisent que M/L/H/V absolus. */
+/**
+ * Le séparateur des deux coordonnées peut être une espace, une virgule, ou
+ * rien du tout devant un nombre négatif : « L 2 -2 », « L2,-2 » et « L2-2 »
+ * sont le même segment. N'en lire qu'une forme laissait la seconde coordonnée
+ * derrière, et pdf-lib recevait un `L` amputé — l'export s'arrêtait sur une
+ * erreur au lieu de sortir une page.
+ */
 export function translatePath(path: string, dx: number, dy: number): string {
-  return path.replace(/([MLHV])\s*(-?[\d.]+)(?:\s+(-?[\d.]+))?/gi, (_match, command: string, a: string, b?: string) => {
+  return path.replace(/([MLHV])\s*(-?[\d.]+)(?:[\s,]*(-?[\d.]+))?/gi, (_match, command: string, a: string, b?: string) => {
     const first = Number(a);
     if (command === 'H') return `H ${first + dx}`;
     if (command === 'V') return `V ${first + dy}`;
@@ -330,7 +400,9 @@ function drawPeriod(context: PdfContext, period: ScenePeriod): void {
       stroke, lineWidth: 1, ...(dash ? { dash } : {}),
     });
     if (patterned && !masked) {
-      drawPattern(context, { x: period.x0, y: period.y, width, height: period.height }, period.fillStyle as string, base);
+      const box = { x: period.x0, y: period.y, width, height: period.height };
+      drawPattern(context, box, period.fillStyle as string, base,
+        period.shape === 'arrow' ? { kind: 'arrow', ...box } : { kind: 'rounded', ...box, radius: BAR_RADIUS });
     }
   }
 
@@ -387,7 +459,8 @@ function drawEvent(context: PdfContext, event: SceneEvent): void {
     ...(masked ? { dash: [3, 3] } : {}),
   });
   if (patterned && !masked) {
-    drawPattern(context, { x: event.chip.x, y: event.chip.y, width: event.chip.width, height: event.chip.height }, event.fillStyle as string, base);
+    drawPattern(context, { x: event.chip.x, y: event.chip.y, width: event.chip.width, height: event.chip.height }, event.fillStyle as string, base,
+      { kind: 'rounded', x: event.chip.x, y: event.chip.y, width: event.chip.width, height: event.chip.height, radius: chipRadius });
   }
 
   const image = event.imageSrc === undefined ? undefined : context.images.get(event.imageSrc);

@@ -72,26 +72,6 @@ export function coupureStrokes(x: number, y: number): Segment2D[] {
   }));
 }
 
-/* ---- libellés de la règle ---- */
-/**
- * Un libellé posé en bord de canevas se cale contre le bord au lieu d'être
- * coupé en deux : sans cela, la date de début d'un segment très comprimé
- * (« 3 000 000 av. J.-C. ») serait invisible.
- */
-export const EDGE_ZONE = 48;
-
-export function tickAnchor(x: number, width: number): 'start' | 'middle' | 'end' {
-  if (x < EDGE_ZONE) return 'start';
-  if (x > width - EDGE_ZONE) return 'end';
-  return 'middle';
-}
-
-export function clampTickLabelX(x: number, width: number): number {
-  if (x < EDGE_ZONE) return Math.max(x, 2);
-  if (x > width - EDGE_ZONE) return Math.min(x, width - 2);
-  return x;
-}
-
 /* ---- motifs de remplissage (DESIGN.md §6, M2) ---- */
 export interface PatternTile {
   size: number;
@@ -102,11 +82,17 @@ export interface PatternTile {
   dot?: { cx: number; cy: number; r: number; opacity: number };
 }
 
+/**
+ * Les chemins s'écrivent **séparateurs explicites** — « M -2 2 L 2 -2 », jamais
+ * « M-2 2L2-2 ». Le SVG accepte les deux ; l'exporteur PDF, lui, doit décaler
+ * chaque tuile puis la donner à pdf-lib, et l'écriture compacte y perdait une
+ * coordonnée — l'export échouait sur les hachures (docs/spec-gaps.md §13.15).
+ */
 const TILES: Record<string, PatternTile> = {
-  hatch: { size: 8, strokes: ['M-2 2L2-2 M0 8L8 0 M6 10L10 6'], strokeOpacity: 0.3 },
-  crosshatch: { size: 10, strokes: ['M-2 2L2-2 M0 10L10 0 M8 12L12 8 M-2 8L2 12 M0 0L10 10 M8-2L12 2'], strokeOpacity: 0.3 },
-  lines: { size: 8, strokes: ['M0 4H8'], strokeOpacity: 0.3 },
-  grid: { size: 10, strokes: ['M0 5H10 M5 0V10'], strokeOpacity: 0.3 },
+  hatch: { size: 8, strokes: ['M -2 2 L 2 -2 M 0 8 L 8 0 M 6 10 L 10 6'], strokeOpacity: 0.3 },
+  crosshatch: { size: 10, strokes: ['M -2 2 L 2 -2 M 0 10 L 10 0 M 8 12 L 12 8 M -2 8 L 2 12 M 0 0 L 10 10 M 8 -2 L 12 2'], strokeOpacity: 0.3 },
+  lines: { size: 8, strokes: ['M 0 4 H 8'], strokeOpacity: 0.3 },
+  grid: { size: 10, strokes: ['M 0 5 H 10 M 5 0 V 10'], strokeOpacity: 0.3 },
   dots: { size: 8, strokes: [], strokeOpacity: 0.3, dot: { cx: 4, cy: 4, r: 1.1, opacity: 0.38 } },
 };
 

@@ -111,7 +111,7 @@ export interface SceneTitle {
   titleY: number;
   subtitle?: string;
   subtitleY?: number;
-  /** « Kilian Vivien · 31 août 2026 », déjà assemblé et formaté */
+  /** « Kilian Vivien — 31 août 2026 », déjà assemblé et formaté */
   meta?: string;
   metaY?: number;
   /** hauteur totale réservée au-dessus des bandes */
