@@ -27,12 +27,12 @@ import type { Mode } from './mode';
 import { Presentation } from './Presentation';
 import { Library } from './Library';
 import { ExportDialog } from './ExportDialog';
+import { AgentSkillDialog } from './AgentSkillDialog';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
 import { PwaPrompts } from './PwaPrompts';
 import { ToolbarOverflow } from './ToolbarOverflow';
 import { useToolbarOverflow } from './useToolbarOverflow';
-import agentSkillUrl from '../agent/kronofrise/SKILL.md?url';
 import './panels.css';
 
 function editable(target: EventTarget | null): boolean {
@@ -66,6 +66,7 @@ export function Editor(): JSX.Element {
   const tutorialDone = useStore(appearanceStore, (value) => value.tutorialDone);
   const [tutorial, setTutorial] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [agentSkill, setAgentSkill] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
   const [sidebar, setSidebar] = useState(() => !window.matchMedia('(max-width: 1100px)').matches);
   const [inspector, setInspector] = useState(() => !window.matchMedia('(max-width: 1100px)').matches);
@@ -352,10 +353,11 @@ export function Editor(): JSX.Element {
       <span className={styles.hint}>{worksheet ? WORKSHEET.hint : <><span className={styles.desktopHint}>{EDITOR.hint}</span><span className={styles.touchHint}>{EDITOR.touchHint}</span></>}</span>
       <AppearancePicker />
       <IconButton icon="help" label={TUTORIAL.restart} above disabled={!state.ready} onClick={() => { setTutorialDone(false); setTutorial(true); }} />
-      <a className={`${styles.icon} ${styles.tip} ${styles.tipAbove} ${styles.tipEnd}`} href={agentSkillUrl} download="SKILL.md" aria-label={APP_LINKS.agentSkill} data-tip={APP_LINKS.agentSkill}><Icon name="agentSkill" /></a>
+      <IconButton icon="agentSkill" label={APP_LINKS.agentSkill} above atEnd onClick={() => setAgentSkill(true)} />
       <a className={`${styles.icon} ${styles.tip} ${styles.tipAbove} ${styles.tipEnd}`} href="https://github.com/kilianvivien/KronoFrise" target="_blank" rel="noopener noreferrer" aria-label={APP_LINKS.github} data-tip={APP_LINKS.github}><Icon name="github" /></a>
     </footer>
-    <PwaPrompts hidden={!state.ready || tutorial || !tutorialDone || library || exporting || mode === 'present' || deleting.length > 0 || !!state.error || notice !== null} save={saveBeforeUpdate} />
+    <PwaPrompts hidden={!state.ready || tutorial || !tutorialDone || library || exporting || agentSkill || mode === 'present' || deleting.length > 0 || !!state.error || notice !== null} save={saveBeforeUpdate} />
+    {agentSkill && <AgentSkillDialog onClose={() => setAgentSkill(false)} />}
     {exporting && <ExportDialog worksheet={worksheet && !answerKey} onClose={() => setExporting(false)} onDone={setNotice} />}
     {library && <Library onClose={() => setLibrary(false)} onImported={setNotice} onOpen={(replace) => {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });

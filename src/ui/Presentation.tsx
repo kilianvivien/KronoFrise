@@ -35,7 +35,9 @@ function reducedMotion(): boolean {
 export function Presentation({ onExit }: { onExit: () => void }): JSX.Element {
   const doc = useStore(editorStore, (state) => state.document);
   const theme = themeById(doc.themeId);
+  const stage = useRef<HTMLDivElement>(null);
   const host = useRef<HTMLDivElement>(null);
+  const [exiting, setExiting] = useState(false);
   const [size, setSize] = useState({ width: 1200, height: 700 });
   const [step, setStep] = useState(-1);
   const [reveal, setReveal] = useState(false);
@@ -98,10 +100,17 @@ export function Presentation({ onExit }: { onExit: () => void }): JSX.Element {
   }, [current, doc, size.width, insets]);
 
   const go = (next: number): void => setStep(Math.max(-1, Math.min(items.length - 1, next)));
-  const exit = (): void => {
-    if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
-    onExit();
-  };
+  const exit = (): void => setExiting(true);
+  useEffect(() => {
+    if (!exiting) return;
+    let cancelled = false;
+    // Garder la scène montée jusqu'à la fin du fondu, même si la transition
+    // est interrompue ou désactivée par la préférence de mouvement réduit.
+    const pending: Promise<unknown>[] = stage.current?.getAnimations().map((transition) => transition.finished) ?? [];
+    if (document.fullscreenElement) pending.push(document.exitFullscreen());
+    void Promise.allSettled(pending).then(() => { if (!cancelled) onExit(); });
+    return () => { cancelled = true; };
+  }, [exiting, onExit]);
   const toggleFullscreen = (): void => {
     if (document.fullscreenElement) void document.exitFullscreen().catch(() => {});
     else void host.current?.parentElement?.requestFullscreen().catch(() => {});
@@ -114,6 +123,7 @@ export function Presentation({ onExit }: { onExit: () => void }): JSX.Element {
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent): void => {
+      if (exiting) { event.preventDefault(); return; }
       if (event.target instanceof Element && event.target.closest('input,textarea,select')) return;
       const keys: Record<string, () => void> = {
         arrowright: () => go(step + 1), ' ': () => go(step + 1), pagedown: () => go(step + 1),
@@ -129,7 +139,8 @@ export function Presentation({ onExit }: { onExit: () => void }): JSX.Element {
   });
 
   const description = current?.description;
-  return <div className={styles.stage} style={{ '--paper': resolveToken(theme.paper) } as CSSProperties}>
+  return <div ref={stage} className={styles.stage} data-exiting={exiting} inert={exiting}
+    style={{ '--paper': resolveToken(theme.paper) } as CSSProperties}>
     <div ref={host} className={styles.canvas} role="region" aria-label={EDITOR.canvas}>
       <Frise scene={shown} title={doc.meta.title} theme={theme}>
         {highlight && <rect className={styles.highlight} x={highlight.x - 3} y={highlight.y - 3} width={highlight.width + 6} height={highlight.height + 6} rx={7} />}

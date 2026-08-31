@@ -186,7 +186,21 @@ export const VIEWER = {
 
 export const APP_LINKS = {
   github: 'KronoFrise sur GitHub (nouvel onglet)',
-  agentSkill: 'Télécharger le skill pour agents IA (.md)',
+  agentSkill: 'Créer une frise avec une IA',
+} as const;
+
+export const AGENT_SKILL = {
+  title: 'Créer une frise avec une IA',
+  intro: 'Un « skill » est un fichier d’instructions qui explique à votre assistant IA comment créer une frise compatible avec KronoFrise, entièrement modifiable.',
+  steps: [
+    'Téléchargez le fichier SKILL.md ci-dessous, puis joignez-le à une conversation avec votre assistant IA. Si les pièces jointes ne sont pas prises en charge, copiez-collez son contenu.',
+    'Demandez à l’assistant de suivre ces instructions et de créer un fichier .krono, en précisant le sujet, les dates et les éléments souhaités.',
+    'Récupérez le fichier .krono généré, puis ouvrez-le dans KronoFrise avec « Ouvrir… » ou « Mes frises → Importer un fichier… ». Vous pourrez ensuite tout modifier.',
+  ],
+  exampleTitle: 'Exemple de demande',
+  example: '« En suivant le skill joint, crée un fichier .krono sur la Révolution française de 1789 à 1799, avec dix événements clés et leurs sources. »',
+  note: 'Vérifiez les dates et les sources proposées par l’IA avant d’utiliser votre frise.',
+  download: 'Télécharger SKILL.md',
 } as const;
 
 export const PWA = {

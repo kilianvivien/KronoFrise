@@ -1,5 +1,7 @@
 /* Mode présentation — sans chrome, la frise occupe tout l'écran (PLAN.md §3.5). */
 .stage { position: fixed; inset: 0; z-index: 20; display: flex; flex-direction: column; background: var(--paper); }
+.stage { composes: appearFade from global; }
+.stage[data-exiting=true] { opacity: 0; }
 .canvas { flex: 1; min-height: 0; overflow: hidden; }
 .highlight { fill: none; stroke: var(--accent); stroke-width: 2.5px; pointer-events: none; }
 
