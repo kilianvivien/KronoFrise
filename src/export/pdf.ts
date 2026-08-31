@@ -23,6 +23,8 @@ import { MARGIN, OVERLAP, paginate, sceneHeightFor, sceneWidthFor, type PaperOpt
 export interface PdfOptions extends PaperOptions {
   /** fiche élève : les masques deviennent des lignes à compléter */
   worksheet?: boolean;
+  /** ajoute le corrigé (la même frise sans masques) à la suite */
+  answerKey?: boolean;
   measurer?: Measurer;
   /** nombre de pages visé en frise murale */
   pages?: number;
@@ -39,11 +41,15 @@ export async function exportPdf(doc: KronoDocument, options: PdfOptions): Promis
 
   const insets = fitInsets(doc, sceneWidth, options.measurer);
   const scale = makeScale(doc.axis, sceneWidth, 0, 1, insets);
-  const scene = layout(doc, scale, {
+  const build = (worksheet: boolean) => layout(doc, scale, {
     ...(options.measurer ? { measurer: options.measurer } : {}),
     height: sceneHeight,
-    ...(options.worksheet === true ? { worksheet: true } : {}),
+    ...(worksheet ? { worksheet: true } : {}),
   });
+  const scene = build(options.worksheet === true);
+  // Le corrigé, c'est la même scène sans masques (docs/format.md §5) : il suit
+  // la fiche dans le même fichier, prêt à imprimer en recto/verso.
+  const answerKey = options.answerKey === true && options.worksheet === true ? build(false) : undefined;
 
   const sheet = paginate(scene.width, scene.height, options);
   const pdf = await PDFDocument.create();
@@ -54,7 +60,11 @@ export async function exportPdf(doc: KronoDocument, options: PdfOptions): Promis
   const bold = await pdf.embedFont(StandardFonts.HelveticaBold);
   const images = await embedImages(pdf, scene.events.flatMap((event) => event.imageSrc === undefined ? [] : [event.imageSrc]));
 
-  for (const sheetPage of sheet.pages) {
+  const scenes: { scene: typeof scene; caption?: string }[] = [
+    { scene },
+    ...(answerKey === undefined ? [] : [{ scene: answerKey, caption: EXPORT.answerKeyPage }]),
+  ];
+  for (const { scene: current, caption } of scenes) for (const sheetPage of sheet.pages) {
     const page = pdf.addPage([sheet.width, sheet.height]);
     // Le papier du thème couvre toute la page : ce que l'on voyait, imprimé.
     const paper = toRgb01(theme.paper);
@@ -69,8 +79,14 @@ export async function exportPdf(doc: KronoDocument, options: PdfOptions): Promis
       },
       font, bold, theme, images,
     };
-    drawScene(context, scene);
+    drawScene(context, current);
     coverMargins(page, sheet.width, sheet.height, paper);
+    if (caption !== undefined) {
+      const ink = toRgb01('var(--text-secondary)');
+      page.drawText(toWinAnsi(caption), {
+        x: MARGIN, y: MARGIN / 2, size: FS_CAPTION, font: bold, color: rgb(ink.r, ink.g, ink.b),
+      });
+    }
     if (sheet.pages.length > 1) drawAssembly(page, sheet.width, sheet.height, sheetPage.overlapLeft, sheetPage.overlapRight);
     if (sheet.pages.length > 1) {
       const label = toWinAnsi(EXPORT.assembly(sheetPage.index + 1, sheet.pages.length));

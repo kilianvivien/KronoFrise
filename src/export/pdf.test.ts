@@ -108,3 +108,17 @@ describe('export PDF', () => {
     expect(roundedRectPath(0, 0, 10, 10, 4)).toContain('A 4 4');
   });
 });
+
+describe('fiche élève imprimée', () => {
+  it('ajoute le corrigé à la suite, dans le même fichier', async () => {
+    const masked = apply(revolution, maskAll(revolution, 'label'));
+    const plain = await PDFDocument.load(await exportPdf(masked, { ...A4, worksheet: true }));
+    const withKey = await PDFDocument.load(await exportPdf(masked, { ...A4, worksheet: true, answerKey: true }));
+    expect(withKey.getPageCount()).toBe(plain.getPageCount() * 2);
+  }, 20_000);
+
+  it('n’ajoute pas de corrigé hors du mode fiche élève', async () => {
+    const pdf = await PDFDocument.load(await exportPdf(revolution, { ...A4, answerKey: true }));
+    expect(pdf.getPageCount()).toBe(1);
+  });
+});

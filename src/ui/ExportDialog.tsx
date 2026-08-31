@@ -12,6 +12,7 @@ import { downloadBlob } from '../export/download';
 import { exportFilename, exportPng, exportScene, exportSvg } from '../export/render';
 import { exportHtml } from '../export/html';
 import { exportPdf } from '../export/pdf';
+import { exportExercise } from '../export/exercise';
 import { paginate, sceneHeightFor, sceneWidthFor, type Orientation, type PageSize } from '../export/paper';
 import { canvasMeasurer } from './measureText';
 import { EXPORT } from './strings';
@@ -36,6 +37,8 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
   const [pages, setPages] = useState(3);
   const [ratio, setRatio] = useState(2);
   const [transparent, setTransparent] = useState(false);
+  const [answerKey, setAnswerKey] = useState(false);
+  const [exercise, setExercise] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +56,8 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
     setError(null);
     try {
       if (format === 'pdf') {
-        const bytes = await exportPdf(doc, { ...paper, pages, worksheet, measurer: canvasMeasurer });
+        const settings = { ...paper, pages, worksheet, answerKey, measurer: canvasMeasurer };
+        const bytes = exercise ? await exportExercise(doc, settings) : await exportPdf(doc, settings);
         const blob = new Blob([bytes as unknown as BlobPart], { type: 'application/pdf' });
         if (await downloadBlob(blob, exportFilename(doc, 'pdf', 'frise'), EXPORT.pdf, 'application/pdf', '.pdf')) onDone(EXPORT.done);
       } else if (format === 'html') {
@@ -102,7 +106,13 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
           </label>
           <p>{EXPORT.wallHint}</p>
         </>}
-        <p role="status">{EXPORT.pages(sheet.pages.length)}</p>
+        <label className="check"><input type="checkbox" checked={exercise} onChange={(event) => setExercise(event.target.checked)} />{EXPORT.exercise}</label>
+        {exercise && <p>{EXPORT.exerciseHint}</p>}
+        {worksheet && !exercise && <>
+          <label className="check"><input type="checkbox" checked={answerKey} onChange={(event) => setAnswerKey(event.target.checked)} />{EXPORT.answerKey}</label>
+          {answerKey && <p>{EXPORT.answerKeyHint}</p>}
+        </>}
+        <p role="status">{EXPORT.pages(sheet.pages.length * (answerKey && worksheet && !exercise ? 2 : 1) + (exercise ? 1 : 0))}</p>
       </>}
 
       {format === 'png' && <>
