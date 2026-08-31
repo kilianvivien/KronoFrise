@@ -2,7 +2,16 @@
 export * from "../shared/strings";
 
 export const EDITOR = {
-  open: 'Ouvrir…', save: 'Enregistrer', fileType: 'Frise KronoFrise', defaultFilename: 'frise',
+  open: 'Ouvrir…', save: 'Enregistrer', fileType: 'Frise KronoFrise',
+  importTypes: 'Frise, export MiCetF ou tableau',
+  imported: (count: number, skipped: number): string =>
+    skipped === 0
+      ? `${count} élément${count > 1 ? 's' : ''} importé${count > 1 ? 's' : ''}.`
+      : `${count} élément${count > 1 ? 's' : ''} importé${count > 1 ? 's' : ''}, ${skipped} ligne${skipped > 1 ? 's' : ''} ignorée${skipped > 1 ? 's' : ''}.`,
+  pasted: (count: number, skipped: number): string =>
+    skipped === 0
+      ? `${count} élément${count > 1 ? 's' : ''} collé${count > 1 ? 's' : ''} dans la frise.`
+      : `${count} élément${count > 1 ? 's' : ''} collé${count > 1 ? 's' : ''}, ${skipped} ligne${skipped > 1 ? 's' : ''} ignorée${skipped > 1 ? 's' : ''}.`, defaultFilename: 'frise',
   title: 'Titre de la frise', renameTitle: 'Renommer la frise', label: 'Libellé', event: 'Nouvel événement', period: 'Nouvelle période',
   canvas: 'Frise chronologique', sidebar: 'Structure', inspector: 'Inspecteur',
   sidebarHint: 'Les bandes et le plan de la frise seront disponibles ici.',

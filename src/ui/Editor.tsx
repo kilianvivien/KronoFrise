@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
 import { useStore } from 'zustand';
 import { addItems, deleteItems } from '../core/commands';
+import { csvItems } from '../core/importers';
 import { createDocument } from '../core/document';
 import { newId } from '../core/ids';
 import { FIXTURES } from '../core/fixtures';
@@ -100,6 +101,28 @@ export function Editor(): JSX.Element {
     const items = current.document.items.filter((item) => current.selection.includes(item.id)).map((item) => ({ ...item, id: newId() }));
     if (items.length) { current.dispatch(addItems(current.document, items)); current.select(items.map((item) => item.id)); }
   }, []);
+  // Coller un tableau (docs/format.md §8.2) ajoute des éléments à la frise
+  // ouverte : c'est une commande, donc annulable, et rien n'est remplacé.
+  useEffect(() => {
+    const onPaste = (event: ClipboardEvent) => {
+      if (editable(event.target) || modeRef.current !== 'edit') return;
+      const text = event.clipboardData?.getData('text/plain') ?? '';
+      if (!text.includes(';') && !text.includes('\t') && !text.includes(',')) return;
+      const current = editorStore.getState();
+      const laneId = current.document.lanes[0]?.id;
+      if (!current.ready || laneId === undefined) return;
+      try {
+        const { items, skipped } = csvItems(text, laneId);
+        if (items.length === 0) return;
+        event.preventDefault();
+        current.dispatch(addItems(current.document, items));
+        current.select(items.map((item) => item.id));
+        setNotice(EDITOR.pasted(items.length, skipped.length));
+      } catch { /* un collage qui n'est pas un tableau reste un collage ordinaire */ }
+    };
+    window.addEventListener('paste', onPaste);
+    return () => window.removeEventListener('paste', onPaste);
+  }, []);
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (editable(event.target) || !editorStore.getState().ready) return;
@@ -195,7 +218,7 @@ export function Editor(): JSX.Element {
       <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" above atEnd disabled={!state.selection.length || worksheet} onClick={remove} />
     </footer>
     {exporting && <ExportDialog worksheet={worksheet && !answerKey} onClose={() => setExporting(false)} onDone={setNotice} />}
-    {library && <Library onClose={() => setLibrary(false)} onOpen={(replace) => {
+    {library && <Library onClose={() => setLibrary(false)} onImported={setNotice} onOpen={(replace) => {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });
     }} />}
     {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}

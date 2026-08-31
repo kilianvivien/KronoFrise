@@ -1,3 +1,4 @@
+import { importText } from '../core/importers';
 import { migrate } from '../core/migrations';
 import { parseDocument } from '../core/schema';
 import type { KronoDocument } from '../core/types';
@@ -13,6 +14,8 @@ interface PickerWindow {
   showSaveFilePicker?: (options: object) => Promise<FileHandle>;
 }
 const pickerOptions = { types: [{ description: EDITOR.fileType, accept: { 'application/json': ['.krono'] } }] };
+/** À l'ouverture, on accepte aussi un export MiCetF et un tableau (format.md §8). */
+const openOptions = { types: [{ description: EDITOR.importTypes, accept: { 'application/json': ['.krono', '.json'], 'text/csv': ['.csv', '.tsv', '.txt'] } }] };
 
 export function decodeFile(text: string): KronoDocument {
   if (new TextEncoder().encode(text).length > MAX_FILE_BYTES) throw new Error(EDITOR.fileTooLarge);
@@ -21,8 +24,15 @@ export function decodeFile(text: string): KronoDocument {
   return parseDocument(migrate(json));
 }
 export async function readFile(file: File): Promise<KronoDocument> {
+  return (await readAnyFile(file)).document;
+}
+
+/** Ouverture tolérante : `.krono`, export MiCetF ou tableau (docs/format.md §8). */
+export async function readAnyFile(file: File): Promise<{ document: KronoDocument; skipped: number[]; source: string }> {
   if (file.size > MAX_FILE_BYTES) throw new Error(EDITOR.fileTooLarge);
-  return decodeFile(await file.text());
+  const text = await file.text();
+  if (new TextEncoder().encode(text).length > MAX_FILE_BYTES) throw new Error(EDITOR.fileTooLarge);
+  return importText(text);
 }
 export function serializeFile(doc: KronoDocument, now = new Date()): string {
   const text = JSON.stringify(parseDocument({ ...doc, meta: { ...doc.meta, modifiedAt: now.toISOString() } }), null, 2);
@@ -33,13 +43,13 @@ export async function openFile(): Promise<KronoDocument | null> {
   const picker = (window as PickerWindow).showOpenFilePicker;
   if (picker) {
     try {
-      const [handle] = await picker(pickerOptions);
+      const [handle] = await picker(openOptions);
       return handle ? readFile(await handle.getFile()) : null;
     } catch (error) { if (isCancelled(error)) return null; throw error; }
   }
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
-    input.type = 'file'; input.accept = '.krono,application/json';
+    input.type = 'file'; input.accept = '.krono,.json,.csv,.tsv,.txt,application/json,text/csv';
     input.addEventListener('cancel', () => { input.remove(); resolve(null); }, { once: true });
     input.addEventListener('change', () => {
       const file = input.files?.[0]; input.remove();

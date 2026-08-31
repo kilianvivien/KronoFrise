@@ -9,20 +9,21 @@ import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import { useStore } from 'zustand';
 import { createDocument } from '../core/document';
 import { editorStore } from '../store/editor';
-import { readFile } from '../store/fileIO';
+import { readAnyFile } from '../store/fileIO';
 import {
   deleteDocument, duplicateDocument, listDocuments, readDocument, readThumbnail,
   type LibraryEntry,
 } from '../store/library';
 import { relativeTime } from './relativeTime';
-import { CONFIRM, LIBRARY, START } from './strings';
+import { CONFIRM, EDITOR, LIBRARY, START } from './strings';
 import { Icon } from './icons';
 import styles from './Library.module.css';
 
-export function Library({ onClose, onOpen }: {
+export function Library({ onClose, onOpen, onImported }: {
   onClose: () => void;
   /** remplace le document courant, après avoir mis le travail en cours à l'abri */
   onOpen: (open: () => Promise<void>) => void;
+  onImported: (message: string) => void;
 }): JSX.Element {
   const state = useStore(editorStore);
   const [entries, setEntries] = useState<LibraryEntry[] | null>(null);
@@ -79,8 +80,12 @@ export function Library({ onClose, onOpen }: {
   };
   const importFile = (file: File): void => {
     onOpen(async () => {
-      try { editorStore.getState().replace(await readFile(file)); onClose(); }
-      catch (cause) { setError(cause instanceof Error ? cause.message : LIBRARY.unreadable); }
+      try {
+        const { document, skipped } = await readAnyFile(file);
+        editorStore.getState().replace(document);
+        onImported(EDITOR.imported(document.items.length, skipped.length));
+        onClose();
+      } catch (cause) { setError(cause instanceof Error ? cause.message : LIBRARY.unreadable); }
     });
   };
 
