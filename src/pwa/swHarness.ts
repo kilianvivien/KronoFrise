@@ -56,6 +56,8 @@ class Cache {
 export interface Harness {
   install(): Promise<void>;
   activate(): Promise<void>;
+  message(data: unknown): Promise<void>;
+  skippedWaiting: boolean;
   /** renvoie la réponse servie, et `null` si le worker laisse passer la requête */
   handle(request: FakeRequest): Promise<FakeResponse | null>;
   cacheNames(): string[];
@@ -72,11 +74,13 @@ export function loadServiceWorker(options: {
   version?: string;
   /** contenu servi par le réseau ; absent = panne réseau */
   network?: Record<string, FakeResponse>;
+  initialCaches?: Record<string, Record<string, FakeResponse>>;
+  openWindows?: number;
 }): Harness {
   const caches = new Map<string, Cache>();
   const networkCalls: string[] = [];
   const listeners = new Map<string, (event: Record<string, unknown>) => void>();
-  const state = { claimed: false, offline: false };
+  const state = { claimed: false, offline: false, skippedWaiting: false };
 
   // Le worker appelle `fetch` tantôt avec une URL (préchargement) tantôt avec
   // une requête (interception) : le banc accepte les deux, comme le navigateur.
@@ -87,6 +91,12 @@ export function loadServiceWorker(options: {
     const hit = options.network?.[url];
     return hit ? Promise.resolve(hit) : Promise.reject(new Error('réseau indisponible'));
   };
+
+  for (const [name, entries] of Object.entries(options.initialCaches ?? {})) {
+    const cache = new Cache(network);
+    for (const [url, value] of Object.entries(entries)) cache.store.set(absolute(url), value);
+    caches.set(name, cache);
+  }
 
   const cacheStorage = {
     open: (name: string): Promise<Cache> => {
@@ -108,7 +118,11 @@ export function loadServiceWorker(options: {
   const self = {
     addEventListener: (type: string, handler: (event: Record<string, unknown>) => void) => listeners.set(type, handler),
     location: { origin: ORIGIN },
-    clients: { claim: () => { state.claimed = true; return Promise.resolve(); } },
+    clients: {
+      claim: () => { state.claimed = true; return Promise.resolve(); },
+      matchAll: () => Promise.resolve(Array.from({ length: options.openWindows ?? 0 }, () => ({}))),
+    },
+    skipWaiting: () => { state.skippedWaiting = true; return Promise.resolve(); },
   };
 
   const source = readFileSync('src/pwa/sw.js', 'utf8')
@@ -116,15 +130,17 @@ export function loadServiceWorker(options: {
     .replace('__PRECACHE__', JSON.stringify(options.precache));
   runInNewContext(source, { self, caches: cacheStorage, fetch: network, URL, Promise, JSON, console });
 
-  const fire = async (type: string): Promise<void> => {
+  const fire = async (type: string, data?: unknown): Promise<void> => {
     let waited: Promise<unknown> = Promise.resolve();
-    listeners.get(type)?.({ waitUntil: (promise: Promise<unknown>) => { waited = promise; } });
+    listeners.get(type)?.({ data, waitUntil: (promise: Promise<unknown>) => { waited = promise; } });
     await waited;
   };
 
   return {
     install: () => fire('install'),
     activate: () => fire('activate'),
+    message: (data) => fire('message', data),
+    get skippedWaiting() { return state.skippedWaiting; },
     handle: async (request) => {
       const served: Promise<FakeResponse>[] = [];
       listeners.get('fetch')?.({ request, respondWith: (promise: Promise<FakeResponse>) => { served.push(promise); } });

@@ -105,10 +105,37 @@ describe('service worker', () => {
     expect(ancien.claimed).toBe(true);
   });
 
-  it('ne prend jamais la main sous une page ouverte', () => {
-    // `skipWaiting` échangerait les fichiers pendant l'exécution et casserait
-    // le chargement paresseux du morceau d'export PDF.
-    expect(sw).not.toMatch(/(self\.)?skipWaiting\s*\(/);
+  it('attend une demande explicite avant de prendre la main', async () => {
+    const worker = loadServiceWorker({ precache: PRECACHE, network: network() });
+    await worker.install();
+    expect(worker.skippedWaiting).toBe(false);
+    await worker.message({ type: 'OTHER' });
+    expect(worker.skippedWaiting).toBe(false);
+    await worker.message({ type: 'SKIP_WAITING' });
+    expect(worker.skippedWaiting).toBe(true);
+  });
+
+  it('préserve les anciens morceaux pour les autres fenêtres mais sert le nouvel index hors ligne', async () => {
+    const worker = loadServiceWorker({ precache: PRECACHE, network: network(), openWindows: 2, initialCaches: {
+      'kronofrise-old': { './': response('ancien index'), 'assets/old.pdf.js': response('ancien PDF') },
+      'another-app': { 'other.js': response('autre application') },
+    } });
+    await worker.install();
+    await worker.message({ type: 'SKIP_WAITING' });
+    await worker.activate();
+    worker.goOffline();
+    expect(worker.cacheNames()).toContain('kronofrise-old');
+    expect((await worker.handle({ method: 'GET', url: 'http://localhost:4173/assets/old.pdf.js' }))?.body).toBe('ancien PDF');
+    expect((await worker.handle({ method: 'GET', url: 'http://localhost:4173/', mode: 'navigate' }))?.body).toBe('<!doctype html>index');
+  });
+
+  it('nettoie seulement les anciens caches KronoFrise sans fenêtre ouverte', async () => {
+    const worker = loadServiceWorker({ precache: PRECACHE, network: network(), initialCaches: {
+      'kronofrise-old': {}, 'another-app': {},
+    } });
+    await worker.install();
+    await worker.activate();
+    expect(worker.cacheNames()).toEqual(['another-app', 'kronofrise-test']);
   });
 
   it('porte les marqueurs que la construction remplace', () => {

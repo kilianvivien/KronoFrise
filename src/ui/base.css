@@ -17,6 +17,7 @@ body {
 }
 
 button, input, select { font: inherit; color: inherit; }
+button, a { touch-action: manipulation; }
 
 :focus-visible { outline: none; box-shadow: 0 0 0 3px var(--focus-ring); }
 
@@ -59,6 +60,10 @@ button, input, select, textarea, a {
  */
 
 textarea { font: inherit; color: inherit; }
+@media (pointer: coarse) {
+  button { min-height: 40px; }
+  input:not([type=checkbox]):not([type=radio]), textarea, select { font-size: 16px; min-height: 40px; }
+}
 input::placeholder, textarea::placeholder { color: var(--text-tertiary); opacity: 1; }
 
 /** Apparition d'un panneau surgissant — voir la note ci-dessus. */

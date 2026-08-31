@@ -431,9 +431,13 @@ l'export aurait échoué au moment précis où il en a besoin.
 
 Décisions :
 
-- **Pas de `skipWaiting`.** Échanger les fichiers sous une page ouverte casse
-  le chargement paresseux des morceaux. La nouvelle version prend la main au
-  démarrage suivant, comme une application native.
+- **Mise à jour explicite (demande de Kilian, 31 août 2026).** Une invite
+  propose la version téléchargée. L'application enregistre la frise avant de
+  demander `skipWaiting`, attend la prise de contrôle et revérifie la sauvegarde
+  avant de recharger. Les autres fenêtres ne sont pas rechargées et les anciens
+  caches restent disponibles tant que des fenêtres sont ouvertes. Une autre
+  invite propose l'installation native, ou les instructions Safari ; elle se
+  masque en mode installé et son report est mémorisé pendant sept jours.
 - **Cache d'abord pour les ressources, réseau d'abord pour la navigation**,
   avec repli sur la page en cache : jamais d'index périmé quand le réseau est là.
 - **Jamais de mise en cache d'une erreur ni d'une réponse opaque** : un 404

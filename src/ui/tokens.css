@@ -74,6 +74,7 @@
   --shadow-panel:     0 1px 3px rgba(44, 41, 37, 0.08);
   --shadow-popover:   0 4px 16px rgba(44, 41, 37, 0.14);
   --shadow-drag:      0 6px 20px rgba(44, 41, 37, 0.18); /* item while dragging */
+  --modal-backdrop:   rgba(44, 41, 37, 0.32);
 
   /* ---- geometry ---- */
   --radius-control:   6px;    /* buttons, inputs, chips */
@@ -111,6 +112,7 @@
     --shadow-panel:    0 1px 3px rgba(0, 0, 0, 0.35);
     --shadow-popover:  0 4px 16px rgba(0, 0, 0, 0.45);
     --shadow-drag:     0 6px 20px rgba(0, 0, 0, 0.5);
+    --modal-backdrop:  rgba(0, 0, 0, 0.5);
     /* --paper and --paper-line unchanged: theme-owned (rule §1.8) */
 }
 

@@ -25,7 +25,7 @@ export function AxisHandles({ axis, scale, y, edit }: { axis: Axis; scale: Scale
       editorStore.getState().previewCommand({ name: 'setAxis', axis: d.next });
     };
     const up = (event: PointerEvent) => { if (drag.current?.pointerId === event.pointerId) finish(); };
-    const abort = () => cancel();
+    const abort = (event: Event) => { if (event.type === 'blur' || ('pointerId' in event && event.pointerId === drag.current?.pointerId)) cancel(); };
     window.addEventListener('blur', abort); window.addEventListener('pointermove', move, true); window.addEventListener('pointerup', up, true); window.addEventListener('pointercancel', abort, true);
     return () => { window.removeEventListener('blur', abort); window.removeEventListener('pointermove', move, true); window.removeEventListener('pointerup', up, true); window.removeEventListener('pointercancel', abort, true); };
   }, []);
@@ -34,10 +34,10 @@ export function AxisHandles({ axis, scale, y, edit }: { axis: Axis; scale: Scale
     const x = (left.x1 + right.x0) / 2 - scale.pan;
     return <g key={index} className="axisHandle" role="slider" aria-label={M2.resizeBoundary(index + 1)} aria-valuemin={2} aria-valuemax={98} aria-valuenow={Math.round(100 * segment.weight / (segment.weight + axis.segments[index + 1]!.weight))} tabIndex={0}
       onDoubleClick={(e) => { e.stopPropagation(); edit(index, x); }}
-      onPointerDown={(e) => { if (e.button !== 0 || editorStore.getState().preview) return; e.stopPropagation(); e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { pointerId: e.pointerId, index, x: e.clientX, width: left.x1 - left.x0 + right.x1 - right.x0, share: segment.weight / (segment.weight + axis.segments[index + 1]!.weight), axis, next: axis }; setActive(true); }}
+      onPointerDown={(e) => { e.stopPropagation(); if (drag.current || e.button !== 0 || editorStore.getState().preview) return; e.preventDefault(); e.currentTarget.setPointerCapture(e.pointerId); e.currentTarget.focus(); drag.current = { pointerId: e.pointerId, index, x: e.clientX, width: left.x1 - left.x0 + right.x1 - right.x0, share: segment.weight / (segment.weight + axis.segments[index + 1]!.weight), axis, next: axis }; setActive(true); }}
 
-      onPointerUp={(e) => { e.stopPropagation(); finish(); if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); }}
-      onPointerCancel={cancel} onLostPointerCapture={() => { if (drag.current) cancel(); }}
+      onPointerUp={(e) => { e.stopPropagation(); if (drag.current?.pointerId === e.pointerId) finish(); if (e.currentTarget.hasPointerCapture(e.pointerId)) e.currentTarget.releasePointerCapture(e.pointerId); }}
+      onPointerCancel={(e) => { if (drag.current?.pointerId === e.pointerId) cancel(); }} onLostPointerCapture={(e) => { if (drag.current?.pointerId === e.pointerId) cancel(); }}
       onKeyDown={(e) => {
         if (e.key === 'Escape') { e.stopPropagation(); cancel(); }
         if (e.key === 'Enter') { e.stopPropagation(); edit(index, x); }

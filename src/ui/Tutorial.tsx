@@ -54,7 +54,7 @@ export function Tutorial({ mode, onClose }: { mode: Mode; onClose: () => void })
   useLayoutEffect(() => {
     if (anchor === undefined) { setBox(null); return; }
     const measure = (): void => {
-      const target = window.document.querySelector(`[data-tour="${anchor}"]`);
+      const target = [...window.document.querySelectorAll(`[data-tour="${anchor}"]`)].find((element) => element.getClientRects().length > 0 && getComputedStyle(element).visibility !== 'hidden');
       if (!target) { setBox(null); return; }
       const rect = target.getBoundingClientRect();
       setBox({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });

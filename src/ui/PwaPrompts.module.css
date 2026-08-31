@@ -1,0 +1,23 @@
+.card {
+  position: fixed; bottom: 56px; right: var(--space-4); z-index: 10;
+  width: min(380px, calc(100vw - 32px)); max-height: calc(100dvh - 88px); overflow-y: auto;
+  padding: var(--space-4); color: var(--text-primary); background: var(--field-bg);
+  border: 1px solid var(--hairline); border-radius: var(--radius-panel); box-shadow: var(--shadow-popover);
+  composes: appear from global;
+}
+.card h2 { margin: 0 0 var(--space-2); font-size: var(--fs-title); font-weight: 600; }
+.card p { margin: 0 0 var(--space-3); color: var(--text-secondary); }
+.card .error { color: var(--danger); }
+.actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--space-2); }
+.actions button {
+  min-height: 32px; padding: var(--space-1) var(--space-3); cursor: pointer;
+  color: var(--text-primary); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control);
+}
+.actions button:hover { background: var(--chrome-hover); }
+.actions .primary { color: var(--on-accent); background: var(--accent); border-color: transparent; }
+.actions .primary:hover { background: var(--accent-hover); }
+.actions button:disabled { opacity: .5; cursor: wait; }
+.busy { padding: var(--space-5); color: var(--text-primary); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-panel); }
+.busy::backdrop { background: var(--modal-backdrop); }
+.busy p { margin: 0; }
+@media (pointer: coarse) { .card { bottom: 72px; } }

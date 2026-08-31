@@ -14,8 +14,8 @@
  */
 import { createElement, type JSX } from 'react';
 import {
-  ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Copy, FileImage,
-  CircleQuestionMark, FileText, FolderOpen, Frame, Globe, Image, LayoutGrid, Minus, MonitorPlay, MousePointer2,
+  ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Copy, Ellipsis, FileImage,
+  CircleQuestionMark, FileCode2, FileText, FolderOpen, Frame, Globe, Image, LayoutGrid, Minus, MonitorPlay, MousePointer2,
   PanelLeft, PanelRight, Pencil, Pin, Plus, Redo2, Save, Scissors, Search, SkipBack,
   Spline, Trash2, Undo2, Upload, X, type LucideIcon,
 } from 'lucide-react';
@@ -27,21 +27,21 @@ export type IconName =
   | 'zoomOut' | 'zoomIn'
   | 'edit' | 'present' | 'worksheet'
   | 'library' | 'open' | 'save' | 'export'
-  | 'duplicate' | 'trash'
+  | 'duplicate' | 'trash' | 'more'
   | 'search' | 'plus' | 'chevronDown' | 'chevronRight' | 'arrowUp' | 'arrowDown'
   | 'bar' | 'bracket' | 'arrow' | 'image' | 'pin' | 'lane' | 'preset' | 'check'
   | 'close' | 'first' | 'last' | 'mask' | 'back'
-  | 'pdf' | 'web' | 'vector' | 'raster' | 'wall' | 'scissors' | 'fit' | 'help';
+  | 'pdf' | 'web' | 'vector' | 'raster' | 'wall' | 'scissors' | 'fit' | 'help' | 'github' | 'agentSkill';
 
 /** Glyphes génériques : Lucide, tel quel. */
 const LUCIDE: Partial<Record<IconName, LucideIcon>> = {
-  sidebar: PanelLeft, inspector: PanelRight,
+  sidebar: PanelLeft, inspector: PanelRight, agentSkill: FileCode2,
   undo: Undo2, redo: Redo2, help: CircleQuestionMark,
   navigate: MousePointer2,
   zoomOut: Minus, zoomIn: Plus,
   edit: Pencil, present: MonitorPlay,
   library: LayoutGrid, open: FolderOpen, save: Save, export: Upload,
-  duplicate: Copy, trash: Trash2,
+  duplicate: Copy, trash: Trash2, more: Ellipsis,
   search: Search, plus: Plus,
   chevronDown: ChevronDown, chevronRight: ChevronRight, back: ChevronLeft,
   arrowUp: ArrowUp, arrowDown: ArrowDown,
@@ -63,6 +63,8 @@ interface Glyph {
  * temps en bas, l'élément posé dessus.
  */
 const DRAWN: Partial<Record<IconName, Glyph>> = {
+  // GitHub's familiar cat silhouette; brand glyphs are not supplied by Lucide.
+  github: { d: 'M9 19c-4.3 1.3-4.3-2.2-6-2.7 M15 22v-3.9a3.4 3.4 0 0 0-.9-2.6c3-.3 6.2-1.5 6.2-6.9a5.4 5.4 0 0 0-1.5-3.7 5 5 0 0 0-.1-3.6s-1.2-.4-3.8 1.4a13 13 0 0 0-6.9 0C5.4.9 4.2 1.3 4.2 1.3a5 5 0 0 0-.1 3.6 5.4 5.4 0 0 0-1.5 3.7c0 5.4 3.2 6.6 6.2 6.9a3.4 3.4 0 0 0-.8 2.6V22' },
   // Un événement : une pastille reliée à la ligne du temps.
   event: { d: 'M3 19h18 M12 19v-4', circle: { cx: 12, cy: 9, r: 3.5 } },
   // Une période : une barre posée sur la ligne du temps.

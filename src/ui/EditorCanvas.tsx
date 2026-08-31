@@ -25,6 +25,7 @@ import { moveSelection, precisionAt, selectedStart, snapDate } from './canvasMat
 import styles from './Editor.module.css';
 
 import { backgroundIntent, createsEvent, type Tool } from './gesturePolicy';
+import { CanvasPointers, pinchZoom } from './canvasPointers';
 export type { Tool } from './gesturePolicy';
 interface Props {
   insets: ScaleInsets; onWidth: (width: number) => void; focusItem: { id: string; serial: number } | null;
@@ -49,6 +50,8 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
   const theme = themeById(doc.themeId);
   const host = useRef<HTMLDivElement>(null);
   const gesture = useRef<Gesture | null>(null);
+  const pointers = useRef(new CanvasPointers());
+  const pinch = useRef<{ distance: number; zoom: number; time: number; y: number; scroll: number } | null>(null);
   const [size, setSize] = useState({ width: 800, height: 600 });
   const [axisMenu, setAxisMenu] = useState<{ index: number | null; x: number; date: string } | null>(null);
   const [axisEdit, setAxisEdit] = useState<{ edge: 'start' | 'end'; value: string } | null>(null);
@@ -94,6 +97,7 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
   useEffect(() => { if (axisEdit) { axisFinishing.current = false; axisInput.current?.focus(); axisInput.current?.select(); } }, [axisEdit?.edge]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const cancel = useCallback(() => {
+    pointers.current.clear(); pinch.current = null;
     gesture.current = null;
     const current = editorStore.getState();
     current.previewCommand(null);
@@ -163,14 +167,31 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
   };
   const onDown = (event: PointerEvent<HTMLDivElement>) => {
     if (editing || axisEdit || axisMenu || (event.button !== 0 && event.button !== 1)) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    const intent = pointers.current.down({ id: event.pointerId, type: event.pointerType, x: event.clientX - rect.left, y: event.clientY - rect.top });
+    if (intent === 'ignore') return;
+    if (intent === 'pinch' || gesture.current) {
+      // A pinch or a new pen stroke cancels the uncommitted one-pointer edit.
+      gesture.current = null; state.previewCommand(null);
+      setDragging(false); setTooltip(null); setMarquee(null);
+    }
+    event.currentTarget.setPointerCapture(event.pointerId);
+    const pair = pointers.current.pair();
+    if (pair) {
+      pinch.current = { distance: pair.distance, zoom, time: scale.xToTime(pair.x), y: pair.y, scroll: event.currentTarget.scrollTop };
+      event.preventDefault();
+      return;
+    }
+    pinch.current = null;
     const target = event.target instanceof Element ? event.target : null;
     const id = target?.closest('[data-item-id]')?.getAttribute('data-item-id') ?? undefined;
     let edge = target?.closest('[data-edge]')?.getAttribute('data-edge');
     const start = point(event);
     const period = scene.periods.find((period) => period.itemId === id);
     if (!edge && period && state.selection.length <= 1) {
-      if (Math.abs(start.x - period.x0) <= 8) edge = 'start';
-      else if (Math.abs(start.x - period.x1) <= 8) edge = 'end';
+      const hitWidth = event.pointerType === 'touch' ? 18 : 8;
+      if (Math.abs(start.x - period.x0) <= hitWidth) edge = 'start';
+      else if (Math.abs(start.x - period.x1) <= hitWidth) edge = 'end';
     }
     const laneId = scene.lanes.find((lane) => start.y >= lane.y && start.y <= lane.anchorY)?.id ?? doc.lanes[0]?.id;
     if (!laneId) return;
@@ -189,6 +210,19 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
     event.preventDefault(); event.currentTarget.focus();
   };
   const onMove = (event: PointerEvent<HTMLDivElement>) => {
+    if (!pointers.current.has(event.pointerId)) return;
+    const rect = event.currentTarget.getBoundingClientRect();
+    pointers.current.move({ id: event.pointerId, type: event.pointerType, x: event.clientX - rect.left, y: event.clientY - rect.top });
+    const pair = pointers.current.pair();
+    if (pair && pinch.current) {
+      const initial = pinch.current;
+      const next = pinchZoom(initial.zoom, initial.distance, pair.distance);
+      const nextScale = makeScale(state.document.axis, size.width, 0, next, insets);
+      setZoom(next); setPan(clampPan(nextScale, nextScale.timeToX(initial.time) - pair.x));
+      event.currentTarget.scrollTop = initial.scroll + initial.y - pair.y;
+      event.preventDefault();
+      return;
+    }
     const active = gesture.current;
     if (!active || active.pointerId !== event.pointerId) return;
     const current = point(event); active.current = current;
@@ -196,6 +230,7 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
     active.moved = true; setDragging(true);
     if (active.kind === 'pan') {
       setPan(clampPan(scale, active.pan - current.x + active.start.x));
+      event.currentTarget.scrollTop = active.start.y - (event.clientY - rect.top);
       return;
     }
     if (active.kind === 'marquee') { setMarquee({ start: active.start, end: current }); return; }
@@ -231,6 +266,13 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
     setTooltip({ point: current, text: active.created?.kind === 'period' ? EDITOR.range(formatDate(active.created.start), formatDate(active.created.end)) : formatDate(snap.date), guide: snap.guide });
   };
   const onUp = (event: PointerEvent<HTMLDivElement>) => {
+    if (!pointers.current.has(event.pointerId)) return;
+    pointers.current.up(event.pointerId);
+    if (pinch.current) {
+      pinch.current = null;
+      if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+      return; // Lifting a finger after zooming must not create or move an item.
+    }
     const active = gesture.current;
     if (!active || active.pointerId !== event.pointerId) return;
     gesture.current = null;
@@ -263,7 +305,8 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
       if (item && file) void importImage(file).then((image) => { const current = editorStore.getState(); if (current.document.id === documentId && current.document.items.some((i) => i.id === item.id)) commit({ name: 'updateItems', label: 'setImage', patches: [{ itemId: item.id, patch: { image } }] }); }).catch(reportError);
     }}
     onContextMenu={(event) => { if (readOnly) return; const rect = host.current?.getBoundingClientRect(); const y = event.clientY - (rect?.top ?? 0) + (host.current?.scrollTop ?? 0); if (y >= scene.baselineY - 16) { event.preventDefault(); const x = event.clientX - (rect?.left ?? 0); setAxisMenu({ index: null, x, date: formatDate(snapDate(scale, x, false).date) }); } }}
-    onPointerCancel={cancel} onLostPointerCapture={() => { if (gesture.current) cancel(); }}
+    onPointerCancel={(event) => { if (pointers.current.has(event.pointerId)) cancel(); }}
+    onLostPointerCapture={(event) => { if (pointers.current.has(event.pointerId)) cancel(); }}
     onFocus={(event) => {
       // Sans cela, Tab atteignait un élément mais ne le sélectionnait pas :
       // au clavier, rien n'était déplaçable, dupliquable ni supprimable

@@ -115,7 +115,9 @@ Type usage: UI text is `--fs-ui`/regular; panel headers `--fs-title`/600; never 
 
 - Panels: `--chrome-bg`, separated from canvas by a 1px `--hairline`. Panel inner padding `--space-3`.
 - Sidebar toggles with ⌘1, inspector with ⌘2; the canvas reflows with a 140ms width transition.
-- Toolbar contents, left → right (**icon-only**, decided by Kilian 2026-08-31 — text buttons made the bar overflow as features landed): sidebar toggle · document title (editable on click, `--fs-title`/600) · separator · undo/redo · separator · tool group (segmented: navigate | événement | période) · separator · zoom controls (−, percentage button, +) · *flexible space* · mode switch (segmented control: Édition | Présentation | Fiche élève) · separator · open · save · export · separator · inspector toggle.
+- Toolbar contents, left → right (**icon-only**, decided by Kilian 2026-08-31): sidebar toggle · document title (editable on click, `--fs-title`/600) · separator · undo/redo · duplicate/delete · separator · tool group (navigate | événement | période) · *flexible space* · mode switch (Édition | Présentation | Fiche élève) · separator · library · open · save · export · separator · inspector toggle. The toolbar always stays on one row. Only when the full command row no longer fits, move modes and file commands into an overflow menu; hide that menu as soon as all commands fit again.
+- Zoom controls (−, percentage / fit button, +) float in a bubble at the top right of the canvas.
+- App controls stay in the footer: appearance, tutorial, downloadable agent skill, GitHub. The inspector toggle always occupies a separate column at the top right. On iPad, enlarge touch targets, support two-finger zoom and Pencil editing, and use mutually exclusive overlay panels at widths up to 1100px.
 - **Every icon button carries an `aria-label` and a tooltip** naming the command and its shortcut ("Annuler · ⌘Z"). Tooltip = the dark chip of §5 (`--tooltip-bg`, `--on-accent`, `--fs-caption`, radius 5px, padding 3px 8px), 8px below the button, 350ms delay, right-aligned for the last button of the bar. Icons: 16px, 1.5px stroke, `currentColor`, no fill (`src/ui/icons.tsx`).
 - Separators in the toolbar: 1px hairline, 16px tall, `--space-3` horizontal margin.
 
@@ -268,9 +270,9 @@ French, vouvoiement, sentence case, verbs first on buttons. Buttons state exactl
 - Errors name the fix: *« Ce fichier n'est pas une frise KronoFrise (.krono). Vérifiez le fichier ou importez un export MiCetF. »*
 - Never: exclamation marks, "Oups", apologies, emoji in chrome copy.
 
-## 10. Start screen
+## 10. Document library
 
-Centered column, max-width 720px, on `--chrome-bg`: app name (`--fs-display`/600) + one-line tagline (`--text-secondary`), then a grid of recent-document tiles (aspect 3:2, radius `--radius-panel`, 1px hairline, thumbnail = actual rendered frise on `--paper`, title + "modifié il y a 2 j" caption below), first tile is "+ Nouvelle frise" (dashed hairline border, `--accent` plus icon). Drag-and-drop a `.krono`/MiCetF/CSV file anywhere onto the window opens it (full-window drop overlay: `--accent-tint` veil, 2px dashed `--accent` inset border, centered label).
+Updated by Kilian on 2026-08-31: **Mes frises is a centered native modal**, up to 960px wide, with the editor visible behind a dimmed backdrop. Keep its header visible while the document grid scrolls. Tiles retain their 3:2 previews, titles, modification dates, and duplicate/delete actions; the first tile creates a new document. Preserve imports, examples, drag-and-drop, nested delete confirmation, Escape dismissal, and focus restoration.
 
 ## 11. Implementer checklist (before considering any UI task done)
 

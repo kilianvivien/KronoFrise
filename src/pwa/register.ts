@@ -1,3 +1,5 @@
+import { watchForUpdates } from './prompts';
+
 /**
  * Enregistrement du service worker.
  *
@@ -7,8 +9,11 @@
  */
 export function registerServiceWorker(): void {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
-  window.addEventListener('load', () => {
+  const register = () => {
     navigator.serviceWorker.register(`${import.meta.env.BASE_URL}sw.js`, { scope: import.meta.env.BASE_URL })
+      .then(watchForUpdates)
       .catch(() => { /* hors ligne indisponible : l'éditeur fonctionne quand même */ });
-  });
+  };
+  if (document.readyState === 'complete') register();
+  else window.addEventListener('load', register, { once: true });
 }

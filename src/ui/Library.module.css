@@ -1,12 +1,16 @@
-/* Navigateur de frises — DESIGN.md §10 : colonne centrée, tuiles 3:2. */
+/* Bibliothèque modale : le document reste visible derrière les tuiles 3:2. */
 .overlay {
-  position: fixed; inset: 0; z-index: 15; overflow-y: auto;
-  padding: var(--space-6) var(--space-5) var(--space-6);
+  width: min(960px, calc(100vw - 48px)); max-width: none;
+  max-height: calc(100dvh - 64px); padding: 0; overflow: hidden;
+  border: 1px solid var(--hairline); border-radius: var(--radius-panel); box-shadow: var(--shadow-popover);
   background: var(--chrome-bg); color: var(--text-primary);
 }
-.overlay[data-dropping=true] { background: var(--accent-tint); box-shadow: inset 0 0 0 2px var(--accent); }
+.overlay[open] { display: flex; flex-direction: column; }
+.overlay::backdrop { background: var(--modal-backdrop); }
+.overlay[data-dropping=true] { box-shadow: inset 0 0 0 2px var(--accent); }
+.content { min-height: 0; overflow-y: auto; padding: var(--space-5); }
 
-.header { display: flex; align-items: center; gap: var(--space-3); max-width: 900px; margin: 0 auto var(--space-5); }
+.header { display: flex; flex-shrink: 0; align-items: center; gap: var(--space-3); padding: var(--space-5); border-bottom: 1px solid var(--hairline); }
 .header h1 { margin: 0; font-size: var(--fs-display); font-weight: 600; }
 .spacer { flex: 1; }
 .secondary, .close {
@@ -16,7 +20,7 @@
 .secondary:hover, .close:hover { background: var(--chrome-hover); }
 .close { width: 28px; padding: 0; }
 
-.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-4); max-width: 900px; margin: 0 auto; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: var(--space-4); max-width: 900px; margin: 0 auto; }
 
 .tile { display: flex; flex-direction: column; }
 .preview {
@@ -56,7 +60,7 @@
 .error { color: var(--danger); }
 
 .dialog {
-  color: var(--text-primary); background: var(--field-bg); padding: var(--space-5); max-width: 420px;
+  color: var(--text-primary); background: var(--field-bg); padding: var(--space-5); width: min(420px, calc(100vw - 32px)); max-width: none;
   border: 1px solid var(--hairline); border-radius: var(--radius-panel); box-shadow: var(--shadow-popover);
 }
 .dialog h2 { margin: 0 0 var(--space-2); font-size: var(--fs-title); }
@@ -99,3 +103,17 @@
 }
 /* La zone de dépôt s'allume dès que le fichier survole la fenêtre. */
 .overlay[data-dropping=true], .overlay { transition: background-color var(--motion-ui) var(--ease-ui), box-shadow var(--motion-ui) var(--ease-ui); }
+
+@media (max-width: 600px) {
+  .overlay { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+  .header { flex-wrap: wrap; padding: var(--space-4); }
+  .header > div { flex: 1 1 calc(100% - 40px); min-width: 0; }
+  .header .close { flex-shrink: 0; }
+  .header .spacer { display: none; }
+  .header .secondary { order: 1; }
+  .content { padding: var(--space-4); }
+}
+@media (pointer: coarse) {
+  .header .close { width: 44px; height: 44px; }
+  .header .secondary, .actions button, .exampleRow button, .dialogActions button { min-height: 44px; }
+}

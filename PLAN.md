@@ -10,7 +10,7 @@ Web-first, macOS-grade design, later packaged as a Tauri desktop app.
 ## 0. Settled decisions (Kilian, 2026-08-30) — do not relitigate
 
 1. **Elastic segmented axis ships in v1.** Core math in M0, editor UI (coupure handles, split-at-date) in M2. Spec: format.md §3, DESIGN.md §4.
-2. **Desktop-first.** Use pointer events so basic touch isn't broken, but do not design, adapt, or test for iPad in v1.
+2. **Desktop and iPad.** Updated by Kilian on 2026-08-31: support iPad portrait/landscape, touch navigation and pinch zoom, and Apple Pencil editing. Phones are not a target for now. Preserve desktop keyboard and pointer workflows.
 3. **French only in v1.** All strings in `src/ui/strings.ts` as typed constants — no i18n library, no literal strings in components.
 4. **Visual direction: "warm historical".** Terre cuite accent, warm neutral chrome, macOS-native behavior. Exact tokens in DESIGN.md §2 — never invent colors.
 5. **Single-package repo, not a monorepo.** Folder boundaries inside one Vite app (see §4.2) with an ESLint rule enforcing them. Tauri later wraps this same app.

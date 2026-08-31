@@ -15,14 +15,19 @@
  * fait fonctionner l'application hors ligne sans jamais servir un index périmé
  * quand le réseau est là.
  *
- * `skipWaiting` n'est **pas** appelé : remplacer les fichiers sous une page
- * ouverte casse le chargement paresseux des morceaux. La nouvelle version
- * prend la main au prochain démarrage complet, comme une application native.
+ * L'activation anticipée exige une demande explicite, après enregistrement
+ * du document. Les anciens caches restent disponibles pour les autres onglets
+ * jusqu'à une activation naturelle, sans fenêtre d'application ouverte.
  */
 
 const VERSION = '__VERSION__';
 const CACHE = `kronofrise-${VERSION}`;
 const PRECACHE = __PRECACHE__;
+
+self.addEventListener('message', (event) => {
+  if (event.data?.type !== 'SKIP_WAITING') return;
+  event.waitUntil(self.skipWaiting());
+});
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -32,8 +37,12 @@ self.addEventListener('install', (event) => {
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
-    caches.keys()
-      .then((keys) => Promise.all(keys.filter((key) => key !== CACHE).map((key) => caches.delete(key))))
+    // Les autres fenêtres peuvent encore charger les morceaux de l'ancienne
+    // version. Ne nettoyer que lorsqu'aucune fenêtre n'est ouverte, y compris
+    // si le worker a été arrêté puis relancé depuis le message d'activation.
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clients) => clients.length ? [] : caches.keys())
+      .then((keys) => Promise.all(keys.filter((key) => key.startsWith('kronofrise-') && key !== CACHE).map((key) => caches.delete(key))))
       .then(() => self.clients.claim()),
   );
 });
@@ -49,13 +58,13 @@ self.addEventListener('fetch', (event) => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('./').then((hit) => hit ?? caches.match('index.html'))),
+      fetch(request).catch(() => caches.open(CACHE).then((cache) => cache.match('./').then((hit) => hit ?? cache.match('index.html')))),
     );
     return;
   }
 
   event.respondWith(
-    caches.match(request).then((hit) => hit ?? fetch(request).then((response) => {
+    caches.open(CACHE).then((cache) => cache.match(request)).then((hit) => hit ?? caches.match(request)).then((hit) => hit ?? fetch(request).then((response) => {
       // Les réponses opaques ou en erreur ne sont jamais conservées : sinon un
       // 404 mis en cache survivrait à la panne qui l'a produit.
       if (!response.ok || response.type === 'opaque') return response;

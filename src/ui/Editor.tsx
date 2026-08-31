@@ -9,7 +9,7 @@ import { newId } from '../core/ids';
 import { editorStore } from '../store/editor';
 import { openFile, saveFile } from '../store/fileIO';
 import { startPersistence } from '../store/persistence';
-import { CONFIRM, DOC, EDITOR, EXPORT, LIBRARY, M2, TOOLBAR, WORKSHEET } from './strings';
+import { APP_LINKS, CONFIRM, DOC, EDITOR, EXPORT, LIBRARY, M2, TOOLBAR, WORKSHEET } from './strings';
 import { EditorCanvas, type Tool } from './EditorCanvas';
 import { useThumbnail } from './useThumbnail';
 import styles from './Editor.module.css';
@@ -29,6 +29,10 @@ import { Library } from './Library';
 import { ExportDialog } from './ExportDialog';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
+import { PwaPrompts } from './PwaPrompts';
+import { ToolbarOverflow } from './ToolbarOverflow';
+import { useToolbarOverflow } from './useToolbarOverflow';
+import agentSkillUrl from '../agent/kronofrise/SKILL.md?url';
 import './panels.css';
 
 function editable(target: EventTarget | null): boolean {
@@ -53,6 +57,7 @@ function keyboardSelection(): readonly string[] {
   return [];
 }
 export function Editor(): JSX.Element {
+  const toolbar = useToolbarOverflow();
   const state = useStore(editorStore);
   const [tool, setTool] = useState<Tool>('auto');
   const [mode, setMode] = useState<Mode>('edit');
@@ -62,7 +67,20 @@ export function Editor(): JSX.Element {
   const [tutorial, setTutorial] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
-  const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(true);
+  const [sidebar, setSidebar] = useState(() => !window.matchMedia('(max-width: 1100px)').matches);
+  const [inspector, setInspector] = useState(() => !window.matchMedia('(max-width: 1100px)').matches);
+  const toggleSidebar = useCallback(() => {
+    setSidebar((value) => !value);
+    if (window.matchMedia('(max-width: 1100px)').matches) setInspector(false);
+  }, []);
+  const toggleInspector = useCallback(() => {
+    setInspector((value) => !value);
+    if (window.matchMedia('(max-width: 1100px)').matches) setSidebar(false);
+  }, []);
+  const revealInspector = useCallback(() => {
+    setInspector(true);
+    if (window.matchMedia('(max-width: 1100px)').matches) setSidebar(false);
+  }, []);
   const [laneId, setLaneId] = useState<string | null>(null);
   const [focusItem, setFocusItem] = useState<{ id: string; serial: number } | null>(null);
   const [canvasWidth, setCanvasWidth] = useState(800);
@@ -79,6 +97,13 @@ export function Editor(): JSX.Element {
   const finishingTitle = useRef(false);
   useThumbnail(state.document, state.ready, state.revision);
   modeRef.current = mode;
+
+  useEffect(() => {
+    const compact = window.matchMedia('(max-width: 1100px)');
+    const changed = () => { if (compact.matches) { setSidebar(false); setInspector(false); } };
+    compact.addEventListener('change', changed);
+    return () => compact.removeEventListener('change', changed);
+  }, []);
 
   useEffect(() => {
     const persistence = startPersistence(editorStore); flush.current = persistence.flush;
@@ -144,6 +169,11 @@ export function Editor(): JSX.Element {
       if (document && await preserveCurrent()) { editorStore.getState().replace(document); setZoom(1); setPan(0); }
     } catch (cause) { error(cause); }
   }, [error, preserveCurrent]);
+  const saveBeforeUpdate = useCallback(async () => {
+    await flush.current();
+    const current = editorStore.getState();
+    return current.ready && current.preview === null && current.savedRevision === current.revision;
+  }, []);
   const save = useCallback(async () => {
     try { const current = editorStore.getState(); if (await saveFile(current.document)) { exportedRevision.current = current.revision; await flush.current(); setNotice(EDITOR.fileSaved); } }
     catch (cause) { error(cause); }
@@ -221,8 +251,8 @@ export function Editor(): JSX.Element {
       else if (command && key === 's') { event.preventDefault(); void save(); }
       else if (command && key === 'o') { event.preventDefault(); void open(); }
       else if (command && key === 'e') { event.preventDefault(); setExporting(true); }
-      else if (command && key === '1') { event.preventDefault(); setSidebar((value) => !value); }
-      else if (command && key === '2') { event.preventDefault(); setInspector((value) => !value); }
+      else if (command && key === '1') { event.preventDefault(); toggleSidebar(); }
+      else if (command && key === '2') { event.preventDefault(); toggleInspector(); }
       else if (command && (key === '=' || key === '+')) { event.preventDefault(); stepZoom(1.5); }
       else if (command && key === '-') { event.preventDefault(); stepZoom(1 / 1.5); }
       else if (command && key === '0') { event.preventDefault(); fitRef.current(); }
@@ -236,7 +266,7 @@ export function Editor(): JSX.Element {
       }
     };
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
-  }, [duplicate, nudge, open, remove, save, shiftLane, stepZoom]);
+  }, [duplicate, nudge, open, remove, save, shiftLane, stepZoom, toggleSidebar, toggleInspector]);
   const finishTitle = (commit: boolean) => {
     if (finishingTitle.current) return;
     finishingTitle.current = true;
@@ -246,25 +276,23 @@ export function Editor(): JSX.Element {
 
   return <div className={styles.app}>
     <header className={styles.toolbar} aria-label={TOOLBAR.toolbar}>
-      <IconButton icon="sidebar" label={EDITOR.sidebarToggle} pressed={sidebar} onClick={() => setSidebar(!sidebar)} />
-      {title === null ? <button className={`${styles.title} ${styles.tip}`} data-tip={EDITOR.renameTitle} onClick={() => setTitle(state.document.meta.title)}>{state.document.meta.title}</button> :
-        <input ref={titleInput} className={styles.titleInput} aria-label={EDITOR.title} value={title} onChange={(event) => setTitle(event.target.value)} onBlur={() => finishTitle(true)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') finishTitle(event.key === 'Enter'); }} />}
+      <div ref={toolbar.ref} className={styles.toolbarContent} data-compact={toolbar.compact}>
+      <IconButton icon="sidebar" label={EDITOR.sidebarToggle} pressed={sidebar} onClick={toggleSidebar} />
+      {title === null ? <button data-toolbar-title className={`${styles.title} ${styles.tip}`} data-tip={EDITOR.renameTitle} onClick={() => setTitle(state.document.meta.title)}>{state.document.meta.title}</button> :
+        <input data-toolbar-title ref={titleInput} className={styles.titleInput} aria-label={EDITOR.title} value={title} onChange={(event) => setTitle(event.target.value)} onBlur={() => finishTitle(true)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') finishTitle(event.key === 'Enter'); }} />}
       <span className={styles.separator} />
       <IconButton icon="undo" label={TOOLBAR.undo} hint="⌘Z" disabled={!state.history.past.length || !!state.preview} onClick={state.undo} />
       <IconButton icon="redo" label={TOOLBAR.redo} hint="⇧⌘Z" disabled={!state.history.future.length || !!state.preview} onClick={state.redo} />
+      <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" disabled={!state.selection.length || worksheet} onClick={duplicate} />
+      <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" disabled={!state.selection.length || worksheet} onClick={remove} />
       <span className={styles.separator} />
       <div className={styles.group} role="group" aria-label={TOOLBAR.tools}>
         <IconButton icon="navigate" label={M2.navigate} hint="Échap" segment pressed={tool === 'auto'} onClick={() => setTool('auto')} />
         <span data-tour="event-tool"><IconButton icon="event" label={TOOLBAR.addEvent} hint="E" segment pressed={tool === 'event'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')} /></span>
         <IconButton icon="period" label={TOOLBAR.addPeriod} hint="P" segment pressed={tool === 'period'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')} />
       </div>
-      <span className={styles.separator} />
-      <div className={styles.zoomGroup} role="group" aria-label={TOOLBAR.zoom}>
-        <IconButton icon="zoomOut" label={TOOLBAR.zoomOut} hint="⌘−" disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)} />
-        <button className={`${styles.zoom} ${styles.tip}`} data-tip={`${TOOLBAR.zoomFit} · ⌘0`} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
-        <IconButton icon="zoomIn" label={TOOLBAR.zoomIn} hint="⌘+" disabled={zoom >= 5000} onClick={() => stepZoom(1.5)} />
-      </div>
-      <span className={styles.spacer} />
+      <span data-toolbar-spacer className={styles.spacer} />
+      <div className={styles.desktopCommands} inert={toolbar.compact}>
       <div className={styles.group} role="group" aria-label={WORKSHEET.mode}>
         {([['edit', TOOLBAR.modeEdit, 'edit'], ['present', TOOLBAR.modePresent, 'present'], ['worksheet', TOOLBAR.modeWorksheet, 'worksheet']] as const).map(([value, label, icon]) =>
           <span key={value} {...(value === 'present' ? { 'data-tour': 'present-mode' } : {})}>
@@ -276,20 +304,41 @@ export function Editor(): JSX.Element {
       <IconButton icon="open" label={EDITOR.open} hint="⌘O" disabled={!state.ready} onClick={() => { void open(); }} />
       <IconButton icon="save" label={EDITOR.save} hint="⌘S" disabled={!state.ready} onClick={() => { void save(); }} />
       <IconButton icon="export" label={EXPORT.open} hint="⌘E" disabled={!state.ready} onClick={() => setExporting(true)} />
-      <span className={styles.separator} />
-      <IconButton icon="inspector" label={EDITOR.inspectorToggle} hint="⌘2" pressed={inspector} atEnd onClick={() => setInspector(!inspector)} />
+      </div>
+      <ToolbarOverflow compact={toolbar.compact} groups={[
+        { label: WORKSHEET.mode, actions: ([['edit', TOOLBAR.modeEdit, 'edit'], ['present', TOOLBAR.modePresent, 'present'], ['worksheet', TOOLBAR.modeWorksheet, 'worksheet']] as const).map(([value, label, icon]) => ({
+          label, icon, pressed: mode === value, disabled: !state.ready, run: () => changeMode(value),
+        })) },
+        { label: M2.document, actions: [
+          { label: LIBRARY.title, icon: 'library', disabled: !state.ready, run: () => setLibrary(true) },
+          { label: EDITOR.open, icon: 'open', disabled: !state.ready, run: () => { void open(); } },
+          { label: EDITOR.save, icon: 'save', disabled: !state.ready, run: () => { void save(); } },
+          { label: EXPORT.open, icon: 'export', disabled: !state.ready, run: () => setExporting(true) },
+        ] },
+      ]} />
+      </div>
+      <div className={styles.inspectorToggle}>
+        <span className={styles.separator} />
+        <IconButton icon="inspector" label={EDITOR.inspectorToggle} hint="⌘2" pressed={inspector} atEnd onClick={toggleInspector} />
+      </div>
     </header>
     <div className={styles.workspace}>
       <aside className={styles.sidebar} style={sidebar ? { width: sidebarWidth } : undefined} data-open={sidebar} aria-hidden={!sidebar} inert={!sidebar}>
         <div className={styles.panelContent}>
           <header className="panelHeader"><h2>{EDITOR.sidebar}</h2></header>
-          <Outline onLane={(id) => { setLaneId(id); setInspector(true); }} onFocus={(id) => { setLaneId(null); setInspector(true); setFocusItem({ id, serial: Date.now() }); }} />
+          <Outline onLane={(id) => { setLaneId(id); revealInspector(); }} onFocus={(id) => { setLaneId(null); revealInspector(); setFocusItem({ id, serial: Date.now() }); }} />
         </div>
       </aside>
       {sidebar && <div className="sidebarResize" role="separator" aria-label={M2.resizeSidebar} aria-orientation="vertical" aria-valuemin={200} aria-valuemax={320} aria-valuenow={sidebarWidth} tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setSidebarWidth(Math.max(200, Math.min(320, sidebarWidth + (e.key === 'ArrowLeft' ? -10 : 10)))); } }}
         onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)} onPointerMove={(e) => { if (e.currentTarget.hasPointerCapture(e.pointerId)) setSidebarWidth(Math.max(200, Math.min(320, e.clientX))); }} onPointerUp={(e) => e.currentTarget.releasePointerCapture(e.pointerId)} />}
-      <main className={styles.main} data-tour="canvas">{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} worksheet={worksheet && !answerKey} readOnly={worksheet} /><Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
+      <main className={styles.main} data-tour="canvas">{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} worksheet={worksheet && !answerKey} readOnly={worksheet} />
+        <div className={styles.zoomBubble} role="group" aria-label={TOOLBAR.zoom}>
+          <IconButton icon="zoomOut" label={TOOLBAR.zoomOut} hint="⌘−" disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)} />
+          <button className={`${styles.zoom} ${styles.tip}`} aria-label={`${TOOLBAR.zoomFit} · ${EDITOR.zoomPercent(zoom)}`} data-tip={`${TOOLBAR.zoomFit} · ⌘0`} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
+          <IconButton icon="zoomIn" label={TOOLBAR.zoomIn} hint="⌘+" atEnd disabled={zoom >= 5000} onClick={() => stepZoom(1.5)} />
+        </div>
+        <Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
       <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><Inspector laneId={laneId} onLane={setLaneId} fit={fit} mode={mode} answerKey={answerKey} onAnswerKey={setAnswerKey} /></aside>
     </div>
     <footer className={styles.footer}>
@@ -300,12 +349,13 @@ export function Editor(): JSX.Element {
             ? <><Icon name="check" />{EDITOR.saved}</>
             : <><span className={styles.pulse} aria-hidden="true" />{EDITOR.saving}</>}
       </span>
-      <span className={styles.hint}>{worksheet ? WORKSHEET.hint : EDITOR.hint}</span>
+      <span className={styles.hint}>{worksheet ? WORKSHEET.hint : <><span className={styles.desktopHint}>{EDITOR.hint}</span><span className={styles.touchHint}>{EDITOR.touchHint}</span></>}</span>
       <AppearancePicker />
       <IconButton icon="help" label={TUTORIAL.restart} above disabled={!state.ready} onClick={() => { setTutorialDone(false); setTutorial(true); }} />
-      <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" above disabled={!state.selection.length || worksheet} onClick={duplicate} />
-      <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" above atEnd disabled={!state.selection.length || worksheet} onClick={remove} />
+      <a className={`${styles.icon} ${styles.tip} ${styles.tipAbove} ${styles.tipEnd}`} href={agentSkillUrl} download="SKILL.md" aria-label={APP_LINKS.agentSkill} data-tip={APP_LINKS.agentSkill}><Icon name="agentSkill" /></a>
+      <a className={`${styles.icon} ${styles.tip} ${styles.tipAbove} ${styles.tipEnd}`} href="https://github.com/kilianvivien/KronoFrise" target="_blank" rel="noopener noreferrer" aria-label={APP_LINKS.github} data-tip={APP_LINKS.github}><Icon name="github" /></a>
     </footer>
+    <PwaPrompts hidden={!state.ready || tutorial || !tutorialDone || library || exporting || mode === 'present' || deleting.length > 0 || !!state.error || notice !== null} save={saveBeforeUpdate} />
     {exporting && <ExportDialog worksheet={worksheet && !answerKey} onClose={() => setExporting(false)} onDone={setNotice} />}
     {library && <Library onClose={() => setLibrary(false)} onImported={setNotice} onOpen={(replace) => {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });

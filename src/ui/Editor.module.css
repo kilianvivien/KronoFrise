@@ -1,5 +1,9 @@
-.app { height: 100%; display: flex; flex-direction: column; overflow: hidden; }
-.toolbar { height: 48px; flex: 0 0 48px; display: flex; align-items: center; gap: var(--space-1); padding: 0 var(--space-3); border-bottom: 1px solid var(--hairline); background: var(--chrome-bg); overflow-x: auto; }
+.app { height: 100%; height: 100dvh; display: flex; flex-direction: column; overflow: hidden; }
+.toolbar { height: 48px; flex: 0 0 48px; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: var(--space-1); padding: 0 var(--space-3); border-bottom: 1px solid var(--hairline); background: var(--chrome-bg); overflow-x: auto; }
+.toolbarContent { display: flex; flex-wrap: nowrap; align-items: center; gap: var(--space-1); min-width: 0; }
+.desktopCommands { display: flex; align-items: center; gap: var(--space-1); flex-shrink: 0; }
+.toolbar .overflowTrigger { display: none; }
+.inspectorToggle { display: flex; align-items: center; }
 .button, .primary, .danger, .icon, .zoom, .title { height: 28px; border: 1px solid var(--hairline); border-radius: var(--radius-control); padding: 0 var(--space-3); background: var(--field-bg); font-weight: 500; white-space: nowrap; cursor: pointer; flex-shrink: 0; }
 .button:hover, .button:active { background: var(--chrome-bg-inset); }
 .primary { background: var(--accent); color: var(--on-accent); border-color: transparent; }
@@ -8,6 +12,7 @@
 .danger { background: var(--danger); color: var(--on-accent); border-color: transparent; }
 .danger:hover { opacity: .85; }
 .icon { width: 28px; display: grid; place-items: center; padding: 0; border-color: transparent; background: transparent; color: var(--text-secondary); }
+.app a.icon { flex-shrink: 0; height: 28px; border: 1px solid transparent; border-radius: var(--radius-control); text-decoration: none; }
 .icon:hover, .icon:active, .zoom:hover, .title:hover { background: var(--chrome-bg-inset); }
 .icon[aria-pressed=true], .button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); }
 .primary[aria-pressed=true] { background: var(--accent-pressed); }
@@ -17,7 +22,7 @@
 .separator { flex: 0 0 1px; height: 16px; background: var(--hairline); margin: 0 var(--space-2); }
 .spacer { flex: 1; }
 .zoom { font-variant-numeric: tabular-nums; background: transparent; border-color: transparent; padding: 0 var(--space-1); min-width: 52px; }
-.workspace { flex: 1; display: flex; min-height: 0; }
+.workspace { position: relative; flex: 1; display: flex; min-height: 0; }
 .main { display: flex; flex-direction: column; flex: 1; min-width: 0; position: relative; }
 .sidebar, .inspector { flex-shrink: 0; overflow-x: hidden; overflow-y: auto; background: var(--chrome-bg); transition: width var(--motion-ui) var(--ease-ui); }
 .sidebar { width: 240px; border-right: 1px solid var(--hairline); }
@@ -31,6 +36,7 @@
 .footer { flex: 0 0 40px; display: flex; align-items: center; gap: var(--space-3); padding: 0 var(--space-3); border-top: 1px solid var(--hairline); color: var(--text-secondary); }
 .status { min-width: 180px; font-size: var(--fs-caption); }
 .hint { flex: 1; font-size: var(--fs-caption); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.touchHint { display: none; }
 .canvas { flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; position: relative; background: var(--paper); touch-action: none; user-select: none; }
 .canvas:focus-visible { box-shadow: inset 0 0 0 3px var(--focus-ring); }
 .canvas[data-tool=event], .canvas[data-tool=period] { cursor: crosshair; }
@@ -95,8 +101,13 @@
 .segment { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; border-radius: calc(var(--radius-control) - 2px); background: transparent; color: var(--text-secondary); cursor: pointer; }
 .segment:hover:not(:disabled) { color: var(--text-primary); }
 .segment[aria-pressed=true] { color: var(--accent); background: var(--field-bg); box-shadow: var(--shadow-panel); }
-.zoomGroup { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
-.title { margin-right: var(--space-1); }
+.zoomBubble {
+  position: absolute; top: var(--space-3); right: var(--space-3); z-index: 3;
+  display: flex; align-items: center; gap: var(--space-1); padding: var(--space-1);
+  border: 1px solid var(--hairline); border-radius: var(--radius-panel);
+  background: var(--field-bg); box-shadow: var(--shadow-popover);
+}
+.title, .titleInput { margin-right: var(--space-1); }
 
 /* Infobulle : même vocabulaire que celle du glissement sur le canevas. */
 .tip { position: relative; }
@@ -115,8 +126,60 @@
 .tipAbove::after { top: auto; bottom: calc(100% + 8px); }
 @media (prefers-reduced-motion: reduce) { .tip::after { transition: none; } }
 /* La barre respire : le titre peut de nouveau s'afficher en entier. */
+.title, .titleInput { flex: 0 1 360px; min-width: 64px; }
 .title { width: clamp(160px, 24vw, 360px); }
 @media (max-width: 1100px) { .title { width: clamp(120px, 20vw, 200px); } }
+@media (max-width: 1100px) {
+  .toolbar { height: 48px; flex-basis: 48px; }
+  .sidebar, .inspector { position: absolute; top: 0; bottom: 0; z-index: 8; box-shadow: var(--shadow-popover); }
+  .sidebar { left: 0; }
+  .inspector { right: 0; width: 280px; }
+  .workspace > :global(.sidebarResize) { display: none; }
+}
+
+@media (pointer: coarse) {
+  .desktopHint { display: none; }
+  .touchHint { display: inline; }
+  .toolbar { height: 64px; flex-basis: 64px; padding-block: var(--space-2); }
+  .toolbar .icon, .toolbar .segment, .footer .icon, .app a.icon, .zoomBubble .icon { width: 44px; height: 44px; }
+  .group { height: 48px; }
+  .zoom, .title, .titleInput { height: 44px; }
+  .titleInput, .inline, .axisBounds input { font-size: 16px; }
+  .footer { flex-basis: 56px; gap: var(--space-2); }
+  .tip::after { display: none; }
+  .inline { height: 40px; }
+  .axisBounds button { min-height: 36px; }
+}
+
+/* Keep hidden commands measurable; overflow depends on actual available space. */
+.toolbarContent[data-compact=true] .desktopCommands {
+  position: absolute; top: 0; left: 0; width: max-content; visibility: hidden; pointer-events: none;
+}
+.toolbarContent[data-compact=true] .overflowTrigger { display: grid; }
+.toolbarContent[data-compact=true] .title, .toolbarContent[data-compact=true] .titleInput { flex: 1 1 200px; max-width: 200px; }
+.toolbarPopover {
+  inset: 56px 12px auto auto; margin: 0; width: 280px; max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 80px); overflow-y: auto; padding: var(--space-3);
+  border: 1px solid var(--hairline); border-radius: var(--radius-panel);
+  color: var(--text-primary); background: var(--field-bg); box-shadow: var(--shadow-popover);
+}
+.overflowHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.overflowHeading h2 { margin: 0; font-size: var(--fs-title); }
+.overflowGroup { padding-top: var(--space-2); margin-top: var(--space-2); border-top: 1px solid var(--hairline); }
+.overflowGroup h3 { margin: 0 0 var(--space-1); font-size: var(--fs-caption); color: var(--text-secondary); font-weight: 500; }
+.toolbarPopover button {
+  display: flex; align-items: center; gap: var(--space-3); width: 100%; min-height: 40px;
+  padding: var(--space-2); border: 0; border-radius: var(--radius-control);
+  background: transparent; color: var(--text-primary); cursor: pointer; text-align: left;
+}
+.toolbarPopover button span { flex: 1; }
+.toolbarPopover button:hover { background: var(--chrome-hover); }
+.toolbarPopover button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); }
+.overflowHeading button { width: 40px; justify-content: center; }
+@media (pointer: coarse) {
+  .toolbarPopover { top: 72px; max-height: calc(100dvh - 88px); }
+  .toolbarPopover button { min-height: 44px; }
+}
 
 /* Pied : état d'enregistrement lisible d'un coup d'œil. */
 .status { display: flex; align-items: center; gap: 6px; }

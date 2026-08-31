@@ -19,7 +19,6 @@ import {
 import { relativeTime } from './relativeTime';
 import { CONFIRM, EDITOR, LIBRARY, START } from './strings';
 import { Icon } from './icons';
-import { useModalFocus } from './useModalFocus';
 import styles from './Library.module.css';
 
 export function Library({ onClose, onOpen, onImported }: {
@@ -36,10 +35,13 @@ export function Library({ onClose, onOpen, onImported }: {
   const [error, setError] = useState<string | null>(null);
   const upload = useRef<HTMLInputElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
-  const overlay = useRef<HTMLDivElement>(null);
-  // Le navigateur est plein écran, donc dessiné en div : le piège à focus
-  // que `<dialog>` offrirait nativement est ici explicite.
-  useModalFocus(overlay, !deleting);
+  const overlay = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const modal = overlay.current;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    modal?.showModal();
+    return () => { modal?.close(); previous?.focus(); };
+  }, []);
   const urls = useRef<string[]>([]);
 
   const refresh = useCallback(async () => {
@@ -59,11 +61,6 @@ export function Library({ onClose, onOpen, onImported }: {
 
   useEffect(() => { void refresh(); return () => { for (const url of urls.current) URL.revokeObjectURL(url); urls.current = []; }; }, [refresh]);
   useEffect(() => { if (deleting) dialog.current?.showModal(); else dialog.current?.close(); }, [deleting]);
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent): void => { if (event.key === 'Escape' && !deleting) { event.preventDefault(); onClose(); } };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [deleting, onClose]);
 
   const open = (entry: LibraryEntry): void => {
     if (entry.id === state.document.id) { onClose(); return; }
@@ -96,7 +93,18 @@ export function Library({ onClose, onOpen, onImported }: {
     });
   };
 
-  return <div ref={overlay} className={styles.overlay} role="dialog" aria-modal="true" aria-label={LIBRARY.title}
+  return <dialog ref={overlay} className={styles.overlay} aria-labelledby="library-title"
+    onCancel={(event) => { event.preventDefault(); if (!deleting) onClose(); }}
+    onKeyDown={(event) => {
+      if (event.key !== 'Escape') return;
+      event.preventDefault(); event.stopPropagation();
+      if (deleting) setDeleting(null); else onClose();
+    }}
+    onClick={(event) => {
+      if (event.target !== event.currentTarget || deleting) return;
+      const bounds = event.currentTarget.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) onClose();
+    }}
     data-dropping={dropping}
     onDragOver={(event) => { if (event.dataTransfer.types.includes('Files')) { event.preventDefault(); setDropping(true); } }}
     onDragLeave={() => setDropping(false)}
@@ -107,13 +115,14 @@ export function Library({ onClose, onOpen, onImported }: {
     }}>
     <header className={styles.header}>
       <div>
-        <h1>{LIBRARY.title}</h1>
+        <h1 id="library-title">{LIBRARY.title}</h1>
         <p className={styles.subtitle}>{LIBRARY.subtitle}</p>
       </div>
       <span className={styles.spacer} />
       <button className={styles.secondary} onClick={() => upload.current?.click()}><Icon name="open" />{LIBRARY.importFile}</button>
       <button className={styles.close} aria-label={LIBRARY.close} onClick={onClose}><Icon name="close" /></button>
     </header>
+    <div className={styles.content}>
     <input hidden type="file" ref={upload} accept=".krono,application/json" onChange={(event) => {
       const file = event.target.files?.[0]; event.target.value = '';
       if (file) importFile(file);
@@ -156,7 +165,8 @@ export function Library({ onClose, onOpen, onImported }: {
     </section>
 
     <p className={styles.dropHint}><Icon name="open" /> {LIBRARY.drop}</p>
-    <dialog ref={dialog} className={styles.dialog} onCancel={() => setDeleting(null)} aria-labelledby="library-delete">
+    </div>
+    <dialog ref={dialog} className={styles.dialog} onCancel={(event) => { event.stopPropagation(); setDeleting(null); }} aria-labelledby="library-delete">
       <h2 id="library-delete">{deleting ? LIBRARY.confirmDelete(deleting.title) : ''}</h2>
       <p>{LIBRARY.confirmHint}</p>
       <div className={styles.dialogActions}>
@@ -168,5 +178,5 @@ export function Library({ onClose, onOpen, onImported }: {
         }}>{CONFIRM.delete}</button>
       </div>
     </dialog>
-  </div>;
+  </dialog>;
 }

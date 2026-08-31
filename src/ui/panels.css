@@ -243,3 +243,13 @@
 /* La vue du minimap suit le panoramique image par image : l'animer la ferait
    traîner derrière le canevas. */
 .minimapView { transition: none; }
+
+@media (pointer: coarse) {
+  .panelAction, .sectionHeading button, .laneHeading button.iconOnly,
+  .outline .laneTitle, .outline .outlineItem, .choiceRow .choices button { min-height: 44px; }
+  .colors { grid-template-columns: repeat(6, 1fr); }
+  .colors button { min-width: 32px; min-height: 32px; }
+  .field input, .field textarea, .axisPopover input { font-size: 16px; min-height: 40px; }
+  .minimap { touch-action: none; }
+  .axisHandle { touch-action: none; }
+}

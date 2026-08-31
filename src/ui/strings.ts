@@ -19,6 +19,7 @@ export const EDITOR = {
   sidebarToggle: 'Afficher ou masquer la structure', inspectorToggle: 'Afficher ou masquer l’inspecteur',
   duplicate: 'Dupliquer', selectAll: 'Tout sélectionner',
   hint: 'Glisser : naviguer · E : événement · P : période · ← → : décaler · Maj + glisser : sélectionner · ⌥ : sans aimantation',
+  touchHint: 'Glisser le fond : naviguer · Pincer : zoomer · Touchez un élément pour le sélectionner · Pencil : créer et déplacer',
   toolbarOverflow: 'Autres commandes',
   saved: 'Enregistré sur cet appareil', saving: 'Enregistrement…', loading: 'Ouverture de la frise…',
   fileSaved: 'Fichier .krono enregistré',
@@ -181,6 +182,26 @@ export const VIEWER = {
   help: 'Glissez pour naviguer · molette pour zoomer · ← → pour parcourir la frise',
   position: (index: number, total: number): string => `${index} / ${total}`,
   madeWith: 'Frise réalisée avec KronoFrise',
+} as const;
+
+export const APP_LINKS = {
+  github: 'KronoFrise sur GitHub (nouvel onglet)',
+  agentSkill: 'Télécharger le skill pour agents IA (.md)',
+} as const;
+
+export const PWA = {
+  installTitle: 'Installer KronoFrise',
+  installHint: 'Retrouvez vos frises dans une fenêtre dédiée, même hors connexion.',
+  install: 'Installer', later: 'Plus tard', alreadyInstalled: 'Déjà installée',
+  iosHint: 'Dans Safari, touchez Partager, puis « Sur l’écran d’accueil ».',
+  safariHint: 'Dans Safari, choisissez Fichier → Ajouter au Dock…',
+  manualDataHint: 'Avant de passer à l’application, enregistrez votre frise en fichier .krono pour pouvoir l’y ouvrir.',
+  updateTitle: 'Une mise à jour est prête',
+  updateHint: 'Votre frise sera enregistrée sur cet appareil, puis l’application redémarrera.',
+  update: 'Mettre à jour', updating: 'Enregistrement et mise à jour…',
+  saveError: 'La frise n’a pas pu être enregistrée. La mise à jour est suspendue pour préserver votre travail.',
+  updateError: 'La mise à jour n’a pas abouti. Vous pouvez réessayer ou fermer puis rouvrir l’application après avoir enregistré votre frise.',
+  installError: 'L’installation n’a pas abouti. Utilisez le menu de votre navigateur pour installer KronoFrise.',
 } as const;
 
 export const APPEARANCE = {
