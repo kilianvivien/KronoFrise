@@ -19,6 +19,7 @@ export function Minimap({ width, zoom, pan, setPan, insets }: { insets: ScaleIns
     onPointerDown={(e) => { const x = e.clientX - e.currentTarget.getBoundingClientRect().left; drag.current = { offset: x >= left && x <= right ? x - (left + right) / 2 : 0 }; e.currentTarget.setPointerCapture(e.pointerId); if (x < left || x > right) go(x); }}
     onPointerMove={(e) => { if (drag.current) { go(e.clientX - e.currentTarget.getBoundingClientRect().left - drag.current.offset); } }} onPointerUp={(e) => { drag.current = null; e.currentTarget.releasePointerCapture(e.pointerId); }} onPointerCancel={() => { drag.current = null; }} onLostPointerCapture={() => { drag.current = null; }}>
     <svg width="100%" height="64" viewBox={`0 0 ${width} 64`} aria-hidden="true">
+      <rect className="minimapTrack" x={0} y={4} width={width} height={48} rx={4} />
       {doc.items.map((item) => { const y = 10 + doc.lanes.findIndex((l) => l.id === item.laneId) * 38 / Math.max(doc.lanes.length, 1); const x = full.timeToX(toFractionalYear(item.kind === 'event' ? item.date : item.start)); return item.kind === 'event' ? <line key={item.id} x1={x} x2={x} y1={y} y2={y + 10} stroke={resolveBase(item.color)} strokeWidth={2} /> : <rect key={item.id} x={x} y={y} width={Math.max(1, full.timeToX(toFractionalYear(item.end)) - x)} height={8} fill={resolveBase(item.color)} opacity={.6} />; })}
       <rect className="minimapView" x={left} y={4} width={Math.max(right - left, 4)} height={48} rx={4} />
     </svg>

@@ -6,6 +6,7 @@ import { serializeFile } from '../store/fileIO';
 import { editorStore } from '../store/editor';
 import { EDITOR, M2 } from './strings';
 import { PALETTE, resolveBase } from './palette';
+import { Icon, type IconName } from './icons';
 
 export function reportError(error: unknown): void {
   editorStore.setState({ error: error instanceof Error ? error.message : EDITOR.fileError });
@@ -40,11 +41,49 @@ export function Field({ label, value, onCommit, multiline = false, type = 'text'
       if (e.key === 'Escape') { done.current = true; setDraft(null); (e.target as HTMLElement).blur(); }
       if (e.key === 'Enter' && !multiline) { e.preventDefault(); finish(); (e.target as HTMLElement).blur(); }
     } };
-  return <label className="field">{label}{multiline ? <textarea {...props} rows={3} /> : <input {...props} type={type} />}</label>;
+  return <label className="field"><span>{label}</span>{multiline ? <textarea {...props} rows={3} /> : <input {...props} type={type} />}</label>;
+}
+
+/** Choix exclusif compact : les trois formes d'une période, une résolution… */
+export function Choices<T extends string>({ label, value, options, onChange }: {
+  label: string;
+  value: T | null;
+  options: readonly { value: T; label: string; icon?: IconName; text?: string }[];
+  onChange: (value: T) => void;
+}): JSX.Element {
+  return <div className="choiceRow">
+    <span>{label}</span>
+    <div className="choices" role="group" aria-label={label}>
+      {options.map((option) => <button key={option.value} type="button" aria-label={option.label} data-tip={option.label} title={option.label}
+        aria-pressed={value === option.value} onClick={() => onChange(option.value)}>
+        {option.icon ? <Icon name={option.icon} /> : option.text ?? option.label}
+      </button>)}
+    </div>
+  </div>;
 }
 export function Colors({ value, onChange, label = M2.color }: { value: string; onChange: (value: string) => void; label?: string }): JSX.Element {
   return <fieldset className="colors"><legend>{label}</legend>{PALETTE.map((color) => <button key={color.id} type="button" aria-label={color.name} title={color.name} aria-pressed={resolveBase(value) === color.base} style={{ background: color.base }} onClick={() => onChange(color.id)} />)}</fieldset>;
 }
-export function Check({ label, value, onChange }: { label: string; value: boolean; onChange: (value: boolean) => void }): JSX.Element {
-  return <label className="check"><input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} />{label}</label>;
+
+/**
+ * Case à cocher. `wide` met la case avant son libellé, pour les options qui se
+ * lisent comme une phrase plutôt que comme une propriété.
+ */
+export function Check({ label, value, onChange, wide = false }: {
+  label: string; value: boolean; onChange: (value: boolean) => void; wide?: boolean;
+}): JSX.Element {
+  return <label className={wide ? 'check wide' : 'check'}>
+    {wide ? <><input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} /><span>{label}</span></>
+      : <><span>{label}</span><input type="checkbox" checked={value} onChange={(e) => onChange(e.target.checked)} /></>}
+  </label>;
+}
+
+/** Bouton d'action pleine largeur d'un panneau, avec son icône. */
+export function PanelButton({ icon, label, onClick, disabled = false, danger = false, title }: {
+  icon: IconName; label: string; onClick: () => void; disabled?: boolean; danger?: boolean; title?: string;
+}): JSX.Element {
+  return <button type="button" className={danger ? 'panelAction panelDanger' : 'panelAction'} disabled={disabled}
+    {...(title === undefined ? {} : { title })} onClick={onClick}>
+    <Icon name={icon} />{label}
+  </button>;
 }

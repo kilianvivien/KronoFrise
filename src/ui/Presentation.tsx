@@ -20,6 +20,7 @@ import { editorStore } from '../store/editor';
 import { themeById } from '../themes';
 import { canvasMeasurer } from './measureText';
 import { focusCamera, interpolate, OVERVIEW, type Camera } from './presentationCamera';
+import { Icon } from './icons';
 import { EDITOR, PRESENT } from './strings';
 import { resolveToken } from './tokenValues';
 import styles from './Presentation.module.css';
@@ -143,12 +144,14 @@ export function Presentation({ onExit }: { onExit: () => void }): JSX.Element {
       {description !== undefined && description !== '' && <p>{description}</p>}
     </aside>}
     <nav className={styles.bar} aria-label={PRESENT.controls}>
-      <button onClick={() => go(step - 1)} disabled={step < 0} aria-label={PRESENT.previous}>←</button>
+      <button className={styles.icon} onClick={() => go(-1)} disabled={step < 0} aria-label={PRESENT.overview} title={PRESENT.overview}><Icon name="first" /></button>
+      <button className={styles.icon} onClick={() => go(step - 1)} disabled={step < 0} aria-label={PRESENT.previous} title={PRESENT.previous}><Icon name="back" /></button>
       <span className={styles.counter} role="status">{step < 0 ? PRESENT.overview : PRESENT.position(step + 1, items.length)}</span>
-      <button onClick={() => go(step + 1)} disabled={step >= items.length - 1} aria-label={PRESENT.next}>→</button>
-      <button aria-pressed={reveal} onClick={() => setReveal(!reveal)}>{PRESENT.reveal}</button>
-      <button aria-pressed={full} onClick={toggleFullscreen}>{PRESENT.fullscreen}</button>
-      <button onClick={exit}>{PRESENT.exit}</button>
+      <button className={styles.icon} onClick={() => go(step + 1)} disabled={step >= items.length - 1} aria-label={PRESENT.next} title={PRESENT.next}><Icon name="chevronRight" /></button>
+      <span className={styles.separator} />
+      <button aria-pressed={reveal} onClick={() => setReveal(!reveal)} title={PRESENT.revealHint}><Icon name="mask" />{PRESENT.reveal}</button>
+      <button aria-pressed={full} onClick={toggleFullscreen}><Icon name="present" />{PRESENT.fullscreen}</button>
+      <button onClick={exit}><Icon name="close" />{PRESENT.exit}</button>
     </nav>
   </div>;
 }

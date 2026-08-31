@@ -117,3 +117,13 @@
 /* La barre respire : le titre peut de nouveau s'afficher en entier. */
 .title { width: clamp(160px, 24vw, 360px); }
 @media (max-width: 1100px) { .title { width: clamp(120px, 20vw, 200px); } }
+
+/* Pied : état d'enregistrement lisible d'un coup d'œil. */
+.status { display: flex; align-items: center; gap: 6px; }
+.status svg { width: 14px; height: 14px; color: var(--text-tertiary); }
+.pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .pulse { animation: none; opacity: .7; } }
+.footer { gap: var(--space-3); }
+.hint { color: var(--text-tertiary); }
+.empty { font-size: var(--fs-ui); line-height: 1.6; }

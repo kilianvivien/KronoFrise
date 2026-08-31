@@ -1,8 +1,13 @@
-.picker { margin: 16px 0; padding: 0; border: 0; min-width: 0; }
-.picker legend { margin-bottom: 8px; font-size: var(--fs-caption); color: var(--text-secondary); }
-.grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.picker .grid button { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 3px; border: 1px solid var(--hairline); border-radius: var(--radius-control); min-height: 52px; font-size: var(--fs-caption); }
-.grid svg { max-width: 100%; }
-.picker .grid button[aria-pressed=true] { border-color: var(--accent); background: var(--accent-tint); }
-.picker .grid button:hover { background: var(--chrome-hover); }
-.picker:disabled { opacity: .5; }
+/* Remplissages — huit aperçus compacts, le nom vit dans l'infobulle. */
+.picker { border: 0; padding: 0; margin: 0 0 var(--space-3); }
+.picker legend { margin-bottom: var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary); }
+.grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.grid button {
+  display: block; padding: 2px !important; min-height: 0 !important;
+  background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer;
+}
+.grid button:hover { border-color: var(--text-tertiary); }
+.grid button[aria-pressed=true] { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.grid svg { display: block; width: 100%; height: auto; border-radius: 3px; }
+.picker:disabled { opacity: .4; pointer-events: none; }
+.picker p { margin: var(--space-2) 0 0; font-size: var(--fs-caption); color: var(--text-secondary); }

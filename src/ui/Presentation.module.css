@@ -29,3 +29,10 @@
 .counter { min-width: 120px; text-align: center; font-size: var(--fs-caption); color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 
 @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+
+/* Barre de commandes : icônes, séparateur, alignement centré. */
+.bar button { display: inline-flex; align-items: center; gap: 6px; }
+.bar .icon { width: 28px; padding: 0; justify-content: center; color: var(--text-secondary); }
+.bar .icon:hover:not(:disabled) { color: var(--text-primary); }
+.bar .separator { width: 1px; height: 16px; margin: 0 var(--space-2); background: var(--hairline); }
+.bar button svg { flex: 0 0 16px; }

@@ -1,75 +1,212 @@
-.inspectorContent { width: 263px; padding: 12px; }
-.panelTabs, .sectionHeading, .laneHeading { display: flex; align-items: center; gap: 4px; }
-.panelTabs { justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid var(--hairline); color: var(--text-secondary); }
-.panelSection { padding: 12px 0; border-bottom: 1px solid var(--hairline); }
-.panelSection h3, .outline h3 { font-size: var(--fs-ui); margin: 0 0 12px; font-weight: 600; }
-.panelSection h4 { font-size: var(--fs-caption); color: var(--text-secondary); margin: 0 0 8px; }
-.panelSection p, .outline p { font-size: var(--fs-caption); color: var(--text-secondary); }
-.field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 12px; font-size: var(--fs-caption); color: var(--text-secondary); }
-.field input, .field textarea, .field select, .outline > input { width: 100%; min-height: 28px; padding: 4px 8px; color: var(--text-primary); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); font: inherit; }
-.field textarea { resize: vertical; }
-.inspectorContent button, .outline button { min-height: 28px; border: 1px solid var(--hairline); border-radius: var(--radius-control); padding: 4px 8px; background: var(--field-bg); cursor: pointer; font-size: var(--fs-caption); }
-.inspectorContent button:hover, .outline button:hover { background: var(--chrome-bg-inset); }
-.inspectorContent button[aria-pressed=true], .outline button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); }
-.check { display: flex; align-items: center; gap: 8px; margin: 12px 0; font-size: var(--fs-caption); }
-.colors { border: 0; padding: 0; margin: 12px 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
-.colors legend { font-size: var(--fs-caption); color: var(--text-secondary); margin-bottom: 8px; }
-.colors button { width: 26px; height: 26px; min-height: 26px; padding: 0; border: 2px solid transparent; border-radius: 50%; }
+/**
+ * Panneaux latéraux — structure (gauche) et inspecteur (droite).
+ * DESIGN.md §3 : rangée d'inspecteur en grille 96px / 1fr, libellé aligné à
+ * droite, titres de section en capitales discrètes. Aucun hexadécimal ici.
+ */
+
+/* ---- coquille ---- */
+.inspectorContent, .outline { line-height: 1.45; }
+.inspectorContent { width: 263px; padding: var(--space-3); }
+
+.panelHeader {
+  display: flex; align-items: center; gap: var(--space-2);
+  min-height: 32px; margin-bottom: var(--space-3);
+  padding-bottom: var(--space-3); border-bottom: 1px solid var(--hairline);
+}
+.panelHeader h2 { flex: 1; margin: 0; font-size: var(--fs-title); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panelHeader .badge {
+  padding: 1px var(--space-2); border-radius: 999px;
+  background: var(--accent-tint); color: var(--accent); font-size: var(--fs-caption); font-weight: 500;
+}
+.panelBack {
+  display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 var(--space-2);
+  color: var(--text-secondary); background: transparent; border: 1px solid transparent;
+  border-radius: var(--radius-control); font-size: var(--fs-caption); cursor: pointer;
+}
+.panelBack:hover { color: var(--text-primary); background: var(--chrome-hover); }
+
+/* ---- sections ---- */
+.panelSection { padding: var(--space-4) 0; border-bottom: 1px solid var(--hairline); }
+.panelSection:last-child { border-bottom: 0; }
+.panelSection > h3, .sectionHeading h3 {
+  margin: 0 0 var(--space-3); font-size: var(--fs-caption); font-weight: 600;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary);
+}
+.panelSection h4 { margin: 0 0 var(--space-2); font-size: var(--fs-caption); font-weight: 600; color: var(--text-primary); }
+.panelSection p, .outline p { margin: 0 0 var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary); }
+.panelSection p:last-child { margin-bottom: 0; }
+
+/* ---- rangées : libellé à gauche (96px), contrôle à droite ---- */
+.field {
+  display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: var(--space-2);
+  min-height: 28px; margin-bottom: var(--space-2);
+  font-size: var(--fs-caption); color: var(--text-secondary);
+}
+.field > span:first-child, .check > span:first-child, .choiceRow > span:first-child { text-align: right; line-height: 1.25; }
+.field.stack { grid-template-columns: 1fr; }
+.field:has(textarea) { align-items: start; }
+.field:has(textarea) > span:first-child { padding-top: 6px; }
+.field input, .field textarea, .field select {
+  width: 100%; max-width: 100%; min-width: 0; min-height: 28px; padding: 3px var(--space-2);
+  color: var(--text-primary); background: var(--field-bg);
+  border: 1px solid var(--hairline); border-radius: var(--radius-control);
+  font: inherit; font-size: var(--fs-ui);
+}
+.field textarea { min-height: 56px; resize: vertical; line-height: 1.5; }
+.field input:hover, .field textarea:hover, .field select:hover { border-color: var(--text-tertiary); }
+.field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible { border-color: var(--accent); }
+.field input[type=range] { padding: 0; accent-color: var(--accent); }
+
+.check {
+  display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: var(--space-2);
+  min-height: 28px; margin: 0 0 var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary);
+}
+.check input { grid-column: 2; justify-self: start; width: 14px; height: 14px; margin: 0; accent-color: var(--accent); }
+.check.wide { grid-template-columns: auto minmax(0, 1fr); }
+.check.wide > span { text-align: left; }
+.check.wide input { grid-column: 1; }
+
+/* ---- boutons de panneau ---- */
+.inspectorContent button, .outline button {
+  min-height: 28px; padding: 4px var(--space-2);
+  color: var(--text-primary); background: var(--field-bg);
+  border: 1px solid var(--hairline); border-radius: var(--radius-control);
+  font-size: var(--fs-caption); cursor: pointer;
+}
+.inspectorContent button:hover:not(:disabled), .outline button:hover:not(:disabled) { background: var(--chrome-hover); }
+.inspectorContent button:disabled, .outline button:disabled { opacity: .4; pointer-events: none; }
+.inspectorContent button[aria-pressed=true], .outline button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); border-color: var(--accent); }
+.panelAction {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  width: 100%; font-size: var(--fs-ui) !important;
+}
+.panelAction svg { color: var(--text-secondary); }
+.panelDanger:hover:not(:disabled) { color: var(--danger) !important; background: var(--danger-tint) !important; border-color: var(--danger) !important; }
+
+/* ---- choix segmentés (forme d'une période, résolution…) ---- */
+.choiceRow { display: grid; grid-template-columns: 84px minmax(0, 1fr); align-items: center; gap: var(--space-2); margin-bottom: var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary); }
+.choiceRow > .choices { display: flex; gap: 2px; padding: 2px; background: var(--chrome-bg-inset); border-radius: var(--radius-control); }
+.choiceRow .choices button {
+  flex: 1; display: grid; place-items: center; min-height: 24px; padding: 0 10px; white-space: nowrap;
+  background: transparent; border: 0; border-radius: calc(var(--radius-control) - 2px); color: var(--text-secondary);
+}
+.choiceRow .choices button[aria-pressed=true] { color: var(--accent); background: var(--field-bg); border: 0; box-shadow: var(--shadow-panel); }
+
+/* ---- couleurs : 20px, grille 6×2 (DESIGN.md §6) ---- */
+.colors { border: 0; padding: 0; margin: 0 0 var(--space-3); display: grid; grid-template-columns: repeat(6, 20px); gap: 6px; }
+.colors legend { margin-bottom: var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary); }
+.colors button { width: 20px; height: 20px; min-height: 20px; padding: 0; border: 0; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .12); }
+.colors button:hover { transform: none; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .25); }
 .colors button[aria-pressed=true] { outline: 2px solid var(--accent); outline-offset: 2px; }
-.segment { margin-bottom: 12px; padding: 12px; border: 1px solid var(--hairline); border-radius: var(--radius-card); }
-.imageField img { display: block; width: 80px; height: 80px; object-fit: cover; border-radius: var(--radius-card); margin-bottom: 8px; }
-.imageField button { margin-bottom: 8px; }
-.outline { margin-top: 20px; }
-.sectionHeading { justify-content: space-between; margin: 16px 0 8px; }
-.sectionHeading h3 { margin: 0; }
-.laneHeading { margin: 12px 0 4px; }
-.laneHeading button { border-color: transparent; background: transparent; padding: 2px; min-width: 24px; }
-.laneTitle { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: left; }
-.outline i { display: inline-block; flex: 0 0 6px; width: 6px; height: 6px; border-radius: 50%; margin-right: 6px; }
-.outline .outlineItem { display: flex; align-items: center; width: 100%; text-align: left; border-color: transparent; background: transparent; padding: 6px 8px; margin: 2px 0; }
-.outlineItem span { overflow: hidden; text-overflow: ellipsis; }
-.outlineItem small { display: block; color: var(--text-tertiary); margin-top: 2px; }
+
+/* ---- segments de l'axe ---- */
+.segment { margin-bottom: var(--space-2); padding: var(--space-3); background: var(--chrome-bg-inset); border-radius: var(--radius-card); }
+.segment .field:last-of-type { margin-bottom: var(--space-2); }
+
+/* ---- image d'un événement ---- */
+.imageField img { display: block; width: 100%; max-height: 120px; object-fit: cover; border-radius: var(--radius-card); margin-bottom: var(--space-2); }
+.imageField .row { display: flex; gap: var(--space-2); }
+.imageField .row button { flex: 1; }
+
+/* ---- structure (sidebar) ---- */
+.outline { display: flex; flex-direction: column; gap: var(--space-2); }
+.searchField { position: relative; display: flex; align-items: center; }
+.searchField svg { position: absolute; left: var(--space-2); color: var(--text-tertiary); pointer-events: none; }
+.searchField input {
+  width: 100%; min-height: 30px; padding: 4px var(--space-2) 4px 30px;
+  color: var(--text-primary); background: var(--field-bg);
+  border: 1px solid var(--hairline); border-radius: var(--radius-control); font: inherit;
+}
+.searchField input:hover { border-color: var(--text-tertiary); }
+.searchField input:focus-visible { border-color: var(--accent); }
+
+.sectionHeading { display: flex; align-items: center; gap: var(--space-1); margin: var(--space-4) 0 var(--space-1); }
+.sectionHeading h3 { flex: 1; margin: 0; }
+.sectionHeading button, .laneHeading button.iconOnly {
+  width: 24px; min-width: 24px; height: 24px; min-height: 24px; padding: 0;
+  display: grid; place-items: center; color: var(--text-secondary);
+  background: transparent; border-color: transparent;
+}
+.sectionHeading button:hover, .laneHeading button.iconOnly:hover:not(:disabled) { color: var(--text-primary); background: var(--chrome-hover); }
+
+.outlineLane { border-radius: var(--radius-card); }
+.outlineLane[data-drop=true] { background: var(--accent-tint); box-shadow: inset 0 0 0 1px var(--accent); }
+.laneHeading { display: flex; align-items: center; gap: 2px; margin: var(--space-2) 0 2px; }
+.outline .laneTitle {
+  flex: 1; display: flex; align-items: center; gap: var(--space-2); min-width: 0;
+  text-align: left; background: transparent; border-color: transparent;
+  font-size: var(--fs-ui) !important; font-weight: 500;
+}
+.outline .laneTitle:hover { background: var(--chrome-hover); }
+.outline .laneTitle span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.outline i { display: inline-block; flex: 0 0 8px; width: 8px; height: 8px; border-radius: 50%; }
+.outline i[data-kind=period] { width: 10px; height: 6px; border-radius: 2px; }
+
+.outline .outlineItem {
+  display: flex; align-items: center; gap: var(--space-2); width: 100%; margin: 1px 0; padding: 5px var(--space-2);
+  text-align: left; background: transparent; border-color: transparent;
+}
+.outline .outlineItem span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--fs-ui); color: var(--text-primary); }
+.outline .outlineItem small { display: block; font-size: var(--fs-caption); color: var(--text-tertiary); }
+.outline .outlineItem:hover { background: var(--chrome-hover); }
+.outline .outlineItem[aria-pressed=true] { background: var(--accent-tint); border-color: transparent; }
+.outline .outlineItem[aria-pressed=true] span { color: var(--accent); }
+.outline .outlineItem[aria-pressed=true] small { color: var(--text-secondary); }
+.outlineEmpty { padding: var(--space-3) var(--space-2); color: var(--text-tertiary); font-size: var(--fs-caption); }
+
+/* ---- redimensionnement, minimap, popover de l'axe ---- */
 .sidebarResize { flex: 0 0 4px; cursor: col-resize; touch-action: none; margin-left: -4px; z-index: 2; }
-.sidebarResize:hover { background: var(--accent); }
+.sidebarResize:hover, .sidebarResize:focus-visible { background: var(--accent); }
 .minimap { flex: 0 0 64px; height: 64px; overflow: hidden; border-top: 1px solid var(--hairline); background: var(--chrome-bg); touch-action: none; cursor: grab; }
 .minimap:active { cursor: grabbing; }
+.minimapTrack { fill: var(--chrome-bg-inset); }
 .minimapView { fill: var(--accent-tint); stroke: var(--accent); stroke-width: 1.5px; }
-.axisPopover { position: absolute; z-index: 4; width: 240px; padding: 12px; border: 1px solid var(--hairline); border-radius: var(--radius-panel); background: var(--field-bg); box-shadow: var(--shadow-popover); }
+.minimap { padding: 0 var(--space-3); }
+.axisPopover {
+  position: absolute; z-index: 4; width: 248px; padding: var(--space-3);
+  border: 1px solid var(--hairline); border-radius: var(--radius-panel);
+  background: var(--field-bg); box-shadow: var(--shadow-popover);
+}
+.axisPopover .field { grid-template-columns: 1fr; }
+.axisPopover button { width: 100%; margin-top: var(--space-1); }
 .axisHandle { cursor: ew-resize; }
 .axisHandle:focus { outline: none; }
 .axisHandle:focus-visible rect { stroke: var(--accent); stroke-width: 3px; }
 
-/* Interface polish: consistent field sizing and quieter section hierarchy. */
-.panelSection { padding: 16px 0; }
-.field { gap: 6px; margin-bottom: 14px; }
-.field input, .field textarea, .field select, .outline > input { min-height: 30px; font-size: var(--fs-ui); }
-.field textarea { line-height: 1.5; }
-.field input:hover, .field textarea:hover, .field select:hover, .outline > input:hover { border-color: var(--text-tertiary); }
-.field input:focus-visible, .field textarea:focus-visible, .field select:focus-visible, .outline > input:focus-visible { border-color: var(--accent); }
-.panelSection h3, .sectionHeading h3 { color: var(--text-secondary); font-size: var(--fs-caption); letter-spacing: .04em; }
-.panelTabs { min-height: 40px; padding-bottom: 12px; }
-.segment { padding: 12px; background: var(--chrome-bg-inset); }
-.segment h4 { color: var(--text-primary); font-weight: 600; }
-.outlineItem span { min-width: 0; line-height: 1.5; }
-.outlineItem small { font-size: var(--fs-caption); }
-.outline .outlineItem:hover, .laneHeading button:hover { background: var(--chrome-hover); }
-.outline .outlineItem[aria-pressed=true] { background: var(--accent-tint); }
-.outline .outlineItem[aria-pressed=true] small { color: var(--text-secondary); }
-.check input { accent-color: var(--accent); width: 14px; height: 14px; margin: 0; }
-.inspectorContent, .outline { line-height: 1.45; }
+/* ---- thèmes du document : aperçus plutôt qu'une liste déroulante ---- */
+.themeGrid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-2); margin-bottom: var(--space-2); }
+.themeCard { display: flex; flex-direction: column; gap: 6px; padding: 6px !important; }
+.themeCard svg { display: block; width: 100%; height: auto; border-radius: 4px; }
+.themeCard span { font-size: var(--fs-caption); }
 
-/* Fiche élève : actions de masquage et choix par élément (PLAN.md §3.5). */
-.worksheetActions, .worksheetChoices { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; padding: 0; border: 0; }
-.worksheetChoices legend { font-size: var(--fs-caption); color: var(--text-secondary); margin-bottom: 6px; }
-.worksheetActions button, .worksheetChoices button { text-align: left; }
+/* ---- fiche élève ---- */
+.worksheetActions { display: flex; flex-direction: column; gap: var(--space-1); margin: 0 0 var(--space-3); padding: 0; border: 0; }
+.worksheetActions button { display: flex; align-items: center; gap: var(--space-2); text-align: left; }
+.worksheetActions svg { color: var(--text-secondary); }
+.worksheetChoices { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-1); margin: 0 0 var(--space-2); padding: 0; border: 0; }
+.worksheetChoices legend { margin-bottom: var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary); }
 
-/* Boîte d'export (PLAN.md §3.6) : mêmes contrôles que l'inspecteur. */
-.exportForm { width: 380px; max-width: 100%; }
-.exportForm fieldset { display: flex; gap: 6px; margin: 0 0 14px; padding: 0; border: 0; }
-.exportForm legend { width: 100%; margin-bottom: 6px; font-size: var(--fs-caption); color: var(--text-secondary); }
-.exportForm button { min-height: 28px; padding: 4px 12px; color: var(--text-primary); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer; }
-.exportForm button:hover { background: var(--chrome-hover); }
-.exportForm button[aria-pressed=true] { color: var(--accent); border-color: var(--accent); background: var(--accent-tint); }
-.exportForm p { margin: 0 0 12px; font-size: var(--fs-caption); color: var(--text-secondary); }
-.exportForm .field input[type=range] { padding: 0; }
+/* ---- boîte d'export ---- */
+.exportForm { width: 400px; max-width: 100%; }
+.exportFormats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin: 0 0 var(--space-4); padding: 0; border: 0; }
+.exportFormats button {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-1);
+  min-height: 64px; padding: var(--space-2) 4px !important; color: var(--text-secondary);
+  background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-card); cursor: pointer;
+  font-size: var(--fs-caption); text-align: center; line-height: 1.25;
+}
+.exportFormats button:hover { background: var(--chrome-hover); }
+.exportFormats button[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); border-color: var(--accent); }
+.exportForm .choiceRow { grid-template-columns: 108px auto; margin-bottom: var(--space-3); }
+.exportForm .choiceRow > .choices { justify-self: start; }
+.exportForm p { margin: 0 0 var(--space-2); font-size: var(--fs-caption); color: var(--text-secondary); }
+.exportForm .note { display: flex; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--chrome-bg-inset); border-radius: var(--radius-card); }
 .exportError { color: var(--danger); }
+
+/* Libellé réservé aux lecteurs d'écran (DESIGN.md §7). */
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.panelBack { width: 24px; min-width: 24px; padding: 0; justify-content: center; }
+.exportForm .note { display: flex; align-items: flex-start; gap: var(--space-2); padding: var(--space-2) var(--space-3); background: var(--chrome-bg-inset); border-radius: var(--radius-card); }
+.exportForm .note svg { flex: 0 0 16px; margin-top: 1px; color: var(--text-tertiary); }
+.exportForm .summary { margin-top: var(--space-3); color: var(--text-primary); font-variant-numeric: tabular-nums; }
+.exportForm .check { margin-bottom: var(--space-3); }

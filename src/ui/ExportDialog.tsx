@@ -15,6 +15,8 @@ import { exportPdf } from '../export/pdf';
 import { exportExercise } from '../export/exercise';
 import { paginate, sceneHeightFor, sceneWidthFor, type Orientation, type PageSize } from '../export/paper';
 import { canvasMeasurer } from './measureText';
+import { Check, Choices } from './fields';
+import { Icon, type IconName } from './icons';
 import { EXPORT } from './strings';
 import styles from './Editor.module.css';
 
@@ -22,6 +24,13 @@ type Format = 'pdf' | 'html' | 'svg' | 'png';
 
 /** Largeur de scène des exports d'image, en pixels CSS (DESIGN.md §3.6). */
 const IMAGE_WIDTH = 1600;
+
+const FORMATS: { value: Format; label: string; icon: IconName }[] = [
+  { value: 'pdf', label: EXPORT.pdf, icon: 'pdf' },
+  { value: 'html', label: EXPORT.html, icon: 'web' },
+  { value: 'svg', label: EXPORT.svg, icon: 'vector' },
+  { value: 'png', label: EXPORT.png, icon: 'raster' },
+];
 
 export function ExportDialog({ worksheet, onClose, onDone }: {
   worksheet: boolean;
@@ -82,51 +91,45 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
   return <dialog ref={dialog} className={styles.dialog} onCancel={onClose} aria-labelledby="export-title">
     <h2 id="export-title">{EXPORT.title}</h2>
     <div className="exportForm">
-      <fieldset>
-        <legend>{EXPORT.format}</legend>
-        {([['pdf', EXPORT.pdf], ['html', EXPORT.html], ['svg', EXPORT.svg], ['png', EXPORT.png]] as const).map(([value, label]) =>
-          <button key={value} type="button" aria-pressed={format === value} onClick={() => setFormat(value)}>{label}</button>)}
+      <fieldset className="exportFormats">
+        <legend className="srOnly">{EXPORT.format}</legend>
+        {FORMATS.map(({ value, label, icon }) =>
+          <button key={value} type="button" aria-pressed={format === value} onClick={() => setFormat(value)}>
+            <Icon name={icon} />{label}
+          </button>)}
       </fieldset>
 
       {format === 'pdf' && <>
-        <fieldset>
-          <legend>{EXPORT.pageSize}</legend>
-          {([['a4', EXPORT.a4], ['a3', EXPORT.a3]] as const).map(([value, label]) =>
-            <button key={value} type="button" aria-pressed={size === value} onClick={() => setSize(value)}>{label}</button>)}
-        </fieldset>
-        <fieldset>
-          <legend>{EXPORT.orientation}</legend>
-          {([['landscape', EXPORT.landscape], ['portrait', EXPORT.portrait]] as const).map(([value, label]) =>
-            <button key={value} type="button" aria-pressed={orientation === value} onClick={() => setOrientation(value)}>{label}</button>)}
-        </fieldset>
-        <label className="check"><input type="checkbox" checked={wall} onChange={(event) => setWall(event.target.checked)} />{EXPORT.wall}</label>
+        <Choices label={EXPORT.pageSize} value={size} onChange={setSize}
+          options={[{ value: 'a4' as const, label: EXPORT.a4, text: EXPORT.a4 }, { value: 'a3' as const, label: EXPORT.a3, text: EXPORT.a3 }]} />
+        <Choices label={EXPORT.orientation} value={orientation} onChange={setOrientation}
+          options={[{ value: 'landscape' as const, label: EXPORT.landscape, text: EXPORT.landscape }, { value: 'portrait' as const, label: EXPORT.portrait, text: EXPORT.portrait }]} />
+        <Check wide label={EXPORT.wall} value={wall} onChange={setWall} />
         {wall && <>
-          <label className="field">{EXPORT.pages(pages)}
-            <input type="range" min={2} max={12} value={pages} onChange={(event) => setPages(Number(event.target.value))} />
+          <label className="field"><span>{EXPORT.pages(pages)}</span>
+            <input type="range" aria-label={EXPORT.pages(pages)} min={2} max={12} value={pages} onChange={(event) => setPages(Number(event.target.value))} />
           </label>
-          <p>{EXPORT.wallHint}</p>
+          <p className="note"><Icon name="wall" />{EXPORT.wallHint}</p>
         </>}
-        <label className="check"><input type="checkbox" checked={exercise} onChange={(event) => setExercise(event.target.checked)} />{EXPORT.exercise}</label>
-        {exercise && <p>{EXPORT.exerciseHint}</p>}
+        <Check wide label={EXPORT.exercise} value={exercise} onChange={setExercise} />
+        {exercise && <p className="note"><Icon name="scissors" />{EXPORT.exerciseHint}</p>}
         {worksheet && !exercise && <>
-          <label className="check"><input type="checkbox" checked={answerKey} onChange={(event) => setAnswerKey(event.target.checked)} />{EXPORT.answerKey}</label>
-          {answerKey && <p>{EXPORT.answerKeyHint}</p>}
+          <Check wide label={EXPORT.answerKey} value={answerKey} onChange={setAnswerKey} />
+          {answerKey && <p className="note"><Icon name="check" />{EXPORT.answerKeyHint}</p>}
         </>}
-        <p role="status">{EXPORT.pages(sheet.pages.length * (answerKey && worksheet && !exercise ? 2 : 1) + (exercise ? 1 : 0))}</p>
       </>}
 
       {format === 'png' && <>
-        <fieldset>
-          <legend>{EXPORT.resolution}</legend>
-          {[1, 2, 3].map((value) =>
-            <button key={value} type="button" aria-pressed={ratio === value} onClick={() => setRatio(value)}>{value}×</button>)}
-        </fieldset>
-        <label className="check"><input type="checkbox" checked={transparent} onChange={(event) => setTransparent(event.target.checked)} />{EXPORT.transparent}</label>
+        <Choices label={EXPORT.resolution} value={String(ratio)} onChange={(value) => setRatio(Number(value))}
+          options={[1, 2, 3].map((value) => ({ value: String(value), label: `${value}×`, text: `${value}×` }))} />
+        <Check wide label={EXPORT.transparent} value={transparent} onChange={setTransparent} />
       </>}
 
-      {scene !== null && <p role="status">{`${Math.round(scene.width * (format === 'png' ? ratio : 1))} × ${Math.round(scene.height * (format === 'png' ? ratio : 1))} px`}</p>}
-      {format === 'html' && <p>{EXPORT.htmlHint}</p>}
-      {worksheet && <p>{EXPORT.worksheetHint}</p>}
+      {format === 'html' && <p className="note"><Icon name="web" />{EXPORT.htmlHint}</p>}
+      {worksheet && <p className="note"><Icon name="mask" />{EXPORT.worksheetHint}</p>}
+      <p className="summary" role="status">{format === 'pdf'
+        ? EXPORT.pages(sheet.pages.length * (answerKey && worksheet && !exercise ? 2 : 1) + (exercise ? 1 : 0))
+        : scene === null ? '' : EXPORT.size(Math.round(scene.width * (format === 'png' ? ratio : 1)), Math.round(scene.height * (format === 'png' ? ratio : 1)))}</p>
       {error !== null && <p className="exportError" role="alert">{error}</p>}
     </div>
     <div className={styles.dialogActions}>

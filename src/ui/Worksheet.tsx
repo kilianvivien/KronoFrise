@@ -10,7 +10,7 @@ import { clearMasks, maskAll, maskRandom, setMask } from '../core/pedagogy';
 import { maskOf } from '../core/document';
 import type { MaskKind } from '../core/types';
 import { editorStore } from '../store/editor';
-import { Check, commit } from './fields';
+import { Check, PanelButton, commit } from './fields';
 import { WORKSHEET } from './strings';
 
 const CHOICES: { value: MaskKind | null; label: string }[] = [
@@ -36,16 +36,16 @@ export function Worksheet({ answerKey, onAnswerKey }: { answerKey: boolean; onAn
       <h3>{WORKSHEET.masking}</h3>
       <p>{WORKSHEET.counted(doc.pedagogy.maskedItems.length, doc.items.length)}</p>
       <div className="worksheetActions">
-        <button disabled={!doc.items.length} onClick={() => commit(maskAll(doc, 'label'))}>{WORKSHEET.maskLabels}</button>
-        <button disabled={!doc.items.length} onClick={() => commit(maskAll(doc, 'date'))}>{WORKSHEET.maskDates}</button>
-        <button disabled={!doc.items.length} onClick={() => commit(maskRandom(doc, 0.5))}>{WORKSHEET.maskHalf}</button>
-        <button disabled={!doc.pedagogy.maskedItems.length} onClick={() => commit(clearMasks())}>{WORKSHEET.showAll}</button>
+        <PanelButton icon="mask" label={WORKSHEET.maskLabels} disabled={!doc.items.length} onClick={() => commit(maskAll(doc, 'label'))} />
+        <PanelButton icon="mask" label={WORKSHEET.maskDates} disabled={!doc.items.length} onClick={() => commit(maskAll(doc, 'date'))} />
+        <PanelButton icon="mask" label={WORKSHEET.maskHalf} disabled={!doc.items.length} onClick={() => commit(maskRandom(doc, 0.5))} />
+        <PanelButton icon="check" label={WORKSHEET.showAll} disabled={!doc.pedagogy.maskedItems.length} onClick={() => commit(clearMasks())} />
       </div>
-      <Check label={WORKSHEET.answerKey} value={answerKey} onChange={onAnswerKey} />
+      <Check wide label={WORKSHEET.answerKey} value={answerKey} onChange={onAnswerKey} />
       <p>{WORKSHEET.answerKeyHint}</p>
     </section>
     <section className="panelSection">
-      <h3>{WORKSHEET.hide}</h3>
+      <h3>{WORKSHEET.selected}</h3>
       {selected.length === 0 ? <p>{WORKSHEET.hint}</p> : <fieldset className="worksheetChoices">
         <legend>{WORKSHEET.hide}</legend>
         {CHOICES.map((choice) => <button key={choice.label} type="button" aria-pressed={common === choice.value}

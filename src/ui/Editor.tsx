@@ -2,13 +2,11 @@ import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'rea
 import { useStore } from 'zustand';
 import { addItems, deleteItems } from '../core/commands';
 import { csvItems } from '../core/importers';
-import { createDocument } from '../core/document';
 import { newId } from '../core/ids';
-import { FIXTURES } from '../core/fixtures';
 import { editorStore } from '../store/editor';
 import { openFile, saveFile } from '../store/fileIO';
 import { startPersistence } from '../store/persistence';
-import { CONFIRM, DOC, EDITOR, EXPORT, LIBRARY, M2, START, TOOLBAR, WORKSHEET } from './strings';
+import { CONFIRM, DOC, EDITOR, EXPORT, LIBRARY, M2, TOOLBAR, WORKSHEET } from './strings';
 import { EditorCanvas, type Tool } from './EditorCanvas';
 import { useThumbnail } from './useThumbnail';
 import styles from './Editor.module.css';
@@ -195,12 +193,7 @@ export function Editor(): JSX.Element {
     <div className={styles.workspace}>
       <aside className={styles.sidebar} style={sidebar ? { width: sidebarWidth } : undefined} data-open={sidebar} aria-hidden={!sidebar} inert={!sidebar}>
         <div className={styles.panelContent}>
-          <h2>{EDITOR.sidebar}</h2>
-          <button className={styles.button} disabled={!state.ready} onClick={() => { void preserveCurrent().then((safe) => { if (safe) { state.replace(createDocument()); fit(); } }); }}>{START.newDocument}</button>
-          <select aria-label={EDITOR.examples} className={styles.example} value="" disabled={!state.ready} onChange={(event) => {
-            const fixture = FIXTURES.find((entry) => entry.file === event.target.value);
-            if (fixture) void preserveCurrent().then((safe) => { if (safe) { state.replace({ ...structuredClone(fixture.document), id: newId() }); fit(); } });
-          }}><option value="">{EDITOR.chooseExample}</option>{FIXTURES.map((entry) => <option key={entry.file} value={entry.file}>{entry.document.meta.title}</option>)}</select>
+          <header className="panelHeader"><h2>{EDITOR.sidebar}</h2></header>
           <Outline onLane={(id) => { setLaneId(id); setInspector(true); }} onFocus={(id) => { setLaneId(null); setInspector(true); setFocusItem({ id, serial: Date.now() }); }} />
         </div>
       </aside>
@@ -211,7 +204,13 @@ export function Editor(): JSX.Element {
       <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><Inspector laneId={laneId} onLane={setLaneId} fit={fit} mode={mode} answerKey={answerKey} onAnswerKey={setAnswerKey} /></aside>
     </div>
     <footer className={styles.footer}>
-      <span className={styles.status} role="status">{state.selection.length ? EDITOR.selected(state.selection.length) : state.savedRevision === state.revision ? EDITOR.saved : EDITOR.saving}</span>
+      <span className={styles.status} role="status">
+        {state.selection.length
+          ? <><Icon name="navigate" />{EDITOR.selected(state.selection.length)}</>
+          : state.savedRevision === state.revision
+            ? <><Icon name="check" />{EDITOR.saved}</>
+            : <><span className={styles.pulse} aria-hidden="true" />{EDITOR.saving}</>}
+      </span>
       <span className={styles.hint}>{worksheet ? WORKSHEET.hint : EDITOR.hint}</span>
       <AppearancePicker />
       <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" above disabled={!state.selection.length || worksheet} onClick={duplicate} />

@@ -66,3 +66,24 @@
 .dialogActions button { height: 28px; padding: 0 var(--space-3); color: inherit; background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer; }
 .danger { background: var(--danger); color: var(--on-accent); border-color: transparent; }
 .danger:hover { opacity: .85; }
+
+/* ---- finition : sous-titre, exemples, actions en icônes ---- */
+.header h1 { margin-bottom: 2px; }
+.subtitle { margin: 0; color: var(--text-secondary); font-size: var(--fs-caption); }
+.secondary { display: inline-flex; align-items: center; gap: var(--space-2); }
+.close { display: grid; place-items: center; color: var(--text-secondary); }
+.close:hover { color: var(--text-primary); }
+.actions button { display: inline-flex; align-items: center; gap: 4px; }
+.actions svg { width: 14px; height: 14px; }
+.newTile { color: var(--accent); }
+.newTile svg { width: 20px; height: 20px; }
+
+.examples { max-width: 900px; margin: var(--space-6) auto 0; padding-top: var(--space-5); border-top: 1px solid var(--hairline); }
+.examples h2 { margin: 0 0 2px; font-size: var(--fs-caption); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-tertiary); }
+.examples p { margin: 0 0 var(--space-3); color: var(--text-secondary); font-size: var(--fs-caption); }
+.exampleRow { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.exampleRow button {
+  height: 28px; padding: 0 var(--space-3); color: var(--text-primary); font-size: var(--fs-caption);
+  background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer;
+}
+.exampleRow button:hover { border-color: var(--accent); color: var(--accent); }

@@ -8,6 +8,8 @@
 import { useCallback, useEffect, useRef, useState, type JSX } from 'react';
 import { useStore } from 'zustand';
 import { createDocument } from '../core/document';
+import { FIXTURES } from '../core/fixtures';
+import { newId } from '../core/ids';
 import { editorStore } from '../store/editor';
 import { readAnyFile } from '../store/fileIO';
 import {
@@ -99,10 +101,13 @@ export function Library({ onClose, onOpen, onImported }: {
       if (file) importFile(file);
     }}>
     <header className={styles.header}>
-      <h1>{LIBRARY.title}</h1>
+      <div>
+        <h1>{LIBRARY.title}</h1>
+        <p className={styles.subtitle}>{LIBRARY.subtitle}</p>
+      </div>
       <span className={styles.spacer} />
-      <button className={styles.secondary} onClick={() => upload.current?.click()}>{LIBRARY.importFile}</button>
-      <button className={styles.close} aria-label={LIBRARY.close} onClick={onClose}>✕</button>
+      <button className={styles.secondary} onClick={() => upload.current?.click()}><Icon name="open" />{LIBRARY.importFile}</button>
+      <button className={styles.close} aria-label={LIBRARY.close} onClick={onClose}><Icon name="close" /></button>
     </header>
     <input hidden type="file" ref={upload} accept=".krono,application/json" onChange={(event) => {
       const file = event.target.files?.[0]; event.target.value = '';
@@ -111,7 +116,7 @@ export function Library({ onClose, onOpen, onImported }: {
     {error !== null && <p className={styles.error} role="alert">{error}</p>}
     <div className={styles.grid}>
       <button className={styles.newTile} onClick={create}>
-        <span className={styles.plus} aria-hidden="true">+</span>
+        <Icon name="plus" />
         {START.newDocument}
       </button>
       {entries === null ? <p className={styles.hint}>{LIBRARY.loading}</p> : entries.map((entry) => <article key={entry.id} className={styles.tile}>
@@ -126,12 +131,25 @@ export function Library({ onClose, onOpen, onImported }: {
           <p>{LIBRARY.modified(relativeTime(entry.modifiedAt))} · {LIBRARY.counted(entry.items, entry.lanes)}</p>
         </div>
         <div className={styles.actions}>
-          <button onClick={() => duplicate(entry)}>{LIBRARY.duplicate}</button>
-          <button className={styles.dangerText} disabled={entry.id === state.document.id} onClick={() => setDeleting(entry)}>{LIBRARY.delete}</button>
+          <button onClick={() => duplicate(entry)}><Icon name="duplicate" />{LIBRARY.duplicate}</button>
+          <button className={styles.dangerText} disabled={entry.id === state.document.id} onClick={() => setDeleting(entry)}><Icon name="trash" />{LIBRARY.delete}</button>
         </div>
       </article>)}
     </div>
     {entries !== null && entries.length === 0 && <p className={styles.hint}>{START.empty}</p>}
+
+    <section className={styles.examples}>
+      <h2>{LIBRARY.examples}</h2>
+      <p>{LIBRARY.examplesHint}</p>
+      <div className={styles.exampleRow}>
+        {FIXTURES.filter((entry) => entry.file !== 'stress.krono').map((entry) => <button key={entry.file} onClick={() => onOpen(() => {
+          editorStore.getState().replace({ ...structuredClone(entry.document), id: newId() });
+          onClose();
+          return Promise.resolve();
+        })}>{entry.document.meta.title}</button>)}
+      </div>
+    </section>
+
     <p className={styles.dropHint}><Icon name="open" /> {LIBRARY.drop}</p>
     <dialog ref={dialog} className={styles.dialog} onCancel={() => setDeleting(null)} aria-labelledby="library-delete">
       <h2 id="library-delete">{deleting ? LIBRARY.confirmDelete(deleting.title) : ''}</h2>
