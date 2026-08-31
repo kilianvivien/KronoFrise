@@ -99,6 +99,12 @@ croisillon ; les motifs débordaient de leur barre d'une frange de dix pixels ;
 le point médian du bloc de titre, absent des trois fontes livrées, s'imprimait
 en rectangle vide.
 
+La frise murale est vérifiée **au pixel** plutôt qu'à l'œil : la bande de
+recouvrement de 10 mm de la page *n* et celle de la page *n+1* se superposent
+avec un décalage optimal de **zéro pixel à 200 dpi** (0,127 mm par pixel), le
+reste de l'écart tenant aux repères d'assemblage, tracés sur un seul bord de
+chaque page. Les feuilles se raboutent donc exactement.
+
 Vérifié bon à l'image : les coupures ⫽ et les densités par segment de
 `grandes-periodes`, les exposants ordinaux (imprimés sur Manuel et Parchemin,
 repliés sur Craie), les six thèmes, le dégradé en seize bandes, les bords flous,
