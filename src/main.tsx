@@ -4,8 +4,10 @@ import './ui/base.css';
 import { DevApp } from './ui/DevApp';
 import { Editor } from './ui/Editor';
 import { startAppearance } from './store/appearance';
+import { registerServiceWorker } from './pwa/register';
 
 const stopAppearance = startAppearance();
+registerServiceWorker();
 if (import.meta.hot) import.meta.hot.dispose(stopAppearance);
 
 const container = document.getElementById('root');

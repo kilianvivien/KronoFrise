@@ -2,10 +2,18 @@
   "id": "./",
   "name": "KronoFrise",
   "short_name": "KronoFrise",
+  "description": "Éditeur de frises chronologiques pour la classe : construire, projeter, imprimer.",
   "lang": "fr",
+  "dir": "ltr",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
+  "background_color": "#F3F0EB",
+  "theme_color": "#F3F0EB",
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -18,6 +26,17 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "./",
+      "name": "Frise KronoFrise",
+      "accept": {
+        "application/json": [
+          ".krono"
+        ]
+      }
     }
   ]
 }

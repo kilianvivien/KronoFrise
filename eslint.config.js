@@ -58,6 +58,14 @@ export default tseslint.config(
     ...tseslint.configs.disableTypeChecked,
   },
   {
+    // Le service worker ne tourne pas dans une page : ses globales sont
+    // celles d'un worker (`self`, `caches`, `clients`), pas celles du DOM.
+    files: ['src/pwa/sw.js'],
+    // `__PRECACHE__` est substitué à la construction par le greffon de
+    // vite.config.ts : dans la source c'est volontairement une globale libre.
+    languageOptions: { globals: { ...globals.serviceworker, __PRECACHE__: 'readonly' } },
+  },
+  {
     files: ['**/*.test.ts', '**/*.test.tsx'],
     rules: { '@typescript-eslint/no-non-null-assertion': 'off' },
   },

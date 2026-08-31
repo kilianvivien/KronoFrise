@@ -414,3 +414,42 @@ et l'encre, elle, ne bougeait pas. `readableInk(base, fill)` assombrit par pas
 déterministes jusqu'au seuil AA — et rend `ink(base)` inchangé partout où il
 passait déjà, si bien que *Manuel scolaire* est au pixel près ce qu'il était.
 Les six thèmes × douze couleurs sont désormais vérifiés par test.
+
+### 13.7 Hors ligne : service worker écrit à la main, préchargement injecté
+
+PLAN.md §5 demande « PWA/offline » en M4 ; le manifeste et les icônes
+existaient depuis M3, le mode hors ligne non. `vite-plugin-pwa` est hors de la
+liste fermée de §8.4, et un service worker de 60 lignes ne justifie pas d'y
+déroger : `src/pwa/sw.js` est écrit à la main.
+
+Un service worker écrit à la main ne peut pas deviner les noms de fichiers
+hachés. Le greffon `kronofrisePwa` de `vite.config.ts` (un `generateBundle` de
+Rollup, aucune dépendance) lit le bundle final et fige la liste réelle. Cela
+inclut **les morceaux chargés paresseusement** : sans eux, un enseignant hors
+ligne qui n'a jamais exporté n'aurait jamais téléchargé le morceau PDF et
+l'export aurait échoué au moment précis où il en a besoin.
+
+Décisions :
+
+- **Pas de `skipWaiting`.** Échanger les fichiers sous une page ouverte casse
+  le chargement paresseux des morceaux. La nouvelle version prend la main au
+  démarrage suivant, comme une application native.
+- **Cache d'abord pour les ressources, réseau d'abord pour la navigation**,
+  avec repli sur la page en cache : jamais d'index périmé quand le réseau est là.
+- **Jamais de mise en cache d'une erreur ni d'une réponse opaque** : un 404
+  conservé survivrait à la panne qui l'a produit.
+- Le manifeste gagne `theme_color`, `background_color`, `description` et
+  `file_handlers` pour `.krono`. Ses couleurs sont du JSON, donc hors de portée
+  du lint DESIGN.md §1.2 : un test les compare à `tokens.css`.
+
+**Limite de vérification** : le service worker ne s'enregistre pas dans
+l'environnement d'automatisation — le navigateur intégré intercepte la requête
+du script (`An unknown error occurred when fetching the script`), alors que le
+fichier est servi en 200 `text/javascript` et de syntaxe valide. À défaut,
+`src/pwa/swHarness.ts` charge le **fichier réel**, avec la substitution de la
+construction, dans un contexte muni de globales de worker et déclenche ses
+événements : préchargement complet, service sans réseau, repli de navigation
+hors ligne, non-interception des POST et des origines tierces, refus de mettre
+en cache une erreur, purge des versions précédentes. Restent à confirmer sur un
+navigateur réel : l'installation elle-même et l'invite « Installer
+l'application ».
