@@ -1,0 +1,47 @@
+/* Bulle d'accompagnement — vocabulaire « Popovers/menus » de DESIGN.md §3. */
+.bubble {
+  position: fixed;
+  z-index: 60;
+  background: var(--field-bg);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-popover);
+  padding: var(--space-3);
+  color: var(--text-primary);
+}
+.bubble h2 { margin: 0 0 var(--space-1); font-size: var(--fs-title); font-weight: 600; }
+.body { margin: 0; color: var(--text-secondary); line-height: 1.4; }
+.counter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0 0 var(--space-2);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+.counter svg { width: 14px; height: 14px; }
+.actions { display: flex; justify-content: flex-end; margin-top: var(--space-3); }
+.actions button {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-control);
+  background: var(--field-bg);
+  color: var(--text-primary);
+  font-weight: 500;
+  cursor: pointer;
+}
+.actions button:hover { background: var(--chrome-bg-inset); }
+
+/* L'anneau d'accent de DESIGN.md §5, posé sur le vrai contrôle. */
+.spot {
+  position: fixed;
+  z-index: 59;
+  pointer-events: none;
+  border: 2px solid var(--accent);
+  border-radius: var(--radius-control);
+  box-shadow: 0 0 0 3px var(--focus-ring);
+}

@@ -453,3 +453,29 @@ hors ligne, non-interception des POST et des origines tierces, refus de mettre
 en cache une erreur, purge des versions précédentes. Restent à confirmer sur un
 navigateur réel : l'installation elle-même et l'invite « Installer
 l'application ».
+
+### 13.8 Tutoriel d'accueil : une étape s'achève sur un geste, pas sur « Suivant »
+
+PLAN.md M4 (ajout 1) demande « trois ou quatre étapes qui font *faire* la
+chose ». Retenu : aucune étape ne comporte de bouton « Suivant ». Chacune
+observe le document ou le mode et se franchit d'elle-même — tant que
+l'événement n'existe pas, l'étape reste. `tutorialSteps.ts` est du calcul pur,
+donc éprouvé sans DOM.
+
+Trois précisions que la spécification laissait ouvertes :
+
+- **Créer n'est pas déplacer.** L'étape « déplacez-le » compare les dates des
+  éléments *déjà présents* à son entrée : sinon elle se serait franchie au
+  moment même où l'élément apparaît, et le geste n'aurait pas été appris.
+- **Une étape déjà satisfaite est franchie d'un coup.** Créer un événement
+  ouvre déjà le champ du libellé : celui qui le nomme tout de suite passe
+  directement de « déplacez-le » à « projetez ». Vérifié dans le navigateur.
+- **La bulle s'accroche au vrai contrôle** (`data-tour`), remesuré à chaque
+  étape et à chaque redimensionnement — jamais une position codée en dur. Sa
+  hauteur est mesurée puis ramenée dans l'écran : une cible haute comme le
+  canevas ne laisse de place ni au-dessus ni au-dessous.
+
+SPEC? DESIGN.md ne décrit pas de bulle d'accompagnement : elle reprend la
+recette « Popovers/menus » de §3 et l'anneau d'accent de §5, sans nouveau
+vocabulaire visuel. Le bouton de reprise est une icône Lucide dans la barre
+d'état, à côté du sélecteur d'apparence — c'est le « menu d'aide » demandé.

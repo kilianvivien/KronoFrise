@@ -18,6 +18,9 @@ import { canvasMeasurer } from './measureText';
 import { makeScale } from '../layout/scale';
 import { clampPan } from './camera';
 import { AppearancePicker } from './AppearancePicker';
+import { Tutorial } from './Tutorial';
+import { appearanceStore, setTutorialDone } from '../store/appearance';
+import { TUTORIAL } from './strings';
 import { Icon, type IconName } from './icons';
 import { Inspector } from './Inspector';
 import type { Mode } from './mode';
@@ -55,6 +58,8 @@ export function Editor(): JSX.Element {
   const [mode, setMode] = useState<Mode>('edit');
   const [answerKey, setAnswerKey] = useState(false);
   const [library, setLibrary] = useState(false);
+  const tutorialDone = useStore(appearanceStore, (value) => value.tutorialDone);
+  const [tutorial, setTutorial] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
   const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(true);
@@ -94,6 +99,10 @@ export function Editor(): JSX.Element {
     const timer = setTimeout(() => setNotice(null), 5000);
     return () => clearTimeout(timer);
   }, [notice]);
+
+  // Première visite : la prise en main s'ouvre dès que la frise est prête,
+  // jamais sur l'écran de chargement.
+  useEffect(() => { if (state.ready && !tutorialDone) setTutorial(true); }, [state.ready, tutorialDone]);
 
   const scale = useMemo(() => makeScale(state.document.axis, canvasWidth, pan, zoom, insets), [state.document.axis, canvasWidth, pan, zoom, insets]);
   const scaleRef = useRef(scale);
@@ -246,7 +255,7 @@ export function Editor(): JSX.Element {
       <span className={styles.separator} />
       <div className={styles.group} role="group" aria-label={TOOLBAR.tools}>
         <IconButton icon="navigate" label={M2.navigate} hint="Échap" segment pressed={tool === 'auto'} onClick={() => setTool('auto')} />
-        <IconButton icon="event" label={TOOLBAR.addEvent} hint="E" segment pressed={tool === 'event'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')} />
+        <span data-tour="event-tool"><IconButton icon="event" label={TOOLBAR.addEvent} hint="E" segment pressed={tool === 'event'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')} /></span>
         <IconButton icon="period" label={TOOLBAR.addPeriod} hint="P" segment pressed={tool === 'period'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')} />
       </div>
       <span className={styles.separator} />
@@ -258,7 +267,9 @@ export function Editor(): JSX.Element {
       <span className={styles.spacer} />
       <div className={styles.group} role="group" aria-label={WORKSHEET.mode}>
         {([['edit', TOOLBAR.modeEdit, 'edit'], ['present', TOOLBAR.modePresent, 'present'], ['worksheet', TOOLBAR.modeWorksheet, 'worksheet']] as const).map(([value, label, icon]) =>
-          <IconButton key={value} icon={icon} label={label} segment pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)} />)}
+          <span key={value} {...(value === 'present' ? { 'data-tour': 'present-mode' } : {})}>
+            <IconButton icon={icon} label={label} segment pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)} />
+          </span>)}
       </div>
       <span className={styles.separator} />
       <IconButton icon="library" label={LIBRARY.open} pressed={library} disabled={!state.ready} onClick={() => setLibrary(!library)} />
@@ -278,7 +289,7 @@ export function Editor(): JSX.Element {
       {sidebar && <div className="sidebarResize" role="separator" aria-label={M2.resizeSidebar} aria-orientation="vertical" aria-valuemin={200} aria-valuemax={320} aria-valuenow={sidebarWidth} tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setSidebarWidth(Math.max(200, Math.min(320, sidebarWidth + (e.key === 'ArrowLeft' ? -10 : 10)))); } }}
         onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)} onPointerMove={(e) => { if (e.currentTarget.hasPointerCapture(e.pointerId)) setSidebarWidth(Math.max(200, Math.min(320, e.clientX))); }} onPointerUp={(e) => e.currentTarget.releasePointerCapture(e.pointerId)} />}
-      <main className={styles.main}>{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} worksheet={worksheet && !answerKey} readOnly={worksheet} /><Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
+      <main className={styles.main} data-tour="canvas">{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} worksheet={worksheet && !answerKey} readOnly={worksheet} /><Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
       <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><Inspector laneId={laneId} onLane={setLaneId} fit={fit} mode={mode} answerKey={answerKey} onAnswerKey={setAnswerKey} /></aside>
     </div>
     <footer className={styles.footer}>
@@ -291,6 +302,7 @@ export function Editor(): JSX.Element {
       </span>
       <span className={styles.hint}>{worksheet ? WORKSHEET.hint : EDITOR.hint}</span>
       <AppearancePicker />
+      <IconButton icon="help" label={TUTORIAL.restart} above disabled={!state.ready} onClick={() => { setTutorialDone(false); setTutorial(true); }} />
       <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" above disabled={!state.selection.length || worksheet} onClick={duplicate} />
       <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" above atEnd disabled={!state.selection.length || worksheet} onClick={remove} />
     </footer>
@@ -299,6 +311,7 @@ export function Editor(): JSX.Element {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });
     }} />}
     {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}
+    {tutorial && state.ready && <Tutorial mode={mode} onClose={() => setTutorial(false)} />}
     {(state.error || notice) && <div className={styles.notification} data-kind={state.error ? 'error' : 'notice'} role={state.error ? 'alert' : 'status'}>
       <Icon name={state.error ? 'close' : 'check'} />
       <span>{state.error || notice}</span>

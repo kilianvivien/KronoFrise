@@ -193,3 +193,23 @@ export const FILLS = {
   bracketHint: 'Les accolades n’ont pas de surface à remplir. Choisissez une barre ou une flèche pour afficher le motif.',
   mixed: 'Plusieurs remplissages : choisissez un style pour l’appliquer à la sélection.',
 } as const;
+
+/** Tutoriel d'accueil — PLAN.md M4 (ajout 1). Vouvoiement, verbes d'abord. */
+export const TUTORIAL = {
+  title: 'Prise en main',
+  step: (index: number, total: number): string => `Étape ${index} sur ${total}`,
+  skip: 'Passer',
+  finish: 'Terminer',
+  restart: 'Revoir la prise en main',
+  completed: 'Terminé',
+  doneTitle: 'Vous savez construire une frise',
+  done: 'Il ne reste qu’à l’exporter : ⌘E propose le PDF, la page web, le SVG et le PNG.',
+  placeTitle: 'Placez un premier événement',
+  placeBody: 'Choisissez l’outil Événement, puis cliquez sur la frise à la date voulue.',
+  moveTitle: 'Déplacez-le dans le temps',
+  moveBody: 'Faites-le glisser le long de l’axe, ou utilisez les flèches ← et →. La date s’affiche pendant le déplacement.',
+  nameTitle: 'Donnez-lui un nom',
+  nameBody: 'Double-cliquez sur l’événement pour le renommer, puis validez avec Entrée.',
+  presentTitle: 'Projetez votre frise',
+  presentBody: 'Le mode Présentation passe la frise en plein écran et la parcourt événement par événement.',
+} as const;

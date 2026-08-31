@@ -15,7 +15,7 @@
 import { createElement, type JSX } from 'react';
 import {
   ArrowDown, ArrowUp, Check, ChevronDown, ChevronLeft, ChevronRight, Copy, FileImage,
-  FileText, FolderOpen, Frame, Globe, Image, LayoutGrid, Minus, MonitorPlay, MousePointer2,
+  CircleQuestionMark, FileText, FolderOpen, Frame, Globe, Image, LayoutGrid, Minus, MonitorPlay, MousePointer2,
   PanelLeft, PanelRight, Pencil, Pin, Plus, Redo2, Save, Scissors, Search, SkipBack,
   Spline, Trash2, Undo2, Upload, X, type LucideIcon,
 } from 'lucide-react';
@@ -31,12 +31,12 @@ export type IconName =
   | 'search' | 'plus' | 'chevronDown' | 'chevronRight' | 'arrowUp' | 'arrowDown'
   | 'bar' | 'bracket' | 'arrow' | 'image' | 'pin' | 'lane' | 'preset' | 'check'
   | 'close' | 'first' | 'last' | 'mask' | 'back'
-  | 'pdf' | 'web' | 'vector' | 'raster' | 'wall' | 'scissors' | 'fit';
+  | 'pdf' | 'web' | 'vector' | 'raster' | 'wall' | 'scissors' | 'fit' | 'help';
 
 /** Glyphes génériques : Lucide, tel quel. */
 const LUCIDE: Partial<Record<IconName, LucideIcon>> = {
   sidebar: PanelLeft, inspector: PanelRight,
-  undo: Undo2, redo: Redo2,
+  undo: Undo2, redo: Redo2, help: CircleQuestionMark,
   navigate: MousePointer2,
   zoomOut: Minus, zoomIn: Plus,
   edit: Pencil, present: MonitorPlay,
