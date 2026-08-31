@@ -18,6 +18,7 @@ import { clampPan } from './camera';
 import { AppearancePicker } from './AppearancePicker';
 import { Inspector } from './Inspector';
 import type { Mode } from './mode';
+import { Presentation } from './Presentation';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
 import './panels.css';
@@ -146,7 +147,7 @@ export function Editor(): JSX.Element {
       <button className={styles.icon} aria-label={TOOLBAR.zoomIn} disabled={zoom >= 5000} onClick={() => stepZoom(1.5)}><Icon name="plus" /></button>
       <span className={styles.spacer} />
       <div className={styles.segmented} role="group" aria-label={WORKSHEET.mode}>
-        {([['edit', TOOLBAR.modeEdit], ['worksheet', TOOLBAR.modeWorksheet]] as const).map(([value, label]) =>
+        {([['edit', TOOLBAR.modeEdit], ['present', TOOLBAR.modePresent], ['worksheet', TOOLBAR.modeWorksheet]] as const).map(([value, label]) =>
           <button key={value} className={styles.segment} aria-pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)}>{label}</button>)}
       </div>
       <button className={styles.button} disabled={!state.ready} onClick={() => { void open(); }}>{EDITOR.open}</button>
@@ -178,6 +179,7 @@ export function Editor(): JSX.Element {
       <button className={styles.icon} aria-label={EDITOR.duplicate} title={`${EDITOR.duplicate} (⌘D)`} disabled={!state.selection.length || worksheet} onClick={duplicate}><Icon name="duplicate" /></button>
       <button className={styles.icon} aria-label={CONFIRM.delete} disabled={!state.selection.length || worksheet} onClick={remove}><Icon name="trash" /></button>
     </footer>
+    {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}
     {(state.error || notice) && <div className={styles.notification} role={state.error ? 'alert' : 'status'}>{state.error || notice}<button className={styles.button} onClick={() => { editorStore.setState({ error: null }); setNotice(null); }}>{EDITOR.close}</button></div>}
     <dialog ref={dialog} className={styles.dialog} onCancel={() => setDeleting([])} aria-labelledby="delete-title">
       <h2 id="delete-title">{CONFIRM.deleteItems(deleting.length)}</h2>

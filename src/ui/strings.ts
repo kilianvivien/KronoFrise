@@ -83,6 +83,19 @@ export const WORKSHEET = {
   mode: 'Mode de la frise',
 } as const;
 
+/** Mode présentation — PLAN.md §3.5. */
+export const PRESENT = {
+  controls: 'Commandes de la présentation',
+  previous: 'Élément précédent', next: 'Élément suivant',
+  overview: 'Vue d’ensemble',
+  position: (index: number, total: number): string => `${index} / ${total}`,
+  reveal: 'Révéler',
+  revealHint: 'Les éléments apparaissent un par un, au rythme de la leçon.',
+  fullscreen: 'Plein écran',
+  exit: 'Quitter',
+  empty: 'Cette frise ne contient encore aucun élément à présenter.',
+} as const;
+
 export const APPEARANCE = {
   title: 'Apparence de l’interface', label: 'Interface',
   terracotta: 'Terre cuite', light: 'Clair', dark: 'Sombre', system: 'Système',
