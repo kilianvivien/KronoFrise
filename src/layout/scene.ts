@@ -108,3 +108,39 @@ export interface SceneGraph {
   /** morceaux de la ligne de base, interrompue par les coupures */
   axisSegments: SceneAxisSegment[];
 }
+
+/** Fenêtre visible, en pixels de scène (déjà des pixels d'écran : `pan` est appliqué). */
+export interface SceneViewport {
+  x0: number;
+  x1: number;
+}
+
+/**
+ * Élagage par fenêtre — optimisation de **l'éditeur seul**.
+ *
+ * À 40 000 % de zoom, 8 éléments sur 500 sont à l'écran : les 492 autres
+ * coûtaient un nœud SVG et une réconciliation à chaque image de glissement.
+ * Cette fonction ne touche à aucune coordonnée : elle retire seulement ce
+ * qui ne peint rien. La scène élaguée est donc un sous-ensemble exact de la
+ * scène complète, jamais une géométrie différente (docs/format.md §9).
+ *
+ * Les exports ne l'appellent pas : un élément placé hors de l'axe est
+ * extrapolé, pas rogné (layout/scale.ts), et doit rester dans le fichier.
+ */
+export function visibleScene(scene: SceneGraph, viewport: SceneViewport): SceneGraph {
+  const { x0, x1 } = viewport;
+  const events = scene.events.filter((event) => {
+    // La pastille peut être visible alors que la puce ne l'est pas, et
+    // inversement : on garde l'union des deux, connecteur compris.
+    const left = Math.min(event.x, event.chip.x);
+    const right = Math.max(event.x, event.chip.x + event.chip.width);
+    return right >= x0 && left <= x1;
+  });
+  const periods = scene.periods.filter((period) => {
+    // Un libellé posé à droite d'une barre étroite déborde de la barre.
+    const right = period.labelInside ? period.x1 : Math.max(period.x1, period.labelX + period.labelWidth);
+    return right >= x0 && period.x0 <= x1;
+  });
+  if (events.length === scene.events.length && periods.length === scene.periods.length) return scene;
+  return { ...scene, events, periods };
+}

@@ -6,6 +6,7 @@ import { parseDocument } from '../core/schema';
 import { newId } from '../core/ids';
 import type { Item, KDate } from '../core/types';
 import { layout } from '../layout/layout';
+import { visibleScene } from '../layout/scene';
 import { makeScale, type ScaleInsets } from '../layout/scale';
 import { Frise } from '../renderer/Frise';
 import { editorStore } from '../store/editor';
@@ -62,6 +63,10 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
   const finishingEdit = useRef(false);
   const scale = useMemo(() => makeScale(doc.axis, size.width, pan, zoom, insets), [doc.axis, size.width, pan, zoom, insets]);
   const scene = useMemo(() => layout(doc, scale, { measurer: canvasMeasurer, height: size.height, worksheet }), [doc, scale, size.height, worksheet]);
+  // Ce qui est réellement dessiné : la scène élaguée à la fenêtre, avec une
+  // largeur de vue de marge de chaque côté. La sélection, la souris et les
+  // exports continuent de travailler sur `scene`, qui reste entière.
+  const painted = useMemo(() => visibleScene(scene, { x0: -size.width, x1: size.width * 2 }), [scene, size.width]);
   const sceneBoxes = useMemo(() => [
     ...scene.events.map((event) => ({ id: event.itemId, ...event.chip })),
     ...scene.periods.map((period) => ({ id: period.itemId, x: period.x0, y: period.y, width: period.x1 - period.x0, height: period.height })),
@@ -282,7 +287,7 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
         if (item) { event.preventDefault(); event.stopPropagation(); state.select([id]); setEditing({ id, value: item.label }); }
       }
     }}>
-    <Frise scene={scene} title={doc.meta.title} theme={themeById(doc.themeId)}>
+    <Frise scene={painted} title={doc.meta.title} theme={themeById(doc.themeId)}>
       {sceneBoxes.filter((box) => state.selection.includes(box.id)).map((box) => <rect key={box.id} className={styles.selection} x={box.x - 2} y={box.y - 2} width={Math.max(box.width, 1) + 4} height={box.height + 4} rx={5} />)}
       {state.selection.length === 1 && !editing && scene.periods.filter((period) => state.selection.includes(period.itemId)).map((period) => <g key={period.itemId} data-item-id={period.itemId}>
         {(['start', 'end'] as const).map((edge) => <g key={edge} data-edge={edge} className={styles.edge}>

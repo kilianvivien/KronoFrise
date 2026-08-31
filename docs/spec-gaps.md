@@ -318,3 +318,70 @@ largeurs réelles : jamais en dessous, jamais plus de 4 % au-dessus.
 Le navigateur continue de mesurer exactement (canvas) ; cette table sert aux
 rendus sans DOM — tests, script d'exemples, et plus tard un export en ligne de
 commande.
+
+## 13. Décisions M4
+
+### 13.1 Clavier : ce que « décaler d'une graduation » veut dire
+
+PLAN.md §3.2 promet « les flèches décalent la date d'une graduation (⇧ = ×10) »
+sans dire ce que vaut une graduation : le pas dépend du zoom **et** du segment
+élastique. Retenu : `nudgeStep` relit l'écart entre deux graduations que la
+règle dessine réellement à l'endroit de l'élément. Sur une même frise, ±1 an
+sur l'époque contemporaine et ±500 ans sur la préhistoire — ce que l'œil
+attend, puisque c'est ce que la règle montre.
+
+Un décalage n'affine jamais la précision d'une date : « 1789 » reste une
+année même si la règle est graduée au mois. ↑/↓ change de bande — non
+spécifié, mais c'est l'équivalent clavier du glissement vertical de §3.3.4,
+sans lequel une frise à plusieurs bandes n'était pas éditable au clavier.
+⌘+ / ⌘− / ⌘0 reprennent les trois boutons de zoom de la barre d'outils.
+
+### 13.2 Accessibilité : le focus et la sélection doivent coïncider
+
+Les éléments du canevas portaient déjà `tabindex`, `role` et un nom accessible
+(DESIGN.md §7), mais **le focus ne sélectionnait pas** : un élément atteint au
+clavier ne pouvait être ni déplacé, ni dupliqué, ni supprimé. Le focus
+sélectionne désormais.
+
+Réciproquement, une commande qui vide la sélection (annuler, ajouter une bande)
+laissait l'anneau de focus sur un élément devenu inerte. `keyboardSelection()`
+rétablit la sélection depuis le focus réel plutôt que de ne rien faire.
+
+La barre d'état nomme l'élément quand il est seul sélectionné : comme c'est un
+`role="status"`, sa date est annoncée à chaque décalage.
+
+### 13.3 Élagage par fenêtre : où il s'applique, et où il ne s'applique pas
+
+À 40 000 % de zoom, la frise de charge montre 8 éléments sur 500 et en
+dessinait pourtant 500 — soit 2 870 nœuds SVG réconciliés à chaque image de
+glissement. `visibleScene(scene, viewport)` (layout/scene.ts) retire ce qui ne
+peint rien : 39 nœuds au lieu de 2 870, sans toucher à une seule coordonnée.
+
+Deux limites assumées :
+
+- **Les exports ne l'appellent pas.** Un élément placé hors de l'axe est
+  extrapolé et non rogné (layout/scale.ts) : il doit rester dans le SVG, le
+  PDF et la page web. `layout()` produit donc toujours la scène entière, et
+  seul l'éditeur en dessine une vue. La scène élaguée est prouvée
+  sous-ensemble exact de la scène complète (`layout.test.ts`).
+- **Tab ne parcourt que les éléments dessinés**, comme dans toute liste
+  virtualisée. Le plan de la barre latérale reste la liste complète, cherchable
+  et navigable au clavier, et y cliquer recentre la vue sur l'élément : c'est
+  le chemin accessible vers un élément hors champ.
+
+### 13.4 Performance mesurée (31 août 2026)
+
+`pnpm bench` mesure la mise en page seule ; les images sont mesurées dans le
+navigateur sur le **build de production** — React en mode développement est
+trois fois plus lent et ne dit rien de l'expérience réelle.
+
+| Mesure (500 éléments, 4 bandes) | Résultat |
+|---|---|
+| `layout()` | 0,6 – 1,0 ms (budget format.md §10 : 5 ms) |
+| Panoramique à 100 % | 10 ms médian, 11 ms au 90ᵉ centile |
+| Glissement des 500 éléments sélectionnés | 10 ms médian, 14 ms max |
+| Panoramique à 40 000 % (après élagage) | 8 ms médian |
+
+Tout tient sous les 16,7 ms d'une image à 60 Hz. La mise en page n'était pas
+le goulot : le coût est la réconciliation React des nœuds SVG, ce que
+l'élagage attaque directement.

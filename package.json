@@ -12,7 +12,8 @@
     "typecheck": "tsc -b --pretty",
     "lint": "eslint .",
     "fixtures:emit": "vite-node scripts/emit-fixtures.ts",
-    "samples": "vite-node scripts/export-samples.ts"
+    "samples": "vite-node scripts/export-samples.ts",
+    "bench": "vite-node scripts/bench-layout.ts"
   },
   "dependencies": {
     "@use-gesture/react": "^10.3.1",

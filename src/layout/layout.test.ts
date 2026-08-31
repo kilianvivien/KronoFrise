@@ -3,6 +3,7 @@ import { antiquite, grandesPeriodes, revolution, stress } from '../core/fixtures
 import type { KronoDocument } from '../core/types';
 import { layout } from './layout';
 import { makeScale } from './scale';
+import { visibleScene } from './scene';
 import type { SceneGraph } from './scene';
 
 const WIDTH = 1200;
@@ -128,5 +129,50 @@ describe('layout regressions found during M1 browser verification', () => {
       if (segment && segment.pxPerYear >= 72) expect(event.showDate).toBe(true);
       if (segment && segment.pxPerYear < 1) expect(event.showDate).toBe(false);
     }
+  });
+});
+
+describe('élagage par fenêtre (visibleScene)', () => {
+  const viewportOf = (scene: ReturnType<typeof sceneOf>) => ({ x0: 0, x1: scene.width });
+
+  it('ne retire rien quand toute la frise tient dans la fenêtre', () => {
+    const scene = sceneOf(revolution);
+    expect(visibleScene(scene, { x0: -scene.width, x1: scene.width * 2 })).toBe(scene);
+  });
+
+  it('retire l’écrasante majorité des éléments à fort zoom', () => {
+    const scene = sceneOf(stress, 0, 400);
+    const culled = visibleScene(scene, viewportOf(scene));
+    expect(scene.events.length + scene.periods.length).toBe(500);
+    expect(culled.events.length + culled.periods.length).toBeLessThan(60);
+  });
+
+  it('garde tout ce qui touche la fenêtre, et rien qui n’y touche', () => {
+    const scene = sceneOf(stress, 0, 400);
+    const view = viewportOf(scene);
+    const culled = visibleScene(scene, view);
+    const touches = (left: number, right: number) => right >= view.x0 && left <= view.x1;
+
+    for (const event of scene.events) {
+      const left = Math.min(event.x, event.chip.x);
+      const right = Math.max(event.x, event.chip.x + event.chip.width);
+      expect(`${event.itemId} ${culled.events.includes(event)}`).toBe(`${event.itemId} ${touches(left, right)}`);
+    }
+    for (const period of scene.periods) {
+      const right = period.labelInside ? period.x1 : Math.max(period.x1, period.labelX + period.labelWidth);
+      expect(`${period.itemId} ${culled.periods.includes(period)}`).toBe(`${period.itemId} ${touches(period.x0, right)}`);
+    }
+  });
+
+  it('ne déplace jamais rien : la scène élaguée est un sous-ensemble exact', () => {
+    const scene = sceneOf(stress, 0, 400);
+    const culled = visibleScene(scene, viewportOf(scene));
+    expect(culled.width).toBe(scene.width);
+    expect(culled.height).toBe(scene.height);
+    expect(culled.baselineY).toBe(scene.baselineY);
+    expect(culled.ticks).toBe(scene.ticks);
+    expect(culled.lanes).toBe(scene.lanes);
+    for (const event of culled.events) expect(scene.events).toContain(event);
+    for (const period of culled.periods) expect(scene.periods).toContain(period);
   });
 });
