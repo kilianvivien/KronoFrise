@@ -38,6 +38,16 @@ describe('exports vectoriels', () => {
     expect(key).toContain(revolution.items[0]!.label);
   });
 
+  it('n’imprime le papier du thème que si le fond n’est pas transparent', async () => {
+    const opaque = await exportSvg(revolution, { width: 800 });
+    const transparent = await exportSvg(revolution, { width: 800, transparent: true });
+    expect(opaque).toContain('background');
+    expect(transparent).not.toContain('background:');
+    // Le dessin, lui, ne change pas : seuls le fond et le rectangle de papier.
+    expect(transparent.length).toBeLessThan(opaque.length);
+    expect(transparent).toContain(revolution.items[0]!.label);
+  });
+
   it('nomme le fichier d’après le titre, sans caractère interdit', () => {
     expect(exportFilename(revolution, 'svg', 'frise')).toBe('La Révolution française.svg');
     expect(exportFilename({ ...revolution, meta: { ...revolution.meta, title: 'a/b:c' } }, 'pdf', 'frise')).toBe('a_b_c.pdf');

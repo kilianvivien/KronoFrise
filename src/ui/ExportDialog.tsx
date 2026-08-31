@@ -69,7 +69,7 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
         const blob = new Blob([svg], { type: 'image/svg+xml' });
         if (await downloadBlob(blob, exportFilename(doc, 'svg', 'frise'), EXPORT.svg, 'image/svg+xml', '.svg')) onDone(EXPORT.done);
       } else {
-        const blob = await exportPng(doc, { width: IMAGE_WIDTH, ratio, transparent, worksheet, measurer: canvasMeasurer });
+        const blob = await exportPng(doc, { width: IMAGE_WIDTH, ratio, worksheet, measurer: canvasMeasurer, ...(transparent ? { transparent: true } : {}) });
         if (await downloadBlob(blob, exportFilename(doc, 'png', 'frise'), EXPORT.png, 'image/png', '.png')) onDone(EXPORT.done);
       }
       onClose();

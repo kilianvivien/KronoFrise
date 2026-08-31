@@ -19,6 +19,8 @@ export interface SceneOptions {
   height?: number;
   worksheet?: boolean;
   measurer?: Measurer;
+  /** n'imprime pas le papier du thème (PNG à fond transparent) */
+  transparent?: boolean;
 }
 
 /** La scène telle qu'elle sera exportée, à la largeur demandée. */
@@ -39,13 +41,13 @@ export async function exportSvg(doc: KronoDocument, options: SceneOptions): Prom
     scene: exportScene(doc, options),
     title: doc.meta.title,
     theme: themeById(doc.themeId),
+    ...(options.transparent === true ? { transparent: true } : {}),
   });
 }
 
 export interface PngOptions extends SceneOptions {
   /** 1×, 2× ou 3× (DESIGN.md §3.6) */
   ratio: number;
-  transparent?: boolean;
 }
 
 /**
@@ -63,10 +65,9 @@ export async function exportPng(doc: KronoDocument, options: PngOptions): Promis
     canvas.height = Math.round(scene.height * options.ratio);
     const context = canvas.getContext('2d');
     if (context === null) throw new Error('canvas');
-    if (options.transparent !== true) {
-      // Le papier du thème est déjà peint par le rendu ; on ne le double pas.
-      context.clearRect(0, 0, canvas.width, canvas.height);
-    }
+    // Le papier vient du rendu lui-même ; ici la toile reste vide, ce qui
+    // laisse le fond transparent quand le rendu ne l'a pas peint.
+    context.clearRect(0, 0, canvas.width, canvas.height);
     context.drawImage(image, 0, 0, canvas.width, canvas.height);
     return await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob((blob) => { if (blob) resolve(blob); else reject(new Error('png')); }, 'image/png');

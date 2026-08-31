@@ -20,9 +20,14 @@ export interface FriseProps {
   theme?: Theme;
   /** titre accessible du document */
   title: string;
+  /**
+   * Export PNG à fond transparent (PLAN.md §3.6) : le papier du thème n'est
+   * pas peint. Le reste du dessin est strictement identique.
+   */
+  transparent?: boolean;
 }
 
-export function Frise({ scene, theme = MANUEL_SCOLAIRE, title, children }: FriseProps): JSX.Element {
+export function Frise({ scene, theme = MANUEL_SCOLAIRE, title, children, transparent = false }: FriseProps): JSX.Element {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -31,11 +36,11 @@ export function Frise({ scene, theme = MANUEL_SCOLAIRE, title, children }: Frise
       viewBox={`0 0 ${scene.width} ${scene.height}`}
       role={children ? "group" : "img"}
       aria-label={title}
-      style={{ display: 'block', background: resolveToken(theme.paper), '--paper': resolveToken(theme.paper), '--paper-line': resolveToken(theme.paperLine), '--text-primary': resolveToken(theme.axisInk), '--text-secondary': resolveToken(theme.rulerInk), '--text-tertiary': resolveToken(theme.rulerInkMinor) } as CSSProperties}
+      style={{ display: 'block', ...(transparent ? {} : { background: resolveToken(theme.paper) }), '--paper': resolveToken(theme.paper), '--paper-line': resolveToken(theme.paperLine), '--text-primary': resolveToken(theme.axisInk), '--text-secondary': resolveToken(theme.rulerInk), '--text-tertiary': resolveToken(theme.rulerInkMinor) } as CSSProperties}
     >
       <title>{title}</title>
       {theme.id === 'journal' && <defs><filter id="journal-monochrome"><feColorMatrix type="saturate" values="0" /></filter></defs>}
-      <rect x={0} y={0} width={scene.width} height={scene.height} fill={theme.paper} />
+      {!transparent && <rect x={0} y={0} width={scene.width} height={scene.height} fill={theme.paper} />}
       <Lanes scene={scene} theme={theme} />
       {[
         ...scene.periods.map((period) => ({ id: period.itemId, x: period.x0, node: <PeriodNode key={period.itemId} period={period} theme={theme} /> })),
