@@ -31,13 +31,21 @@ l'échelle d'espacement de §2 : bande = 120 px, rangée d'empilement = 28 px,
 axe placé sous les bandes, marge de canevas = `--space-5` (24 px). Constantes
 nommées dans `layout/metrics.ts`.
 
-## 4. Fixture d'import MiCetF
+## 4. Fixture d'import MiCetF — relevée en M3
 
-PLAN.md §7.3 demande un vrai export MiCetF comme fixture de test. Aucun export
-n'a pu être récupéré ici (pas d'accès au site). `core/importers/micetf.ts`
-n'est donc **pas** implémenté (il relève de M3) ; le fichier réel devra être
-déposé dans `src/core/fixtures/micetf-export.json` avant écriture de
-l'importateur.
+Le format réel a été relevé sur micetf.fr/frise (clé `micetf.frise.v1`) et
+déposé dans `src/core/fixtures/micetf-export.json`. Il diffère de ce
+qu'annonçait format.md §8.1 : le libellé est dans **`text`**, pas `name` (les
+deux sont acceptés), et le fichier porte aussi `principale`, `secondaire`,
+`distance` — des réglages de mise en page que KronoFrise recalcule et ignore.
+`oubli: true` (« frise à compléter ») devient un masque `label` sur chaque
+élément, ce qui reproduit exactement l'intention en mode fiche élève.
+
+Les 50 couleurs sont des **noms CSS** (`orange`, `chocolate`…), pas des noms
+français. La table 50 → 12 de `core/importers/micetfColors.ts` a été calculée
+une fois à la teinte — la distance RVB brute écrasait tous les tons pâles sur
+la même entrée — puis corrigée à la main ; elle est figée dans le code, comme
+l'exige format.md §8.1.
 
 ## 5. Les commandes sont des données, pas des objets à méthodes
 
@@ -79,7 +87,14 @@ La sonde `export/pdfSpike.ts` (PLAN.md §7.6) montre que les polices standard
 PDF (WinAnsi) ne contiennent pas « ᵉ » (U+1D49) des libellés de siècle. Deux
 issues pour M3 : incorporer une vraie police, ce qui réclame `@pdf-lib/fontkit`
 — **hors de la liste fermée de PLAN.md §8.4, à valider avec Kilian** — ou
-replier « XVIIᵉ » sur « XVIIe » à l'export. La sonde applique le repli.
+replier « XVIIᵉ » sur « XVIIe » à l'export.
+
+**Retenu en M3 : le repli**, pour ne pas ajouter de dépendance sans accord.
+`export/pdfScene.ts` replie « ᵉ » et « ᵉʳ » et convertit l'espace fine
+insécable. Tout le reste de la typographie française passe intact : Helvetica
+standard est encodée en WinAnsi, qui contient bien « é », « ’ », « – » et
+« œ » (vérifié par test sur le flux du PDF). À rouvrir si Kilian veut les
+exposants ordinaux à l'impression.
 
 Les couleurs, elles, sont résolues sans recopie : `ui/tokenValues.ts` lit les
 valeurs directement dans `tokens.css`, qui reste la source unique (DESIGN.md
@@ -201,3 +216,52 @@ Les accolades ne comportent aucune surface fermée. Le sélecteur est désactiv�
 si toute la sélection est composée d'accolades et une explication accompagne
 les sélections concernées. Les bandes gardent leur fond léger : cette demande
 porte sur les événements et périodes. L'export PDF final reste du ressort de M3.
+
+
+## 12. Décisions M3
+
+### 12.1 Une seule géométrie pour l'écran et le PDF
+
+format.md §9 interdit tout code de dessin propre à l'export. Le rendu écran
+est en composants React (interactivité, `data-item-id`, noms accessibles) ;
+le PDF, lui, dessine avec pdf-lib. Pour qu'il n'existe malgré tout qu'une
+seule géométrie, les formes et constantes de dessin sont sorties dans
+`renderer/shapes.ts` (chemins de flèche et d'accolade, rayons, tirets,
+glyphe de coupure, tuiles de motif, ancrage des libellés de règle). L'écran et
+l'exporteur appellent **les mêmes fonctions** et les mêmes couleurs ; seul
+l'ordre de parcours de la scène est écrit deux fois, et il est vérifié par
+test (chaque libellé du document se retrouve en texte dans le PDF).
+
+### 12.2 Mode présentation : apparence non spécifiée
+
+DESIGN.md décrit la durée d'un pas (600 ms, §8) mais pas l'habillage du mode.
+Retenu : plein écran sans chrome, barre de commandes discrète (opacité 0,55,
+pleine au survol), fiche de l'élément en bas à gauche, mise en valeur par le
+contour d'accent de §5. La caméra est une fonction pure et testée
+(`ui/presentationCamera.ts`) : une période occupe au plus 62 % de la vue, un
+événement en montre 16 %, le zoom ne descend jamais sous la vue d'ensemble.
+
+### 12.3 Page web interactive (demande de Kilian, 31 août 2026)
+
+Format d'export supplémentaire, hors PLAN.md §3.6 : un `.html` autonome. La
+frise y est le SVG du rendu partagé, **figé** : le visionneur déplace une
+fenêtre de vue (`viewBox`) mais ne recalcule jamais la mise en page. Le zoom
+agrandit donc le texte au lieu de densifier les graduations — c'est un
+visionneur, pas un éditeur. Aucune requête réseau, images comprises ; le texte
+du document est échappé avant d'entrer dans le HTML et dans le JSON embarqué.
+
+### 12.4 Navigateur de frises (demande de Kilian, 31 août 2026)
+
+DESIGN.md §10 décrit un écran d'accueil ; la même grille sert ici de
+navigateur permanent, ouvert depuis la barre d'outils. L'autosauvegarde tient
+un index (`krono:documents`) écrit dans la même transaction que l'instantané ;
+la liste se reconstruit depuis les clés réelles si l'index est perdu ou
+incomplet. Supprimer efface document, vignette et entrée d'index ; la frise
+ouverte ne peut pas être supprimée sous ses propres pieds.
+
+### 12.5 Barre d'outils en icônes (demande de Kilian, 31 août 2026)
+
+DESIGN.md §3 a été mis à jour : les commandes sont des icônes de 16 px
+groupées par famille, chacune avec un nom accessible et une infobulle qui
+rappelle le raccourci. Les libellés texte faisaient déborder la barre à chaque
+fonction ajoutée.

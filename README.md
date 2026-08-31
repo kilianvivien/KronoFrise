@@ -25,15 +25,17 @@ pnpm dev
 | `pnpm lint` | ESLint, règle de frontière comprise |
 | `pnpm build` | vérification TypeScript puis build de production |
 | `pnpm fixtures:emit` | réécrit les fichiers `.krono` depuis les fixtures TypeScript |
+| `pnpm samples` | exporte les fixtures en PDF, SVG et page web (contrôle visuel) |
 
 ## Structure
 
 ```
 src/
-├── core/      modèle de document, dates, schéma zod, commandes, historique, fixtures
+├── core/      modèle de document, dates, schéma zod, commandes, historique,
+│           pédagogie, importateurs (MiCetF, CSV), fixtures
 ├── layout/    échelle segmentée (temps ⇄ pixels), graduations, moteur de mise en page
 ├── renderer/  SceneGraph → SVG (écran et export headless)
-├── export/    sonde PDF (M3)
+├── export/    PDF vectoriel, page web interactive, SVG, PNG, pagination
 ├── themes/    thèmes, en données pures
 ├── shared/    chaînes et palette pures, sans dépendance à l’interface
 ├── ui/        éditeur, interactions, jetons, entrées chaînes/palette
@@ -47,38 +49,37 @@ s'imprime est exactement ce que l'on voyait.
 
 ## État
 
-**M2 — Apparence et structure sont implémentées.** `/` ouvre l'éditeur ;
-`/?fixtures` conserve la page de contrôle M0.
+**M3 — Les super-pouvoirs du professeur sont implémentés.** `/` ouvre
+l'éditeur ; `/?fixtures` conserve la page de contrôle M0.
 
-- Glissez le fond pour saisir la frise et naviguer horizontalement, même à 100 %.
-  La molette conserve le défilement vertical. Espace + glisser navigue aussi sur un élément.
-- **+ Événement / E**, puis clic ; **+ Période / P**, puis glissement : créer.
-  Entrée valide le libellé, Échap annule, puis l'outil revient à Naviguer.
-- Le bouton de pourcentage ajuste la vue en tenant compte des libellés et images.
-- L'inspecteur édite dates, descriptions, couleurs, formes, bandes, images et métadonnées.
-  Sous Couleur, **Remplissage** propose Léger, Plein, Sans fond, Hachures,
-  Croisillons, Points, Lignes et Quadrillage, également sur une sélection multiple.
-- La structure permet de rechercher, sélectionner, nommer, colorer, replier et réordonner
-  les bandes. Glissez un élément vers une autre bande, sur le canevas ou dans le plan.
-- Clic droit sur la règle : scinder à une date. Glissez une poignée pour redistribuer
-  les largeurs ; double-cliquez pour éditer ou supprimer une coupure. Les poids restent
-  éditables dans l'inspecteur (huit segments maximum).
-- Quatre thèmes : Manuel scolaire, Craie, Parchemin, Journal (noir et blanc).
-  Le préréglage grandes périodes ajoute cinq périodes sans effacer les éléments existants.
-- Le navigateur inférieur déplace la vue à la souris ou au clavier.
-- **Interface**, en bas à droite : Terre cuite, Clair, Sombre ou Système. Le choix
-  est mémorisé sur cet appareil, indépendamment du thème de la frise.
-- Maj + clic/glisser sélectionne plusieurs éléments ; Alt désactive l'aimantation.
-  ⌘/Ctrl Z, ⇧⌘/Ctrl Z, ⌘/Ctrl D, Suppr : annuler, rétablir, dupliquer, supprimer.
-- L'autosauvegarde conserve document et historique ; Ouvrir/Enregistrer échange des `.krono`.
+- La barre d'outils est en icônes groupées (outils, modes, fichiers), chacune
+  avec son infobulle et son raccourci.
+- **Trois modes** : Édition, Présentation, Fiche élève.
+  - *Fiche élève* : masquer un libellé, une date ou les deux, tout masquer,
+    en masquer la moitié au hasard, afficher le corrigé. Masquer ne modifie
+    jamais le document et s'annule en une étape.
+  - *Présentation* : plein écran sans chrome, parcours chronologique au
+    clavier, caméra fluide, fiche de l'élément, mode « Révéler » qui fait
+    apparaître les éléments un par un.
+- **Exporter** : PDF vectoriel (A4/A3, portrait/paysage, frise murale paginée
+  avec recouvrement et repères de coupe, corrigé à la suite, fiche d'exercice
+  à découper), **page web interactive** autonome, SVG et PNG 1×/2×/3×.
+  Tous les exports passent par la même scène que l'écran.
+- **Importer** : export MiCetF (couleurs ramenées à la palette, « frise à
+  compléter » transformée en masques) et tableaux CSV/TSV, par fichier ou par
+  simple collage dans la frise ouverte — annulable, lignes illisibles signalées.
+- **Navigateur de frises** : toutes les frises enregistrées sur l'appareil,
+  avec vignettes ; ouvrir, dupliquer, supprimer, importer par dépôt de fichier.
+- Édition directe sur le canevas, axe élastique, bandes, thèmes, remplissages,
+  images, plan, minimap et annulation illimitée : voir les jalons précédents.
+- L'autosauvegarde conserve document et historique ; Ouvrir/Enregistrer
+  échange des `.krono`.
 
-La vérification M0 a corrigé les imports de couches supérieures, l'inversion
-exacte des masques, plusieurs invariants d'import et la lisibilité de la règle
-en mode sombre. L'empilement des libellés d'accolades est également corrigé.
-L'export MiCetF réel et l'incorporation complète des glyphes de police PDF
-restent des points ouverts documentés, sans bloquer l'édition M2.
+Restent ouverts : le rendu visuel du PDF n'a pas pu être inspecté à l'œil dans
+cet environnement (aucun outil de rastérisation), et les exposants ordinaux
+sont repliés à l'impression (docs/spec-gaps.md §8).
 
-Voir [docs/verification-m1.md](docs/verification-m1.md) pour les contrôles
-exécutés et leurs limites.
-
-Voir [docs/verification-m2.md](docs/verification-m2.md) pour la vérification M2.
+Voir [docs/verification-m1.md](docs/verification-m1.md),
+[docs/verification-m2.md](docs/verification-m2.md) et
+[docs/verification-m3.md](docs/verification-m3.md) pour les contrôles exécutés
+et leurs limites.
