@@ -79,3 +79,41 @@
 .segment { height: 24px; padding: 0 10px; border: 0; border-radius: calc(var(--radius-control) - 1px); background: transparent; color: var(--text-secondary); font-weight: 500; white-space: nowrap; cursor: pointer; }
 .segment:hover { color: var(--text-primary); }
 .segment[aria-pressed=true] { background: var(--field-bg); color: var(--text-primary); box-shadow: var(--shadow-panel); }
+
+/* ---- Barre d'outils en icônes (demande utilisateur, DESIGN.md §3) ----
+   Les libellés texte laissaient la barre se remplir à chaque fonction ajoutée.
+   Chaque commande est désormais une icône 16 px dans un bouton 28 px, avec
+   son nom accessible et une infobulle qui rappelle le raccourci. */
+.toolbar { position: relative; z-index: 5; overflow: visible; gap: var(--space-1); }
+.icon { color: var(--text-secondary); }
+.icon:hover:not(:disabled) { color: var(--text-primary); background: var(--chrome-hover); }
+.icon:active:not(:disabled) { background: var(--chrome-bg-inset); }
+.icon[aria-pressed=true] { color: var(--accent); background: var(--accent-tint); }
+
+/* Un groupe rassemble les commandes d'une même famille : outils, modes. */
+.group { display: flex; align-items: center; gap: 2px; height: 28px; padding: 2px; background: var(--chrome-bg-inset); border-radius: var(--radius-control); flex-shrink: 0; }
+.segment { width: 24px; height: 24px; display: grid; place-items: center; padding: 0; border: 0; border-radius: calc(var(--radius-control) - 2px); background: transparent; color: var(--text-secondary); cursor: pointer; }
+.segment:hover:not(:disabled) { color: var(--text-primary); }
+.segment[aria-pressed=true] { color: var(--accent); background: var(--field-bg); box-shadow: var(--shadow-panel); }
+.zoomGroup { display: flex; align-items: center; gap: 0; flex-shrink: 0; }
+.title { margin-right: var(--space-1); }
+
+/* Infobulle : même vocabulaire que celle du glissement sur le canevas. */
+.tip { position: relative; }
+.tip::after {
+  content: attr(data-tip);
+  position: absolute; top: calc(100% + 8px); left: 50%; transform: translateX(-50%);
+  z-index: 30; white-space: nowrap; pointer-events: none;
+  padding: 3px 8px; border-radius: 5px;
+  background: var(--tooltip-bg); color: #FFF; color: var(--on-accent);
+  font-size: var(--fs-caption); font-weight: 400;
+  opacity: 0; transition: opacity 120ms ease-out;
+}
+.tip:hover::after, .tip:focus-visible::after { opacity: 1; transition-delay: 350ms; }
+.tip:disabled::after { content: none; }
+.tipEnd::after { left: auto; right: 0; transform: none; }
+.tipAbove::after { top: auto; bottom: calc(100% + 8px); }
+@media (prefers-reduced-motion: reduce) { .tip::after { transition: none; } }
+/* La barre respire : le titre peut de nouveau s'afficher en entier. */
+.title { width: clamp(160px, 24vw, 360px); }
+@media (max-width: 1100px) { .title { width: clamp(120px, 20vw, 200px); } }

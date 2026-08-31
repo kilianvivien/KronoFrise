@@ -3,13 +3,14 @@ export * from "../shared/strings";
 
 export const EDITOR = {
   open: 'Ouvrir…', save: 'Enregistrer', fileType: 'Frise KronoFrise', defaultFilename: 'frise',
-  title: 'Titre de la frise', label: 'Libellé', event: 'Nouvel événement', period: 'Nouvelle période',
+  title: 'Titre de la frise', renameTitle: 'Renommer la frise', label: 'Libellé', event: 'Nouvel événement', period: 'Nouvelle période',
   canvas: 'Frise chronologique', sidebar: 'Structure', inspector: 'Inspecteur',
   sidebarHint: 'Les bandes et le plan de la frise seront disponibles ici.',
   inspectorHint: 'Double-cliquez sur un élément pour modifier son libellé. Faites glisser ses bords pour ajuster une période.',
   sidebarToggle: 'Afficher ou masquer la structure', inspectorToggle: 'Afficher ou masquer l’inspecteur',
   duplicate: 'Dupliquer', selectAll: 'Tout sélectionner',
   hint: 'Glisser : naviguer · E : événement · P : période · Maj + glisser : sélectionner · ⌥ : sans aimantation',
+  toolbarOverflow: 'Autres commandes',
   saved: 'Enregistré sur cet appareil', saving: 'Enregistrement…', loading: 'Ouverture de la frise…',
   fileSaved: 'Fichier .krono enregistré',
   storageError: 'L’enregistrement local a échoué. Enregistrez un fichier .krono pour conserver votre travail.',

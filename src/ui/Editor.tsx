@@ -16,6 +16,7 @@ import { canvasMeasurer } from './measureText';
 import { makeScale } from '../layout/scale';
 import { clampPan } from './camera';
 import { AppearancePicker } from './AppearancePicker';
+import { Icon, type IconName } from './icons';
 import { Inspector } from './Inspector';
 import type { Mode } from './mode';
 import { Presentation } from './Presentation';
@@ -131,28 +132,35 @@ export function Editor(): JSX.Element {
   };
 
   return <div className={styles.app}>
-    <header className={styles.toolbar} aria-label={TOOLBAR.modeEdit}>
-      <button className={styles.icon} aria-label={EDITOR.sidebarToggle} aria-pressed={sidebar} onClick={() => setSidebar(!sidebar)}><Icon name="sidebar" /></button>
-      {title === null ? <button className={styles.title} title={EDITOR.title} onClick={() => setTitle(state.document.meta.title)}>{state.document.meta.title}</button> :
+    <header className={styles.toolbar} aria-label={TOOLBAR.toolbar}>
+      <IconButton icon="sidebar" label={EDITOR.sidebarToggle} pressed={sidebar} onClick={() => setSidebar(!sidebar)} />
+      {title === null ? <button className={`${styles.title} ${styles.tip}`} data-tip={EDITOR.renameTitle} onClick={() => setTitle(state.document.meta.title)}>{state.document.meta.title}</button> :
         <input ref={titleInput} className={styles.titleInput} aria-label={EDITOR.title} value={title} onChange={(event) => setTitle(event.target.value)} onBlur={() => finishTitle(true)} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') finishTitle(event.key === 'Enter'); }} />}
-      <button className={styles.icon} aria-label={TOOLBAR.undo} title={`${TOOLBAR.undo} (⌘Z)`} disabled={!state.history.past.length || !!state.preview} onClick={state.undo}><Icon name="undo" /></button>
-      <button className={styles.icon} aria-label={TOOLBAR.redo} title={`${TOOLBAR.redo} (⇧⌘Z)`} disabled={!state.history.future.length || !!state.preview} onClick={state.redo}><Icon name="redo" /></button>
       <span className={styles.separator} />
-      <button className={styles.button} aria-label={M2.navigate} aria-pressed={tool === 'auto'} onClick={() => setTool('auto')}>{M2.navigation}</button>
-      <button className={styles.button} disabled={!state.ready || worksheet} aria-pressed={tool === 'event'} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')}>{TOOLBAR.addEvent}</button>
-      <button className={styles.button} disabled={!state.ready || worksheet} aria-pressed={tool === 'period'} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')}>{TOOLBAR.addPeriod}</button>
+      <IconButton icon="undo" label={TOOLBAR.undo} hint="⌘Z" disabled={!state.history.past.length || !!state.preview} onClick={state.undo} />
+      <IconButton icon="redo" label={TOOLBAR.redo} hint="⇧⌘Z" disabled={!state.history.future.length || !!state.preview} onClick={state.redo} />
       <span className={styles.separator} />
-      <button className={styles.icon} aria-label={TOOLBAR.zoomOut} disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)}><Icon name="minus" /></button>
-      <button className={styles.zoom} title={TOOLBAR.zoomFit} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
-      <button className={styles.icon} aria-label={TOOLBAR.zoomIn} disabled={zoom >= 5000} onClick={() => stepZoom(1.5)}><Icon name="plus" /></button>
-      <span className={styles.spacer} />
-      <div className={styles.segmented} role="group" aria-label={WORKSHEET.mode}>
-        {([['edit', TOOLBAR.modeEdit], ['present', TOOLBAR.modePresent], ['worksheet', TOOLBAR.modeWorksheet]] as const).map(([value, label]) =>
-          <button key={value} className={styles.segment} aria-pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)}>{label}</button>)}
+      <div className={styles.group} role="group" aria-label={TOOLBAR.tools}>
+        <IconButton icon="navigate" label={M2.navigate} hint="Échap" segment pressed={tool === 'auto'} onClick={() => setTool('auto')} />
+        <IconButton icon="event" label={TOOLBAR.addEvent} hint="E" segment pressed={tool === 'event'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')} />
+        <IconButton icon="period" label={TOOLBAR.addPeriod} hint="P" segment pressed={tool === 'period'} disabled={!state.ready || worksheet} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')} />
       </div>
-      <button className={styles.button} disabled={!state.ready} onClick={() => { void open(); }}>{EDITOR.open}</button>
-      <button className={styles.button} disabled={!state.ready} onClick={() => { void save(); }}>{EDITOR.save}</button>
-      <button className={styles.icon} aria-label={EDITOR.inspectorToggle} aria-pressed={inspector} onClick={() => setInspector(!inspector)}><Icon name="inspector" /></button>
+      <span className={styles.separator} />
+      <div className={styles.zoomGroup} role="group" aria-label={TOOLBAR.zoom}>
+        <IconButton icon="zoomOut" label={TOOLBAR.zoomOut} disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)} />
+        <button className={`${styles.zoom} ${styles.tip}`} data-tip={TOOLBAR.zoomFit} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
+        <IconButton icon="zoomIn" label={TOOLBAR.zoomIn} disabled={zoom >= 5000} onClick={() => stepZoom(1.5)} />
+      </div>
+      <span className={styles.spacer} />
+      <div className={styles.group} role="group" aria-label={WORKSHEET.mode}>
+        {([['edit', TOOLBAR.modeEdit, 'edit'], ['present', TOOLBAR.modePresent, 'present'], ['worksheet', TOOLBAR.modeWorksheet, 'worksheet']] as const).map(([value, label, icon]) =>
+          <IconButton key={value} icon={icon} label={label} segment pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)} />)}
+      </div>
+      <span className={styles.separator} />
+      <IconButton icon="open" label={EDITOR.open} hint="⌘O" disabled={!state.ready} onClick={() => { void open(); }} />
+      <IconButton icon="save" label={EDITOR.save} hint="⌘S" disabled={!state.ready} onClick={() => { void save(); }} />
+      <span className={styles.separator} />
+      <IconButton icon="inspector" label={EDITOR.inspectorToggle} hint="⌘2" pressed={inspector} atEnd onClick={() => setInspector(!inspector)} />
     </header>
     <div className={styles.workspace}>
       <aside className={styles.sidebar} style={sidebar ? { width: sidebarWidth } : undefined} data-open={sidebar} aria-hidden={!sidebar} inert={!sidebar}>
@@ -176,8 +184,8 @@ export function Editor(): JSX.Element {
       <span className={styles.status} role="status">{state.selection.length ? EDITOR.selected(state.selection.length) : state.savedRevision === state.revision ? EDITOR.saved : EDITOR.saving}</span>
       <span className={styles.hint}>{worksheet ? WORKSHEET.hint : EDITOR.hint}</span>
       <AppearancePicker />
-      <button className={styles.icon} aria-label={EDITOR.duplicate} title={`${EDITOR.duplicate} (⌘D)`} disabled={!state.selection.length || worksheet} onClick={duplicate}><Icon name="duplicate" /></button>
-      <button className={styles.icon} aria-label={CONFIRM.delete} disabled={!state.selection.length || worksheet} onClick={remove}><Icon name="trash" /></button>
+      <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" above disabled={!state.selection.length || worksheet} onClick={duplicate} />
+      <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" above atEnd disabled={!state.selection.length || worksheet} onClick={remove} />
     </footer>
     {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}
     {(state.error || notice) && <div className={styles.notification} role={state.error ? 'alert' : 'status'}>{state.error || notice}<button className={styles.button} onClick={() => { editorStore.setState({ error: null }); setNotice(null); }}>{EDITOR.close}</button></div>}
@@ -187,12 +195,21 @@ export function Editor(): JSX.Element {
     </dialog>
   </div>;
 }
-function Icon({ name }: { name: 'sidebar' | 'inspector' | 'undo' | 'redo' | 'minus' | 'plus' | 'duplicate' | 'trash' }): JSX.Element {
-  const paths = {
-    sidebar: 'M2 2h12v12H2z M6 2v12', inspector: 'M2 2h12v12H2z M10 2v12',
-    undo: 'M6 3L2 7l4 4 M2 7h7a4 4 0 0 1 4 4v2', redo: 'M10 3l4 4-4 4 M14 7H7a4 4 0 0 0-4 4v2',
-    minus: 'M3 8h10', plus: 'M3 8h10 M8 3v10', duplicate: 'M6 6h8v8H6z M10 6V2H2v8h4',
-    trash: 'M2 4h12 M6 4V2h4v2 M4 4l1 10h6l1-10 M7 7v4 M9 7v4',
-  };
-  return <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>;
+/**
+ * Bouton d'icône : jamais d'icône sans nom accessible ni infobulle
+ * (DESIGN.md §7). L'infobulle rappelle le raccourci, comme sous macOS.
+ */
+function IconButton({ icon, label, hint, pressed, disabled, onClick, segment = false, atEnd = false, above = false }: {
+  icon: IconName; label: string; hint?: string; pressed?: boolean; disabled?: boolean; onClick: () => void;
+  segment?: boolean; atEnd?: boolean; above?: boolean;
+}): JSX.Element {
+  return <button
+    type="button"
+    className={`${segment ? styles.segment : styles.icon} ${styles.tip} ${atEnd ? styles.tipEnd : ''} ${above ? styles.tipAbove : ''}`}
+    aria-label={label}
+    data-tip={hint === undefined ? label : `${label} · ${hint}`}
+    {...(pressed === undefined ? {} : { 'aria-pressed': pressed })}
+    disabled={disabled === true}
+    onClick={onClick}
+  ><Icon name={icon} /></button>;
 }

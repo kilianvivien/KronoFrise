@@ -115,7 +115,8 @@ Type usage: UI text is `--fs-ui`/regular; panel headers `--fs-title`/600; never 
 
 - Panels: `--chrome-bg`, separated from canvas by a 1px `--hairline`. Panel inner padding `--space-3`.
 - Sidebar toggles with ⌘1, inspector with ⌘2; the canvas reflows with a 140ms width transition.
-- Toolbar contents, left → right: document title (editable on click, `--fs-title`/600) · undo/redo · separator · **+ Événement** (accent-filled button) · **+ Période** (secondary) · separator · zoom controls (−, percentage menu, +) · *flexible space* · mode switch (segmented control: Édition | Présentation | Fiche élève) · **Exporter** (secondary).
+- Toolbar contents, left → right (**icon-only**, decided by Kilian 2026-08-31 — text buttons made the bar overflow as features landed): sidebar toggle · document title (editable on click, `--fs-title`/600) · separator · undo/redo · separator · tool group (segmented: navigate | événement | période) · separator · zoom controls (−, percentage button, +) · *flexible space* · mode switch (segmented control: Édition | Présentation | Fiche élève) · separator · open · save · export · separator · inspector toggle.
+- **Every icon button carries an `aria-label` and a tooltip** naming the command and its shortcut ("Annuler · ⌘Z"). Tooltip = the dark chip of §5 (`--tooltip-bg`, `--on-accent`, `--fs-caption`, radius 5px, padding 3px 8px), 8px below the button, 350ms delay, right-aligned for the last button of the bar. Icons: 16px, 1.5px stroke, `currentColor`, no fill (`src/ui/icons.tsx`).
 - Separators in the toolbar: 1px hairline, 16px tall, `--space-3` horizontal margin.
 
 ### Component recipes

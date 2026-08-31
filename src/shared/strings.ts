@@ -39,11 +39,14 @@ export const DOC = {
 export const TOOLBAR = {
   undo: 'Annuler',
   redo: 'Rétablir',
-  addEvent: '+ Événement',
-  addPeriod: '+ Période',
+  addEvent: 'Ajouter un événement',
+  addPeriod: 'Ajouter une période',
   zoomOut: 'Dézoomer',
   zoomIn: 'Zoomer',
   zoomFit: 'Ajuster à la fenêtre',
+  toolbar: 'Barre d’outils',
+  tools: 'Outils de création',
+  zoom: 'Zoom de la vue',
   modeEdit: 'Édition',
   modePresent: 'Présentation',
   modeWorksheet: 'Fiche élève',
@@ -53,7 +56,7 @@ export const TOOLBAR = {
 
 export const CANVAS = {
   emptyHint:
-    'Faites glisser pour naviguer. Choisissez + Événement ou + Période pour ajouter un élément.',
+    'Faites glisser pour naviguer. Choisissez l’outil Événement ou Période dans la barre d’outils pour ajouter un élément.',
 } as const;
 
 export const START = {
