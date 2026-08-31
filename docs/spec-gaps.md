@@ -524,3 +524,45 @@ mise en page. À planifier comme un travail à part entière.
 Le morceau d'export passe de 437 Ko à 1,3 Mo (fontkit et les deux graisses).
 Il est chargé paresseusement — il n'entre pas dans le coût d'ouverture — et
 préchargé par le service worker, si bien qu'exporter hors ligne fonctionne.
+
+### 13.10 Transitions de l'interface (demande de Kilian, 31 août 2026)
+
+DESIGN.md §8 fixe déjà les règles — 140 ms `ease-out` pour l'interface, 240 ms
+pour la caméra, 600 ms pour un pas de présentation, « rien d'autre ne bouge » —
+mais elles n'étaient appliquées qu'à trois endroits, et à deux durées
+différentes (120 et 140 ms). Les panneaux, le plan, les cartes de thème, les
+tuiles du navigateur et les cartes d'export changeaient d'état d'un bloc.
+
+- Les durées et les courbes deviennent des **jetons** de `tokens.css`
+  (`--motion-ui`, `--motion-camera`, `--motion-step`, `--ease-ui`,
+  `--ease-camera`), comme les couleurs : plus une seule durée écrite en dur.
+- Les propriétés animées sont **énumérées**, jamais `transition: all` — qui
+  animerait aussi la géométrie et ferait glisser les panneaux au
+  redimensionnement de la fenêtre.
+- L'anneau de focus apparaît **sans transition** : il répond à une touche.
+- Ce qui se calcule image par image pendant un geste — contour de sélection en
+  cours de glissement, repère d'aimantation, vue du minimap — est explicitement
+  exclu : l'animer le ferait traîner derrière le pointeur.
+- Seule géométrie animée de l'application : l'anneau du tutoriel, qui **glisse**
+  d'une cible à l'autre (240 ms, courbe caméra). C'est ce déplacement qui porte
+  le sens de l'étape ; ailleurs, §8 proscrit tout mouvement.
+
+SPEC? §8 ne dit rien de l'**apparition** d'un panneau surgissant. Retenu : le
+même 140 ms `ease-out`, en fondu avec 4 px de montée, pour la notification, la
+boîte de dialogue, le popover de l'axe, le sélecteur d'apparence, le navigateur
+de frises et la bulle du tutoriel. Ni rebond ni mise à l'échelle.
+
+Détail d'implémentation qui a failli passer inaperçu : c'est une **transition
+avec `@starting-style`**, pas une animation `@keyframes`. Les modules CSS
+renomment les keyframes qu'ils référencent, si bien qu'une règle
+`@keyframes` posée dans une feuille globale se retrouve muette dans chaque
+module — l'animation ne joue jamais, sans la moindre erreur. Une transition n'a
+pas de nom à renommer. Vérifié dans le navigateur : opacité 0 → 0,10 après deux
+images → 1 après la transition.
+
+**Reste à faire, et ce n'est pas dans cette demande** : §8 prévoit aussi que
+« la mise en page qui se réorganise après un dépôt anime les positions sur
+140 ms ». Les éléments du canevas sont posés en coordonnées absolues, que le
+CSS ne sait pas interpoler ; il faudrait que chaque groupe soit positionné par
+`transform`. C'est une reprise du rendu — partagé avec les exports — qui mérite
+son propre changement plutôt qu'un ajout à celui-ci.

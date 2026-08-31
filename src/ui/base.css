@@ -26,6 +26,50 @@ button, input, select { font: inherit; color: inherit; }
   }
 }
 
-button, input, select, textarea { transition: border-color 120ms ease, background-color 120ms ease, color 120ms ease; }
+/**
+ * Transitions de l'interface — DESIGN.md §8 : 140 ms `ease-out`, et rien
+ * d'autre ne bouge. La liste des propriétés est explicite : un `transition:
+ * all` animerait aussi la géométrie et ferait glisser les panneaux au
+ * redimensionnement.
+ */
+button, input, select, textarea, a {
+  transition:
+    border-color var(--motion-ui) var(--ease-ui),
+    background-color var(--motion-ui) var(--ease-ui),
+    color var(--motion-ui) var(--ease-ui),
+    box-shadow var(--motion-ui) var(--ease-ui),
+    opacity var(--motion-ui) var(--ease-ui);
+}
+/* Un anneau de focus apparaît sur-le-champ : il répond à une touche. */
+:focus-visible { transition-duration: 0ms; }
+
+/**
+ * SPEC? DESIGN.md §8 ne dit rien de l'apparition d'un panneau. Retenu : le
+ * même 140 ms `ease-out`, en fondu avec 4 px de montée — assez pour que l'œil
+ * suive d'où vient la chose, trop peu pour qu'on parle d'animation. Aucun
+ * rebond, aucune mise à l'échelle (§8 les proscrit).
+ *
+ * C'est une **transition** avec `@starting-style`, pas une animation par
+ * `@keyframes` : les modules CSS renomment les keyframes qu'ils référencent,
+ * et une règle posée dans une feuille globale se serait retrouvée muette dans
+ * chaque module — une panne silencieuse. Une transition n'a pas de nom à
+ * renommer. Là où `@starting-style` manque, l'élément apparaît simplement
+ * sans fondu, ce que voit déjà quiconque a demandé moins d'animations.
+ */
+
 textarea { font: inherit; color: inherit; }
 input::placeholder, textarea::placeholder { color: var(--text-tertiary); opacity: 1; }
+
+/** Apparition d'un panneau surgissant — voir la note ci-dessus. */
+.appear {
+  transition: opacity var(--motion-ui) var(--ease-ui), transform var(--motion-ui) var(--ease-ui);
+  opacity: 1;
+  transform: translateY(0);
+}
+@starting-style {
+  .appear { opacity: 0; transform: translateY(var(--motion-rise)); }
+}
+.appearFade { transition: opacity var(--motion-ui) var(--ease-ui); opacity: 1; }
+@starting-style {
+  .appearFade { opacity: 0; }
+}

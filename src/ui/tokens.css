@@ -32,6 +32,19 @@
   --whiteboard-ink: #1F2A33;
   --whiteboard-muted: #6B7A87;
 
+  /* ---- mouvement (DESIGN.md §8) ----
+     Un seul endroit pour les durées, comme tokens.css l'est pour les couleurs :
+     140 ms pour l'interface, 240 ms pour la caméra, 600 ms pour un pas de
+     présentation. `prefers-reduced-motion` les ramène toutes à zéro dans
+     base.css. Rien d'autre ne bouge. */
+  --motion-ui: 140ms;
+  --motion-camera: 240ms;
+  --motion-step: 600ms;
+  --ease-ui: ease-out;
+  --ease-camera: cubic-bezier(0.2, 0, 0, 1);
+  /* Décalage d'entrée d'un panneau surgissant : discret, jamais un rebond. */
+  --motion-rise: 4px;
+
   --tooltip-bg: #2C2925;
   /* ---- chrome, light ---- */
   --chrome-bg:        #F3F0EB;   /* toolbar, sidebar, inspector, minimap */

@@ -45,3 +45,17 @@
   border-radius: var(--radius-control);
   box-shadow: 0 0 0 3px var(--focus-ring);
 }
+
+/* ---- mouvement (DESIGN.md §8) ----
+   La bulle arrive en fondu ; l'anneau, lui, **glisse** d'une cible à l'autre :
+   c'est ce déplacement qui dit « regardez maintenant là ». C'est la seule
+   géométrie animée de l'application, et elle l'est parce qu'elle porte le
+   sens de l'étape. */
+.bubble { composes: appear from global; }
+.spot {
+  transition:
+    top var(--motion-camera) var(--ease-camera),
+    left var(--motion-camera) var(--ease-camera),
+    width var(--motion-camera) var(--ease-camera),
+    height var(--motion-camera) var(--ease-camera);
+}

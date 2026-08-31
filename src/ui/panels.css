@@ -210,3 +210,36 @@
 .exportForm .note svg { flex: 0 0 16px; margin-top: 1px; color: var(--text-tertiary); }
 .exportForm .summary { margin-top: var(--space-3); color: var(--text-primary); font-variant-numeric: tabular-nums; }
 .exportForm .check { margin-bottom: var(--space-3); }
+
+/* ---- mouvement (DESIGN.md §8) ----
+   Les panneaux ne bougeaient pas du tout : survols, sélections et cartes
+   changeaient d'un bloc. Tout passe désormais par les 140 ms `ease-out` de
+   tokens.css. Aucune géométrie n'est animée — un contrôle qui change de
+   taille au survol serait un effet, pas une transition. */
+
+.panelBack, .sectionHeading button, .laneHeading button.iconOnly,
+.outline .laneTitle, .outline .outlineItem, .colors button,
+.choiceRow .choices button, .exportFormats button, .themeCard {
+  transition:
+    color var(--motion-ui) var(--ease-ui),
+    background-color var(--motion-ui) var(--ease-ui),
+    border-color var(--motion-ui) var(--ease-ui),
+    box-shadow var(--motion-ui) var(--ease-ui),
+    outline-color var(--motion-ui) var(--ease-ui);
+}
+
+/* La bande qui accueille un dépôt s'éclaire progressivement : le retour doit
+   se voir arriver pendant qu'on tient encore l'élément. */
+.outlineLane { transition: background-color var(--motion-ui) var(--ease-ui), box-shadow var(--motion-ui) var(--ease-ui); }
+
+/* La poignée de redimensionnement s'allume sous le pointeur. */
+.sidebarResize { transition: background-color var(--motion-ui) var(--ease-ui); }
+
+/* Le popover de l'axe surgit là où l'on a cliqué : un fondu suffit à le relier
+   au geste, sans le faire glisser depuis le bord. */
+.axisPopover { transition: opacity var(--motion-ui) var(--ease-ui), transform var(--motion-ui) var(--ease-ui); opacity: 1; }
+@starting-style { .axisPopover { opacity: 0; transform: translateY(var(--motion-rise)); } }
+
+/* La vue du minimap suit le panoramique image par image : l'animer la ferait
+   traîner derrière le canevas. */
+.minimapView { transition: none; }

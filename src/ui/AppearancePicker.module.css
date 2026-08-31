@@ -24,3 +24,7 @@
 .heading { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 16px; }
 .close { width: 28px; height: 28px; flex-shrink: 0; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--text-secondary); font-size: 20px; cursor: pointer; }
 .close:hover { background: var(--chrome-hover); color: var(--text-primary); }
+
+/* ---- mouvement (DESIGN.md §8) ---- */
+.popover { composes: appear from global; }
+.choice { transition: background-color var(--motion-ui) var(--ease-ui), border-color var(--motion-ui) var(--ease-ui), box-shadow var(--motion-ui) var(--ease-ui); }

@@ -87,3 +87,15 @@
   background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer;
 }
 .exampleRow button:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ---- mouvement (DESIGN.md §8) ---- */
+.overlay { composes: appearFade from global; }
+.preview, .newTile, .actions button, .exampleRow button, .secondary, .close, .danger {
+  transition:
+    color var(--motion-ui) var(--ease-ui),
+    background-color var(--motion-ui) var(--ease-ui),
+    border-color var(--motion-ui) var(--ease-ui),
+    opacity var(--motion-ui) var(--ease-ui);
+}
+/* La zone de dépôt s'allume dès que le fichier survole la fenêtre. */
+.overlay[data-dropping=true], .overlay { transition: background-color var(--motion-ui) var(--ease-ui), box-shadow var(--motion-ui) var(--ease-ui); }
