@@ -1,0 +1,68 @@
+/* Navigateur de frises — DESIGN.md §10 : colonne centrée, tuiles 3:2. */
+.overlay {
+  position: fixed; inset: 0; z-index: 15; overflow-y: auto;
+  padding: var(--space-6) var(--space-5) var(--space-6);
+  background: var(--chrome-bg); color: var(--text-primary);
+}
+.overlay[data-dropping=true] { background: var(--accent-tint); box-shadow: inset 0 0 0 2px var(--accent); }
+
+.header { display: flex; align-items: center; gap: var(--space-3); max-width: 900px; margin: 0 auto var(--space-5); }
+.header h1 { margin: 0; font-size: var(--fs-display); font-weight: 600; }
+.spacer { flex: 1; }
+.secondary, .close {
+  height: 28px; padding: 0 var(--space-3); color: var(--text-primary);
+  background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer;
+}
+.secondary:hover, .close:hover { background: var(--chrome-hover); }
+.close { width: 28px; padding: 0; }
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--space-4); max-width: 900px; margin: 0 auto; }
+
+.tile { display: flex; flex-direction: column; }
+.preview {
+  position: relative; display: block; width: 100%; aspect-ratio: 3 / 2; padding: 0; overflow: hidden;
+  background: var(--paper); border: 1px solid var(--hairline); border-radius: var(--radius-panel); cursor: pointer;
+}
+.preview:hover { border-color: var(--accent); }
+.preview img { width: 100%; height: 100%; object-fit: cover; object-position: top center; }
+.noThumbnail { display: grid; place-items: center; height: 100%; color: var(--text-tertiary); font-size: var(--fs-caption); }
+.badge {
+  position: absolute; top: var(--space-2); left: var(--space-2); padding: 2px 8px; border-radius: 999px;
+  background: var(--accent); color: var(--on-accent); font-size: var(--fs-caption);
+}
+
+.newTile {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-2);
+  aspect-ratio: 3 / 2; color: var(--accent); background: transparent;
+  border: 1px dashed var(--hairline); border-radius: var(--radius-panel); cursor: pointer;
+}
+.newTile:hover { border-color: var(--accent); background: var(--accent-tint); }
+.plus { font-size: var(--fs-display); line-height: 1; }
+
+.meta { padding: var(--space-2) 2px 0; }
+.meta h2 { margin: 0; font-size: var(--fs-ui); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.meta p { margin: 2px 0 0; font-size: var(--fs-caption); color: var(--text-secondary); }
+.actions { display: flex; gap: var(--space-2); padding: var(--space-2) 2px 0; }
+.actions button {
+  height: 24px; padding: 0 var(--space-2); color: var(--text-secondary); font-size: var(--fs-caption);
+  background: transparent; border: 1px solid transparent; border-radius: var(--radius-control); cursor: pointer;
+}
+.actions button:hover:not(:disabled) { color: var(--text-primary); background: var(--chrome-hover); border-color: var(--hairline); }
+.actions button:disabled { opacity: .4; pointer-events: none; }
+.dangerText:hover:not(:disabled) { color: var(--danger); background: var(--danger-tint); }
+
+.hint, .error, .dropHint { max-width: 900px; margin: var(--space-4) auto 0; color: var(--text-secondary); font-size: var(--fs-caption); }
+.dropHint { display: flex; align-items: center; gap: var(--space-2); color: var(--text-tertiary); }
+.error { color: var(--danger); }
+
+.dialog {
+  color: var(--text-primary); background: var(--field-bg); padding: var(--space-5); max-width: 420px;
+  border: 1px solid var(--hairline); border-radius: var(--radius-panel); box-shadow: var(--shadow-popover);
+}
+.dialog h2 { margin: 0 0 var(--space-2); font-size: var(--fs-title); }
+.dialog p { margin: 0 0 var(--space-5); color: var(--text-secondary); font-size: var(--fs-caption); }
+.dialog::backdrop { background: var(--accent-tint); }
+.dialogActions { display: flex; gap: var(--space-2); justify-content: flex-end; }
+.dialogActions button { height: 28px; padding: 0 var(--space-3); color: inherit; background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer; }
+.danger { background: var(--danger); color: var(--on-accent); border-color: transparent; }
+.danger:hover { opacity: .85; }

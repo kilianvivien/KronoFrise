@@ -14,7 +14,7 @@ export type IconName =
   | 'navigate' | 'event' | 'period'
   | 'zoomOut' | 'zoomIn'
   | 'edit' | 'present' | 'worksheet'
-  | 'open' | 'save' | 'export'
+  | 'library' | 'open' | 'save' | 'export'
   | 'duplicate' | 'trash';
 
 interface Glyph {
@@ -44,6 +44,8 @@ const GLYPHS: Record<IconName, Glyph> = {
   present: { d: 'M2.5 3h11v8.5h-11z M8 11.5v2 M6 13.5h4 M6.9 5.9l3 1.85-3 1.85z' },
   // La fiche élève : une page et ses lignes à compléter.
   worksheet: { d: 'M4 2.5h8v11H4z', dashed: 'M6 6.5h4 M6 9.5h4' },
+  // La bibliothèque : les frises enregistrées sur cet appareil.
+  library: { d: 'M2.5 3.5h5v4h-5z M8.5 3.5h5v4h-5z M2.5 8.5h5v4h-5z M8.5 8.5h5v4h-5z' },
   open: { d: 'M2.5 12.5v-8h3.6l1.4 1.8h6v6.2z' },
   // La disquette : enregistrer le fichier .krono.
   save: { d: 'M3.5 3.5h7L12.5 5.4v7.1h-9z M6 3.5v3h4v-3 M6 12.5V9.5h4v3' },

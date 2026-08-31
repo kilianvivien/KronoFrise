@@ -7,7 +7,7 @@ import { FIXTURES } from '../core/fixtures';
 import { editorStore } from '../store/editor';
 import { openFile, saveFile } from '../store/fileIO';
 import { startPersistence } from '../store/persistence';
-import { CONFIRM, DOC, EDITOR, M2, START, TOOLBAR, WORKSHEET } from './strings';
+import { CONFIRM, DOC, EDITOR, LIBRARY, M2, START, TOOLBAR, WORKSHEET } from './strings';
 import { EditorCanvas, type Tool } from './EditorCanvas';
 import { useThumbnail } from './useThumbnail';
 import styles from './Editor.module.css';
@@ -20,6 +20,7 @@ import { Icon, type IconName } from './icons';
 import { Inspector } from './Inspector';
 import type { Mode } from './mode';
 import { Presentation } from './Presentation';
+import { Library } from './Library';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
 import './panels.css';
@@ -32,6 +33,7 @@ export function Editor(): JSX.Element {
   const [tool, setTool] = useState<Tool>('auto');
   const [mode, setMode] = useState<Mode>('edit');
   const [answerKey, setAnswerKey] = useState(false);
+  const [library, setLibrary] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
   const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(true);
   const [laneId, setLaneId] = useState<string | null>(null);
@@ -157,6 +159,7 @@ export function Editor(): JSX.Element {
           <IconButton key={value} icon={icon} label={label} segment pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)} />)}
       </div>
       <span className={styles.separator} />
+      <IconButton icon="library" label={LIBRARY.open} pressed={library} disabled={!state.ready} onClick={() => setLibrary(!library)} />
       <IconButton icon="open" label={EDITOR.open} hint="⌘O" disabled={!state.ready} onClick={() => { void open(); }} />
       <IconButton icon="save" label={EDITOR.save} hint="⌘S" disabled={!state.ready} onClick={() => { void save(); }} />
       <span className={styles.separator} />
@@ -187,6 +190,9 @@ export function Editor(): JSX.Element {
       <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" above disabled={!state.selection.length || worksheet} onClick={duplicate} />
       <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" above atEnd disabled={!state.selection.length || worksheet} onClick={remove} />
     </footer>
+    {library && <Library onClose={() => setLibrary(false)} onOpen={(replace) => {
+      void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });
+    }} />}
     {mode === 'present' && state.ready && <Presentation onExit={() => changeMode('edit')} />}
     {(state.error || notice) && <div className={styles.notification} role={state.error ? 'alert' : 'status'}>{state.error || notice}<button className={styles.button} onClick={() => { editorStore.setState({ error: null }); setNotice(null); }}>{EDITOR.close}</button></div>}
     <dialog ref={dialog} className={styles.dialog} onCancel={() => setDeleting([])} aria-labelledby="delete-title">

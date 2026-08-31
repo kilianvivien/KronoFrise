@@ -97,6 +97,31 @@ export const PRESENT = {
   empty: 'Cette frise ne contient encore aucun élément à présenter.',
 } as const;
 
+/** Navigateur de frises — les documents conservés sur cet appareil. */
+export const LIBRARY = {
+  title: 'Mes frises',
+  open: 'Ouvrir le navigateur de frises',
+  close: 'Fermer le navigateur',
+  current: 'Ouverte',
+  newDocument: 'Nouvelle frise',
+  openDocument: 'Ouvrir cette frise',
+  duplicate: 'Dupliquer',
+  copySuffix: (title: string): string => `${title} (copie)`,
+  delete: 'Supprimer',
+  confirmDelete: (title: string): string => `Supprimer « ${title} » ?`,
+  confirmHint: 'Cette frise sera effacée de cet appareil. Enregistrez un fichier .krono pour la conserver.',
+  importFile: 'Importer un fichier .krono…',
+  drop: 'Déposez un fichier .krono pour l’ouvrir.',
+  loading: 'Lecture des frises enregistrées…',
+  unreadable: 'Cette frise enregistrée est illisible. Ouvrez votre fichier .krono ou supprimez-la.',
+  storageUnavailable: 'Les frises enregistrées ne sont pas accessibles sur cet appareil.',
+  modified: (when: string): string => `Modifié ${when}`,
+  justNow: 'à l’instant',
+  counted: (items: number, lanes: number): string =>
+    `${items} élément${items > 1 ? 's' : ''} · ${lanes} bande${lanes > 1 ? 's' : ''}`,
+  noThumbnail: 'Aperçu en préparation',
+} as const;
+
 export const APPEARANCE = {
   title: 'Apparence de l’interface', label: 'Interface',
   terracotta: 'Terre cuite', light: 'Clair', dark: 'Sombre', system: 'Système',
