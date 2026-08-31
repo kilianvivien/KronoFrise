@@ -229,16 +229,24 @@ Inspector panel, lanes (create, name, color, drag items between), **elastic axis
 
 **Exit:** two real documents you'd proudly project in class — "La Révolution française" (linear) and the cycle-3 "grandes périodes" frise built from scratch through the segment UI (elastic).
 
-### M3 — Teacher superpowers (2 weeks)
-Fiche élève mode (masking, worksheet + answer key), Présentation mode with step-through, PDF export (A4/A3, pagination, frise murale), SVG/PNG export, micetf + CSV import, start screen with recents gallery.
+### M3 — Teacher superpowers (2 weeks) — ✅ shipped 2026-08-31
+Fiche élève mode (masking, worksheet + answer key), Présentation mode with step-through, PDF export (A4/A3, pagination, frise murale), SVG/PNG export, **interactive HTML export**, micetf + CSV import, **document navigator** with recents gallery.
 
 **Exit:** the full teacher loop — build, project, print, hand out — with zero other software involved. **Public beta here.**
 
-### M4 — Polish & desktop (2–3 weeks)
+### M4 — Polish, typography & desktop (3–4 weeks)
 Keyboard completeness, accessibility pass, performance pass (500+ items), remaining themes, PWA/offline, Tauri app: native menus, `.krono` file association, app icon, notarized DMG.
 
+Added after the M3 interface pass (Kilian, 2026-08-31):
+
+1. **Onboarding tutorial.** A guided first run, not a video: on an empty frise, three or four steps that make the user *do* the thing (place an event, drag it, name it, switch to Présentation), each anchored to the real control with a coach-mark, skippable and resumable from the help menu. Dismissed state lives in the appearance store (per device, never in the document). Beta blocker: a teacher must reach a printable frise in under five minutes without reading anything.
+2. **Embedded fonts.** Two facets, one decision: *(a)* embed a real font in the PDF so ordinal superscripts (« XVIIᵉ ») print as written — needs `@pdf-lib/fontkit`, outside the closed dependency list of §8.4, and a licence-clear font (Inter, Source Sans 3 or EB Garamond for *Parchemin*) shipped as a subset; *(b)* let a **theme** name its typeface, so *Parchemin* can be serif and *Craie* a chalk hand, with the same font file embedded in the SVG/PDF exports. Until then the fold to « XVIIe » stands (docs/spec-gaps.md §8).
+3. **Gradient fills.** A ninth `fillStyle`, `gradient`, with the item colour fading along the bar — the natural way to draw a period whose intensity grows or fades. Contract: SVG gets a real `linearGradient`; the PDF exporter has no gradient primitive, so it renders a banded approximation (16 steps, same geometry) — that difference must be *specified*, not discovered, and shown in the export dialog. Fuzzy edges already use a gradient mask, so the mechanism is half-built.
+4. **Title and description block.** A document-level block on the canvas — title, optional subtitle/description, optional author and date — placed above the frise, part of the `SceneGraph` so it prints and exports identically. Per-theme typography, toggleable, draggable between top-left / top-centre. This is what turns an exported PNG into a finished handout instead of a floating diagram.
+5. **Icon set decision** (open, needs Kilian): keep the hand-drawn 16px set, or adopt a pack for the generic glyphs. See docs/spec-gaps.md §12.6.
+
 ### M5 — Beyond (backlog, post-launch)
-Share links (read-only web viewer), Wikidata lookup, quiz mode, collaborative editing, template gallery ("frises officielles" per school level), comparative parallel frises (France vs. Monde stacked with a shared axis), PPTX export.
+Share links (read-only web viewer), Wikidata lookup, quiz mode, collaborative editing, template gallery ("frises officielles" per school level), comparative parallel frises (France vs. Monde stacked with a shared axis), PPTX export, interactive HTML export with live re-layout (the M3 viewer freezes the layout — a real re-layout needs the layout engine bundled into the exported file).
 
 ---
 

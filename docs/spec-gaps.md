@@ -265,3 +265,31 @@ DESIGN.md §3 a été mis à jour : les commandes sont des icônes de 16 px
 groupées par famille, chacune avec un nom accessible et une infobulle qui
 rappelle le raccourci. Les libellés texte faisaient déborder la barre à chaque
 fonction ajoutée.
+
+### 12.6 Jeu d'icônes : fait maison ou paquet ? (question ouverte, Kilian)
+
+L'application dessine ses icônes dans `ui/icons.tsx` : grille de 16, trait de
+1,5 px, `currentColor`, aucun remplissage. Question posée le 31 août 2026 :
+faut-il adopter un paquet (Radix Icons, Lucide) ?
+
+Éléments de décision consignés ici pour ne pas les reperdre :
+
+- **shadcn/ui est hors sujet** : ce n'est pas un jeu d'icônes mais une
+  collection de composants Tailwind + Radix, exclue par DESIGN.md §1 (« pas de
+  Tailwind, pas de bibliothèque de composants »). Son jeu d'icônes par défaut
+  est Lucide, qui s'utilise seul.
+- **Radix Icons** : grille de 15 px, trait fin, très proche de notre dessin ;
+  environ 300 glyphes, MIT. **Lucide** : grille de 24 px, trait de 2 px,
+  ~1 500 glyphes, ISC ; il faut passer `strokeWidth={1.5}` et `size={16}` pour
+  retrouver notre densité.
+- **Aucun paquet ne couvre le vocabulaire du domaine** : événement (pastille
+  sur la ligne), période (barre sur la ligne), accolade, flèche, coupure ⫽,
+  ligne à compléter, frise murale. Ces glyphes resteront faits maison ; le
+  risque réel est un mélange de deux dessins, pire qu'un jeu homogène.
+- **Coût** : une dépendance de plus, hors liste fermée (PLAN.md §8.4), pour
+  une quinzaine de glyphes génériques (annuler, dossier, disquette, loupe,
+  corbeille…) que nous dessinons déjà.
+
+Recommandation : garder le jeu maison, et n'adopter Lucide que si l'on veut
+couvrir rapidement beaucoup de commandes nouvelles — en alignant alors les
+glyphes du domaine sur sa grille. À trancher par Kilian.

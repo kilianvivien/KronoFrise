@@ -14,6 +14,7 @@ import { formatDate } from '../core/dates';
 import type { Item, KronoDocument } from '../core/types';
 import type { SceneGraph } from '../layout/scene';
 import { EDITOR, VIEWER } from '../ui/strings';
+import { resolveToken } from '../ui/tokenValues';
 import { exportScene, exportSvg, type SceneOptions } from './render';
 
 export interface HtmlOptions extends SceneOptions {
@@ -94,6 +95,9 @@ export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Prom
     },
   };
   const title = escapeHtml(doc.meta.title);
+  // Le SVG exporté embarque déjà les jetons ; ces valeurs de repli viennent du
+  // même fichier `tokens.css`, jamais d'hexadécimaux recopiés (DESIGN.md §1.2).
+  const token = (name: string): string => resolveToken(`var(${name})`);
 
   return `<!doctype html>
 <html lang="fr">
@@ -106,33 +110,33 @@ export async function exportHtml(doc: KronoDocument, options: HtmlOptions): Prom
   body {
     display: flex; flex-direction: column;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
-    font-size: 13px; color: var(--text-primary, #2C2925); background: var(--paper, #FBFAF7);
+    font-size: 13px; color: var(--text-primary, ${token('--text-primary')}); background: var(--paper, ${token('--paper')});
   }
   #frise { position: relative; flex: 1; min-height: 0; overflow: hidden; touch-action: none; cursor: grab; }
   #frise.krono-dragging { cursor: grabbing; }
   #frise svg { width: 100%; height: 100%; }
   #frise [data-item-id] { cursor: pointer; }
-  .krono-highlight { fill: none; stroke: var(--accent, #B24E33); stroke-width: 2.5px; pointer-events: none; }
+  .krono-highlight { fill: none; stroke: var(--accent, ${token('--accent')}); stroke-width: 2.5px; pointer-events: none; }
   #krono-card {
     position: absolute; left: 24px; bottom: 24px; max-width: 380px; padding: 16px;
-    background: var(--field-bg, #FCFBF8); border: 1px solid var(--hairline, #DCD7CE);
+    background: var(--field-bg, ${token('--field-bg')}); border: 1px solid var(--hairline, ${token('--hairline')});
     border-radius: 10px; box-shadow: 0 4px 16px rgba(44, 41, 37, .14);
   }
   #krono-card h2 { margin: 0 0 4px; font-size: 20px; }
-  #krono-card p { margin: 0 0 8px; color: var(--text-secondary, #6F6A61); }
+  #krono-card p { margin: 0 0 8px; color: var(--text-secondary, ${token('--text-secondary')}); }
   #krono-card img { display: block; width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; margin-top: 12px; }
   footer {
     display: flex; align-items: center; gap: 8px; padding: 8px 12px;
-    background: var(--chrome-bg, #F3F0EB); border-top: 1px solid var(--hairline, #DCD7CE);
+    background: var(--chrome-bg, ${token('--chrome-bg')}); border-top: 1px solid var(--hairline, ${token('--hairline')});
   }
   footer button {
     min-width: 28px; height: 28px; padding: 0 10px; font: inherit; color: inherit; cursor: pointer;
-    background: var(--field-bg, #FCFBF8); border: 1px solid var(--hairline, #DCD7CE); border-radius: 6px;
+    background: var(--field-bg, ${token('--field-bg')}); border: 1px solid var(--hairline, ${token('--hairline')}); border-radius: 6px;
   }
-  footer button:hover { background: var(--chrome-bg-inset, #EAE6DF); }
-  #krono-counter { min-width: 110px; text-align: center; color: var(--text-secondary, #6F6A61); font-variant-numeric: tabular-nums; }
-  .krono-help { flex: 1; color: var(--text-tertiary, #A09A8F); font-size: 11px; }
-  .krono-made { color: var(--text-tertiary, #A09A8F); font-size: 11px; }
+  footer button:hover { background: var(--chrome-bg-inset, ${token('--chrome-bg-inset')}); }
+  #krono-counter { min-width: 110px; text-align: center; color: var(--text-secondary, ${token('--text-secondary')}); font-variant-numeric: tabular-nums; }
+  .krono-help { flex: 1; color: var(--text-tertiary, ${token('--text-tertiary')}); font-size: 11px; }
+  .krono-made { color: var(--text-tertiary, ${token('--text-tertiary')}); font-size: 11px; }
   @media print {
     footer, #krono-card { display: none; }
     #frise { overflow: visible; }
