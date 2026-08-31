@@ -18,7 +18,7 @@ export const EDITOR = {
   inspectorHint: 'Double-cliquez sur un élément pour modifier son libellé. Faites glisser ses bords pour ajuster une période.',
   sidebarToggle: 'Afficher ou masquer la structure', inspectorToggle: 'Afficher ou masquer l’inspecteur',
   duplicate: 'Dupliquer', selectAll: 'Tout sélectionner',
-  hint: 'Glisser : naviguer · E : événement · P : période · Maj + glisser : sélectionner · ⌥ : sans aimantation',
+  hint: 'Glisser : naviguer · E : événement · P : période · ← → : décaler · Maj + glisser : sélectionner · ⌥ : sans aimantation',
   toolbarOverflow: 'Autres commandes',
   saved: 'Enregistré sur cet appareil', saving: 'Enregistrement…', loading: 'Ouverture de la frise…',
   fileSaved: 'Fichier .krono enregistré',

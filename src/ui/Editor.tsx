@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'react';
 import { useStore } from 'zustand';
-import { addItems, deleteItems } from '../core/commands';
+import { addItems, deleteItems, setLane } from '../core/commands';
 import { axisCovering } from '../core/axis';
+import { datePrecision, moveSelection, nudgeStep, selectedStart } from './canvasMath';
 import { csvItems } from '../core/importers';
 import { newId } from '../core/ids';
 import { editorStore } from '../store/editor';
@@ -75,7 +76,19 @@ export function Editor(): JSX.Element {
     return () => clearTimeout(timer);
   }, [notice]);
 
+  const scale = useMemo(() => makeScale(state.document.axis, canvasWidth, pan, zoom, insets), [state.document.axis, canvasWidth, pan, zoom, insets]);
+  const scaleRef = useRef(scale);
+  scaleRef.current = scale;
   const fit = () => { setZoom(1); setPan(0); };
+  const fitRef = useRef(fit);
+  fitRef.current = fit;
+  const stepZoom = useCallback((factor: number) => {
+    // SPEC? Toolbar zoom anchors the viewport centre; wheel zoom anchors the pointer.
+    const current = scaleRef.current, width = current.width;
+    const next = Math.max(1, Math.min(5000, current.zoom * factor));
+    const nextScale = makeScale(editorStore.getState().document.axis, width, 0, next, insets);
+    setPan(clampPan(nextScale, nextScale.timeToX(current.xToTime(width / 2)) - width / 2)); setZoom(next);
+  }, [insets]);
   const worksheet = mode === 'worksheet';
   const changeMode = (next: Mode) => { setMode(next); setTool('auto'); if (next !== 'worksheet') setAnswerKey(false); };
   const error = useCallback((cause: unknown) => {
@@ -105,6 +118,27 @@ export function Editor(): JSX.Element {
     const current = editorStore.getState();
     const items = current.document.items.filter((item) => current.selection.includes(item.id)).map((item) => ({ ...item, id: newId() }));
     if (items.length) { current.dispatch(addItems(current.document, items)); current.select(items.map((item) => item.id)); }
+  }, []);
+  // PLAN.md §3.2 : les flèches décalent la sélection d'une graduation, ⇧ de dix.
+  // Le pas se lit dans la règle affichée, donc il suit le zoom et le segment.
+  const nudge = useCallback((direction: -1 | 1, times: number) => {
+    const current = editorStore.getState();
+    const anchor = current.selection.map((id) => selectedStart(current.document, id)).find((date) => date !== undefined);
+    if (!anchor) return;
+    const delta = nudgeStep(scaleRef.current, anchor) * times * direction;
+    current.dispatch(moveSelection(current.document, current.selection, delta, datePrecision(anchor)));
+  }, []);
+  // SPEC? Le glissement vertical change de bande (PLAN.md §3.3.4) ; au clavier,
+  // c'est ↑/↓ — sans équivalent, la sélection multi-bandes serait bloquée.
+  const shiftLane = useCallback((direction: -1 | 1) => {
+    const current = editorStore.getState();
+    const lanes = current.document.lanes;
+    const selected = current.document.items.filter((item) => current.selection.includes(item.id));
+    if (!selected.length || lanes.length < 2) return;
+    const from = Math.min(...selected.map((item) => lanes.findIndex((lane) => lane.id === item.laneId)));
+    const target = lanes[Math.max(0, Math.min(lanes.length - 1, from + direction))];
+    if (!target || selected.every((item) => item.laneId === target.id)) return;
+    current.dispatch(setLane(current.selection, target.id));
   }, []);
   // Coller un tableau (docs/format.md §8.2) ajoute des éléments à la frise
   // ouverte : c'est une commande, donc annulable, et rien n'est remplacé.
@@ -148,24 +182,25 @@ export function Editor(): JSX.Element {
       else if (command && key === 'e') { event.preventDefault(); setExporting(true); }
       else if (command && key === '1') { event.preventDefault(); setSidebar((value) => !value); }
       else if (command && key === '2') { event.preventDefault(); setInspector((value) => !value); }
+      else if (command && (key === '=' || key === '+')) { event.preventDefault(); stepZoom(1.5); }
+      else if (command && key === '-') { event.preventDefault(); stepZoom(1 / 1.5); }
+      else if (command && key === '0') { event.preventDefault(); fitRef.current(); }
       else if (key === 'delete' || key === 'backspace') { event.preventDefault(); if (modeRef.current === 'edit') remove(); }
       else if (!command && key === 'e' && modeRef.current === 'edit') setTool('event');
       else if (!command && key === 'p' && modeRef.current === 'edit') setTool('period');
+      else if (!command && (key === 'arrowleft' || key === 'arrowright') && modeRef.current === 'edit' && current.selection.length) {
+        event.preventDefault(); nudge(key === 'arrowleft' ? -1 : 1, event.shiftKey ? 10 : 1);
+      } else if (!command && (key === 'arrowup' || key === 'arrowdown') && modeRef.current === 'edit' && current.selection.length) {
+        event.preventDefault(); shiftLane(key === 'arrowup' ? -1 : 1);
+      }
     };
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
-  }, [duplicate, open, remove, save]);
+  }, [duplicate, nudge, open, remove, save, shiftLane, stepZoom]);
   const finishTitle = (commit: boolean) => {
     if (finishingTitle.current) return;
     finishingTitle.current = true;
     if (commit && title !== null && (title.trim() || DOC.untitled) !== state.document.meta.title) state.dispatch({ name: 'setTitle', title: title.trim() || DOC.untitled });
     setTitle(null);
-  };
-  const stepZoom = (factor: number) => {
-    const next = Math.max(1, Math.min(5000, zoom * factor));
-    // SPEC? Toolbar zoom anchors the viewport centre; wheel zoom anchors the pointer.
-    const width = document.querySelector('[data-tool]')?.clientWidth ?? 800;
-    const current = makeScale(state.document.axis, width, pan, zoom, insets), nextScale = makeScale(state.document.axis, width, 0, next, insets);
-    setPan(clampPan(nextScale, nextScale.timeToX(current.xToTime(width / 2)) - width / 2)); setZoom(next);
   };
 
   return <div className={styles.app}>
@@ -184,9 +219,9 @@ export function Editor(): JSX.Element {
       </div>
       <span className={styles.separator} />
       <div className={styles.zoomGroup} role="group" aria-label={TOOLBAR.zoom}>
-        <IconButton icon="zoomOut" label={TOOLBAR.zoomOut} disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)} />
-        <button className={`${styles.zoom} ${styles.tip}`} data-tip={TOOLBAR.zoomFit} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
-        <IconButton icon="zoomIn" label={TOOLBAR.zoomIn} disabled={zoom >= 5000} onClick={() => stepZoom(1.5)} />
+        <IconButton icon="zoomOut" label={TOOLBAR.zoomOut} hint="⌘−" disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)} />
+        <button className={`${styles.zoom} ${styles.tip}`} data-tip={`${TOOLBAR.zoomFit} · ⌘0`} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
+        <IconButton icon="zoomIn" label={TOOLBAR.zoomIn} hint="⌘+" disabled={zoom >= 5000} onClick={() => stepZoom(1.5)} />
       </div>
       <span className={styles.spacer} />
       <div className={styles.group} role="group" aria-label={WORKSHEET.mode}>

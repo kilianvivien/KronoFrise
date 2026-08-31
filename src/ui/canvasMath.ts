@@ -57,3 +57,37 @@ export function moveSelection(doc: KronoDocument, ids: string[], delta: number, 
 export function selectedStart(doc: KronoDocument, id: string): KDate | undefined {
   const item = doc.items.find((item) => item.id === id); return item ? itemStart(item) : undefined;
 }
+
+/** Précision propre à une date : un déplacement au clavier ne l'affine jamais. */
+export function datePrecision(date: KDate): DatePrecision {
+  return date.day !== undefined ? 'day' : date.month !== undefined ? 'month' : 'year';
+}
+
+/**
+ * Pas d'une graduation à cet endroit, en années.
+ *
+ * PLAN.md §3.2 : « les flèches décalent la date d'une graduation ». La
+ * graduation n'a pas de pas fixe — il dépend du zoom **et** du segment
+ * élastique survolé — alors on le relit dans les graduations que la règle
+ * dessine réellement, ce qui garde clavier et affichage d'accord.
+ */
+export function tickStepAt(scale: Scale, x: number): number {
+  const content = x + scale.pan;
+  const segment = scale.segments.find((s) => content >= s.x0 && content <= s.x1) ?? scale.segments[0];
+  const ticks = scale.visibleTicks().filter((tick) => tick.segmentIndex === segment?.index);
+  let step = Infinity;
+  for (let i = 1; i < ticks.length; i++) {
+    const delta = (ticks[i] as { t: number }).t - (ticks[i - 1] as { t: number }).t;
+    if (delta > 0) step = Math.min(step, delta);
+  }
+  return Number.isFinite(step) ? step : 1;
+}
+
+/** Décalage d'un appui sur une flèche : une graduation, jamais moins que la précision de la date. */
+export function nudgeStep(scale: Scale, date: KDate): number {
+  const step = tickStepAt(scale, scale.timeToX(toFractionalYear(date)));
+  const precision = datePrecision(date);
+  if (precision === 'year') return Math.max(1, Math.round(step));
+  if (precision === 'month') return Math.max(1 / 12, step);
+  return Math.max(1 / 365, step);
+}
