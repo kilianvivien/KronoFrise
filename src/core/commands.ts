@@ -21,6 +21,7 @@ import {
   type Lane,
   type MaskKind,
   type PeriodShape,
+  type TitleBlock,
 } from './types';
 
 /* ------------------------------------------------------------------ */
@@ -63,6 +64,7 @@ export type Command =
   | { name: 'setAuthor'; author: string | null }
   | { name: 'setTitle'; title: string }
   | { name: 'setTheme'; themeId: string }
+  | { name: 'setTitleBlock'; block: TitleBlock | null }
   | { name: 'restoreMasks'; masks: KronoDocument['pedagogy']['maskedItems'] }
   | { name: 'setMask'; itemId: string; hide: MaskKind | null };
 
@@ -157,6 +159,13 @@ export function apply(doc: KronoDocument, command: Command): KronoDocument {
         draft.themeId = command.themeId;
         break;
       }
+      // `null` retire le bloc plutôt que d'y laisser un objet éteint : un
+      // document sans bloc de titre est *exactement* celui d'avant M4.
+      case 'setTitleBlock': {
+        if (command.block === null) delete draft.titleBlock;
+        else draft.titleBlock = command.block;
+        break;
+      }
       case 'restoreMasks': {
         draft.pedagogy.maskedItems = structuredClone(command.masks);
         break;
@@ -224,6 +233,8 @@ export function invert(before: KronoDocument, command: Command): Command {
       return { name: 'setTitle', title: before.meta.title };
     case 'setTheme':
       return { name: 'setTheme', themeId: before.themeId };
+    case 'setTitleBlock':
+      return { name: 'setTitleBlock', block: before.titleBlock ?? null };
     case 'restoreMasks':
       return { name: 'restoreMasks', masks: before.pedagogy.maskedItems };
     case 'setMask':

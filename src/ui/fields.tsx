@@ -2,6 +2,7 @@ import { useRef, useState, type JSX } from 'react';
 import { apply, type Command } from '../core/commands';
 import { parseDateInput } from '../core/dates';
 import { parseDocument } from '../core/schema';
+import type { TitleBlock } from '../core/types';
 import { serializeFile } from '../store/fileIO';
 import { editorStore } from '../store/editor';
 import { EDITOR, M2 } from './strings';
@@ -18,6 +19,26 @@ export function commit(command: Command): void {
   if (command.name === 'updateItems' && command.patches.some(({ patch }) => patch.image)) serializeFile(next);
   state.dispatch(command);
 }
+/**
+ * Modifie une partie du bloc de titre en repartant de **l'état courant**, pas
+ * du document capturé au rendu.
+ *
+ * Chaque contrôle du bloc écrit l'objet entier ; construit sur une valeur
+ * fermée, un réglage validé juste avant peut être écrasé par le suivant — le
+ * sous-titre disparaissait alors que son champ le montrait encore. La commande
+ * reste une seule étape d'annulation.
+ */
+export function patchTitleBlock(patch: Partial<TitleBlock>): void {
+  const current = editorStore.getState().document.titleBlock;
+  if (current === undefined) return;
+  const block: TitleBlock = { ...current, ...patch };
+  // `undefined` retire la clé plutôt que de la laisser vide dans le fichier.
+  for (const key of Object.keys(patch) as (keyof TitleBlock)[]) {
+    if (patch[key] === undefined) delete block[key];
+  }
+  commit({ name: 'setTitleBlock', block });
+}
+
 export function dateInput(value: string) {
   const date = parseDateInput(value);
   if (!date) throw new Error(EDITOR.invalidDate);

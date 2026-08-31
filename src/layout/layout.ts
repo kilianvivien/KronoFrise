@@ -22,6 +22,11 @@ import {
   EVENT_IMAGE_SIZE,
   LANE_HEIGHT,
   LANE_LABEL_HEIGHT,
+  TITLE_BLOCK_GAP,
+  TITLE_FONT_SIZE,
+  TITLE_LINE_GAP,
+  TITLE_META_SIZE,
+  TITLE_SUBTITLE_SIZE,
   PERIOD_BAR_HEIGHT,
   ROW_GAP,
   ROW_HEIGHT,
@@ -35,6 +40,7 @@ import type {
   SceneGraph,
   SceneLane,
   ScenePeriod,
+  SceneTitle,
 } from './scene';
 
 export interface LayoutOptions {
@@ -84,13 +90,19 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
 
   // 2) S'il reste de la place, la partager entre les bandes plutôt que de
   //    laisser l'axe flotter au milieu d'un canevas vide.
+  const titleHeight = doc.titleBlock === undefined ? 0 : titleBlockHeight(doc);
   const needed =
-    CANVAS_PADDING * 2 + AXIS_BAND_HEIGHT + placedLanes.reduce((sum, entry) => sum + entry.height, 0);
+    CANVAS_PADDING * 2 + titleHeight + AXIS_BAND_HEIGHT + placedLanes.reduce((sum, entry) => sum + entry.height, 0);
   const spare = Math.max((options.height ?? 0) - needed, 0);
   const expanded = placedLanes.filter((entry) => !entry.lane.collapsed).length;
   const bonus = expanded ? spare / expanded : 0;
 
-  let y = CANVAS_PADDING;
+  // Le bloc de titre occupe le haut du canevas : les bandes commencent sous
+  // lui. Sa hauteur entre dans la scène, donc l'export réserve exactement la
+  // même place que l'écran.
+  const title = titleBlock(doc, scale.width);
+
+  let y = CANVAS_PADDING + (title?.height ?? 0);
   placedLanes.forEach((entry, index) => {
     const height = entry.height + (entry.lane.collapsed ? 0 : bonus);
     const anchorY = y + height;
@@ -120,7 +132,7 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
   const coupures: SceneCoupure[] = scale.coupures.map((coupure) => ({
     x: coupure.x - scale.pan,
     width: coupure.width,
-    top: CANVAS_PADDING,
+    top: CANVAS_PADDING + (title?.height ?? 0),
     bottom: baselineY,
   }));
 
@@ -138,6 +150,7 @@ export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions 
     events,
     periods,
     ticks: scale.visibleTicks(undefined, measurer),
+    ...(title ? { title } : {}),
     coupures,
     axisSegments,
   };
@@ -430,4 +443,73 @@ function finishPeriod(placed: PlacedPeriod, anchorY: number, rowHeight: number):
     ...(hides(placed.mask, 'label') ? { maskLabel: true } : {}),
     ...(hides(placed.mask, 'date') ? { maskDate: true } : {}),
   };
+}
+
+/* ------------------------------------------------------------------ */
+/* Bloc de titre (PLAN.md M4, ajout 4)                                 */
+/* ------------------------------------------------------------------ */
+
+/** Les lignes du bloc, dans l'ordre où elles se lisent. */
+function titleLines(doc: KronoDocument): { subtitle?: string; meta?: string } {
+  const block = doc.titleBlock;
+  if (block === undefined) return {};
+  const parts: string[] = [];
+  if (block.author === true && doc.meta.author !== undefined && doc.meta.author.trim() !== '') parts.push(doc.meta.author.trim());
+  // La date est celle de création : elle date le document, pas la dernière
+  // retouche — c'est ce qu'un en-tête de polycopié porte.
+  if (block.date === true) parts.push(formatIsoDate(doc.meta.createdAt));
+  const subtitle = block.subtitle?.trim();
+  return {
+    ...(subtitle !== undefined && subtitle !== '' ? { subtitle } : {}),
+    ...(parts.length ? { meta: parts.join(' · ') } : {}),
+  };
+}
+
+/** « 2026-08-31 » → « 31 août 2026 ». Le document reste en ISO. */
+function formatIsoDate(iso: string): string {
+  const match = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!match) return '';
+  const [, year, month, day] = match;
+  return formatDate({ year: Number(year), month: Number(month), day: Number(day) });
+}
+
+/** Hauteur réservée au-dessus des bandes, blanc de séparation compris. */
+function titleBlockHeight(doc: KronoDocument): number {
+  if (doc.titleBlock === undefined) return 0;
+  const { subtitle, meta } = titleLines(doc);
+  let height = TITLE_FONT_SIZE;
+  if (subtitle !== undefined) height += TITLE_LINE_GAP + TITLE_SUBTITLE_SIZE;
+  if (meta !== undefined) height += TITLE_LINE_GAP + TITLE_META_SIZE;
+  return height + TITLE_BLOCK_GAP;
+}
+
+/**
+ * Géométrie du bloc — les ordonnées sont des **lignes de base**, comme partout
+ * ailleurs dans la scène, si bien que le SVG et le PDF les emploient telles
+ * quelles sans recalculer un centrage chacun de son côté.
+ */
+function titleBlock(doc: KronoDocument, width: number): SceneTitle | undefined {
+  const block = doc.titleBlock;
+  if (block === undefined) return undefined;
+  const { subtitle, meta } = titleLines(doc);
+  const centered = block.align === 'center';
+  let y = CANVAS_PADDING + TITLE_FONT_SIZE;
+  const scene: SceneTitle = {
+    x: centered ? width / 2 : CANVAS_PADDING,
+    anchor: centered ? 'middle' : 'start',
+    title: doc.meta.title,
+    titleY: y,
+    height: titleBlockHeight(doc),
+  };
+  if (subtitle !== undefined) {
+    y += TITLE_LINE_GAP + TITLE_SUBTITLE_SIZE;
+    scene.subtitle = subtitle;
+    scene.subtitleY = y;
+  }
+  if (meta !== undefined) {
+    y += TITLE_LINE_GAP + TITLE_META_SIZE;
+    scene.meta = meta;
+    scene.metaY = y;
+  }
+  return scene;
 }

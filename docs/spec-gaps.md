@@ -598,3 +598,38 @@ partagée (`gradientLayers`), vérifiée par test sur le flux du PDF réel.
 
 Les accolades restent exclues : elles n'ont aucune surface fermée
 (docs/spec-gaps.md §13, remplissages).
+
+### 13.12 Bloc de titre : dans la scène, donc dans l'image
+
+PLAN.md M4 (ajout 4) : « un bloc au niveau du document — titre, sous-titre ou
+description, auteur et date facultatifs — placé au-dessus de la frise, **membre
+du SceneGraph** pour qu'il s'imprime et s'exporte à l'identique ». C'est la
+contrainte qui a guidé toute la mise en œuvre : rien n'est dessiné par le
+rendu, tout est résolu par `layout()` — jusqu'aux lignes de base, que le PDF
+reprend telles quelles au lieu de recalculer un centrage de son côté.
+
+Décisions non spécifiées :
+
+- **Absent par défaut.** `titleBlock` est optionnel : les fichiers antérieurs
+  se chargent et se dessinent exactement comme avant, et une frise destinée à
+  être collée dans un diaporama n'a pas besoin de son propre titre. Le retirer
+  supprime la clé plutôt que de laisser un objet éteint dans le fichier.
+- **Le bloc repousse les bandes**, il ne se pose pas par-dessus : sa hauteur
+  entre dans le calcul de la scène, coupures comprises — une coupure partant du
+  haut du canevas aurait traversé le titre.
+- **La date affichée est celle de création**, pas celle de la dernière
+  retouche : c'est ce que porte l'en-tête d'un polycopié.
+- **Deux positions seulement**, à gauche ou centré, en contrôle segmenté.
+  PLAN.md parle de « faire glisser entre haut-gauche et haut-centre » ; le
+  glissement ajouterait une poignée sur le canevas pour un choix binaire, là où
+  deux boutons disent la même chose sans encombrer la frise. À rouvrir si
+  Kilian tient au geste.
+- **Typographie par thème** : le bloc n'a pas de couleurs propres, il emploie
+  les jetons `--text-*` que `Frise` redéfinit d'après le thème. Un titre posé
+  sur *Craie* s'écrit donc à la craie sans règle particulière.
+
+Défaut trouvé en vérifiant dans le navigateur : chaque contrôle du bloc écrit
+l'objet entier, et le construisait sur le document **capturé au rendu**. Le
+sous-titre disparaissait dès qu'on cochait « Auteur » dans la foulée, alors que
+son champ le montrait encore. `patchTitleBlock` repart de l'état courant du
+magasin ; le cas est figé par test.

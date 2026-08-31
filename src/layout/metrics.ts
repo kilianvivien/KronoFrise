@@ -57,3 +57,16 @@ export const MASK_LINE_MIN_WIDTH = 48;
 
 /** Hauteur de la zone réservée à l'axe et à ses libellés, sous les bandes. */
 export const AXIS_BAND_HEIGHT = 40;
+
+/* ---- bloc de titre (PLAN.md M4, ajout 4) ---- */
+
+/** Titre du document sur le canevas : `--fs-display` de DESIGN.md §2. */
+export const TITLE_FONT_SIZE = 24;
+/** Sous-titre ou description : le corps courant. */
+export const TITLE_SUBTITLE_SIZE = 13;
+/** Auteur et date : la légende. */
+export const TITLE_META_SIZE = 11;
+/** Interlignes, dérivés du « 1,2 sur le canevas » de DESIGN.md §2. */
+export const TITLE_LINE_GAP = 6;
+/** Blanc laissé entre le bloc et la première bande. */
+export const TITLE_BLOCK_GAP = 20;

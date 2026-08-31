@@ -179,6 +179,23 @@ describe('export PDF', () => {
     expect(layers[0]!.full).toBe(true);
   }, 20_000);
 
+  it('imprime le bloc de titre, comme le SVG et à la même place', async () => {
+    // PLAN.md M4 (ajout 4) : le bloc appartient au SceneGraph, donc « ce qui
+    // est exporté est ce qui a été vu ». On le vérifie des deux côtés.
+    const doc = structuredClone(revolution);
+    doc.meta.author = 'Kilian Vivien';
+    doc.titleBlock = { align: 'center', subtitle: 'Chronologie de 1789 à 1799', author: true, date: true };
+
+    const strings = pdfText(await exportPdf(doc, A4));
+    expect(strings.some((value) => value.includes(doc.meta.title))).toBe(true);
+    expect(strings.some((value) => value.includes('Chronologie de 1789'))).toBe(true);
+    expect(strings.some((value) => value.includes('Kilian Vivien'))).toBe(true);
+
+    // Sans bloc, rien de tout cela n'apparaît en dehors des libellés.
+    const plain = pdfText(await exportPdf(revolution, A4));
+    expect(plain.some((value) => value.includes('Chronologie de 1789'))).toBe(false);
+  }, 20_000);
+
   it('décale une tuile de motif sans la déformer', () => {
     expect(translatePath('M0 4H8', 10, 20)).toBe('M 10 24H 18');
     expect(roundedRectPath(0, 0, 10, 10, 0)).toContain('M 0 0');

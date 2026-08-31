@@ -12,7 +12,7 @@ import { greatPeriodsPreset } from '../core/presets';
 import { editorStore } from '../store/editor';
 import { themeById } from '../themes';
 import { AxisEditor } from './AxisEditor';
-import { Check, Choices, Colors, Field, PanelButton, commit, dateInput, reportError } from './fields';
+import { Check, Choices, Colors, Field, PanelButton, commit, dateInput, patchTitleBlock, reportError } from './fields';
 import { Icon } from './icons';
 import { importImage } from './images';
 import { FillPicker } from './FillPicker';
@@ -124,6 +124,24 @@ export function Inspector({ laneId, onLane, fit, mode = 'edit', answerKey = fals
     <section className="panelSection">
       <Field label={M2.title} value={doc.meta.title} onCommit={(title) => commit({ name: 'setTitle', title })} />
       <Field label={M2.author} value={doc.meta.author ?? ''} onCommit={(author) => commit({ name: 'setAuthor', author: author || null })} />
+    </section>
+    {/* PLAN.md M4 (ajout 4) : le bloc fait partie de la scène, donc de l'image
+        exportée — c'est ce qui transforme un PNG en document fini. */}
+    <section className="panelSection">
+      <h3>{M2.titleBlock}</h3>
+      <Check wide label={M2.showTitleBlock} value={doc.titleBlock !== undefined}
+        onChange={(on) => commit({ name: 'setTitleBlock', block: on ? { align: 'left' } : null })} />
+      {doc.titleBlock === undefined ? <p>{M2.titleBlockHint}</p> : <>
+        <Field label={M2.subtitle} value={doc.titleBlock.subtitle ?? ''}
+          onCommit={(subtitle) => patchTitleBlock(subtitle.trim() ? { subtitle } : { subtitle: undefined })} />
+        <Choices label={M2.align} value={doc.titleBlock.align}
+          options={[{ value: 'left' as const, label: M2.alignLeft, text: M2.alignLeft }, { value: 'center' as const, label: M2.alignCenter, text: M2.alignCenter }]}
+          onChange={(align) => patchTitleBlock({ align })} />
+        <Check wide label={M2.showAuthor} value={doc.titleBlock.author === true}
+          onChange={(author) => patchTitleBlock({ author })} />
+        <Check wide label={M2.showDate} value={doc.titleBlock.date === true}
+          onChange={(date) => patchTitleBlock({ date })} />
+      </>}
     </section>
     <section className="panelSection">
       <h3>{M2.theme}</h3>

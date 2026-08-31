@@ -142,6 +142,16 @@ export const documentSchema = z
       .strict(),
     axis: axisSchema,
     themeId: z.string().min(1),
+    // Ajout M4 : optionnel, donc les fichiers antérieurs restent valides.
+    titleBlock: z
+      .object({
+        align: z.enum(['left', 'center']),
+        subtitle: z.string().optional(),
+        author: z.boolean().optional(),
+        date: z.boolean().optional(),
+      })
+      .strict()
+      .optional(),
     lanes: z.array(laneSchema).min(1, { message: ERRORS.noLane }),
     items: z.array(itemSchema),
     pedagogy: pedagogySchema,

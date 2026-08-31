@@ -54,3 +54,16 @@ describe('exports vectoriels', () => {
     expect(exportFilename({ ...createDocument(), meta: { ...revolution.meta, title: '   ' } }, 'png', 'frise')).toBe('frise.png');
   });
 });
+
+describe('bloc de titre dans les exports vectoriels', () => {
+  it('écrit le titre, le sous-titre et la ligne d’auteur dans le SVG', async () => {
+    const doc = structuredClone(revolution);
+    doc.meta.author = 'Kilian Vivien';
+    doc.titleBlock = { align: 'left', subtitle: 'Chronologie de 1789 à 1799', author: true, date: true };
+    // Le vrai chemin d'export, pas un rendu monté pour l'occasion.
+    const svg = await exportSvg(doc, { width: 1200 });
+    expect(svg).toContain('Chronologie de 1789');
+    expect(svg).toContain('Kilian Vivien');
+    expect(svg).not.toMatch(/NaN|undefined/);
+  });
+});

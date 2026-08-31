@@ -13,6 +13,7 @@ import { EventConnector, EventNode } from './EventNode';
 import { Lanes } from './Lanes';
 import { PeriodNode } from './PeriodNode';
 import { Ruler } from './Ruler';
+import { TitleBlock } from './TitleBlock';
 
 export interface FriseProps {
   scene: SceneGraph;
@@ -41,6 +42,7 @@ export function Frise({ scene, theme = MANUEL_SCOLAIRE, title, children, transpa
       <title>{title}</title>
       {theme.id === 'journal' && <defs><filter id="journal-monochrome"><feColorMatrix type="saturate" values="0" /></filter></defs>}
       {!transparent && <rect x={0} y={0} width={scene.width} height={scene.height} fill={theme.paper} />}
+      {scene.title && <TitleBlock title={scene.title} />}
       <Lanes scene={scene} theme={theme} />
       {/* Les connecteurs d'abord : ils passent derrière toutes les puces. */}
       <g aria-hidden="true">

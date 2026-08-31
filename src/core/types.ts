@@ -88,6 +88,24 @@ export interface Pedagogy {
   maskedItems: { itemId: string; hide: MaskKind }[];
 }
 
+/**
+ * Bloc de titre du document — PLAN.md M4 (ajout 4).
+ *
+ * Absent, la frise reste nue : les fichiers antérieurs se chargent inchangés,
+ * et une frise collée dans un diaporama n'a pas besoin de son propre titre.
+ * Présent, il fait de l'export un document fini plutôt qu'un schéma flottant.
+ */
+export interface TitleBlock {
+  /** aligné à gauche ou centré au-dessus de la frise */
+  align: 'left' | 'center';
+  /** sous-titre ou description, une ligne */
+  subtitle?: string;
+  /** afficher `meta.author` sous le titre */
+  author?: boolean;
+  /** afficher la date de création */
+  date?: boolean;
+}
+
 export interface DocumentMeta {
   title: string;
   author?: string;
@@ -105,6 +123,8 @@ export interface KronoDocument {
   meta: DocumentMeta;
   axis: Axis;
   themeId: string;
+  /** ajout M4 ; absent = pas de bloc de titre sur le canevas */
+  titleBlock?: TitleBlock;
   /** ≥ 1 */
   lanes: Lane[];
   items: Item[];

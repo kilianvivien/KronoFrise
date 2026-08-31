@@ -95,6 +95,29 @@ export interface SceneAxisSegment {
   x1: number;
 }
 
+/**
+ * Bloc de titre posé au-dessus de la frise — PLAN.md M4 (ajout 4).
+ *
+ * Il fait partie du `SceneGraph`, donc l'écran, le SVG, le PNG et le PDF le
+ * dessinent depuis la même géométrie : ce qui est vu est ce qui est imprimé.
+ * Les lignes sont déjà résolues et mesurées ; le rendu n'ajoute que le style.
+ */
+export interface SceneTitle {
+  /** abscisse d'ancrage du texte */
+  x: number;
+  /** `middle` quand le bloc est centré (DESIGN.md §4, ancrage de la règle) */
+  anchor: 'start' | 'middle';
+  title: string;
+  titleY: number;
+  subtitle?: string;
+  subtitleY?: number;
+  /** « Kilian Vivien · 31 août 2026 », déjà assemblé et formaté */
+  meta?: string;
+  metaY?: number;
+  /** hauteur totale réservée au-dessus des bandes */
+  height: number;
+}
+
 export interface SceneGraph {
   width: number;
   height: number;
@@ -107,6 +130,8 @@ export interface SceneGraph {
   coupures: SceneCoupure[];
   /** morceaux de la ligne de base, interrompue par les coupures */
   axisSegments: SceneAxisSegment[];
+  /** absent quand le document ne porte pas de bloc de titre */
+  title?: SceneTitle;
 }
 
 /** Fenêtre visible, en pixels de scène (déjà des pixels d'écran : `pan` est appliqué). */

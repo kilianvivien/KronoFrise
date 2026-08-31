@@ -8,6 +8,7 @@
  */
 import type { CSSProperties } from 'react';
 import { MASK_DASH } from './shapes';
+import { TITLE_FONT_SIZE, TITLE_META_SIZE, TITLE_SUBTITLE_SIZE } from '../layout/metrics';
 
 export const FONT_UI = 'var(--font-ui)';
 export const FS_UI = 13;
@@ -102,3 +103,30 @@ export function periodDatesStyle(color: string): CSSProperties {
     textAnchor: 'end',
   };
 }
+
+/* ---- bloc de titre (PLAN.md M4, ajout 4) ---- */
+
+/**
+ * La typographie du bloc suit le thème : les jetons `--text-*` sont
+ * redéfinis sur le `<svg>` par les couleurs du thème (voir `Frise`), si bien
+ * qu'un titre posé sur *Craie* s'écrit à la craie sans règle propre.
+ */
+export const titleStyle: CSSProperties = {
+  fill: 'var(--text-primary)',
+  fontFamily: FONT_UI,
+  fontSize: TITLE_FONT_SIZE,
+  fontWeight: 600,
+};
+
+export const titleSubtitleStyle: CSSProperties = {
+  fill: 'var(--text-secondary)',
+  fontFamily: FONT_UI,
+  fontSize: TITLE_SUBTITLE_SIZE,
+};
+
+export const titleMetaStyle: CSSProperties = {
+  fill: 'var(--text-tertiary)',
+  fontFamily: FONT_UI,
+  fontSize: TITLE_META_SIZE,
+  fontVariantNumeric: 'tabular-nums',
+};

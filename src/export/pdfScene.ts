@@ -13,8 +13,9 @@ import { degrees, rgb, type PDFFont, type PDFImage, type PDFPage } from 'pdf-lib
 import {
   TICK_LABEL_GAP, TICK_MAJOR_HEIGHT, TICK_MINOR_HEIGHT,
   BASELINE_WIDTH, CANVAS_PADDING, EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP,
+  TITLE_FONT_SIZE, TITLE_META_SIZE, TITLE_SUBTITLE_SIZE,
 } from '../layout/metrics';
-import type { SceneEvent, SceneGraph, ScenePeriod } from '../layout/scene';
+import type { SceneEvent, SceneGraph, ScenePeriod, SceneTitle } from '../layout/scene';
 import { fillPaint, gradientPaint } from '../renderer/FillPattern';
 import {
   arrowPath, BAR_RADIUS, bracketPath, CARD_RADIUS, CHIP_PADDING_X, CHIP_RADIUS,
@@ -238,6 +239,7 @@ export function translatePath(path: string, dx: number, dy: number): string {
 /* ------------------------------------------------------------------ */
 
 export function drawScene(context: PdfContext, scene: SceneGraph): void {
+  if (scene.title) drawTitleBlock(context, scene.title);
   drawLanes(context, scene);
   // Même ordre qu'à l'écran : les connecteurs passent derrière les puces.
   for (const event of scene.events) drawConnector(context, event);
@@ -248,6 +250,29 @@ export function drawScene(context: PdfContext, scene: SceneGraph): void {
   ].sort((a, b) => a.x - b.x || a.id.localeCompare(b.id));
   for (const node of nodes) node.draw();
   drawRuler(context, scene);
+}
+
+/**
+ * Bloc de titre — PLAN.md M4 (ajout 4).
+ *
+ * Aucune géométrie ici : les lignes de base viennent du `SceneGraph`, comme à
+ * l'écran. Le PDF n'a donc pas sa propre idée de l'endroit où poser un titre.
+ */
+function drawTitleBlock(context: PdfContext, title: SceneTitle): void {
+  const anchor = title.anchor === 'middle' ? 'middle' : 'start';
+  drawText(context, title.title, title.x, title.titleY, {
+    size: TITLE_FONT_SIZE, color: context.theme.axisInk, bold: true, anchor,
+  });
+  if (title.subtitle !== undefined && title.subtitleY !== undefined) {
+    drawText(context, title.subtitle, title.x, title.subtitleY, {
+      size: TITLE_SUBTITLE_SIZE, color: context.theme.rulerInk, anchor,
+    });
+  }
+  if (title.meta !== undefined && title.metaY !== undefined) {
+    drawText(context, title.meta, title.x, title.metaY, {
+      size: TITLE_META_SIZE, color: context.theme.rulerInkMinor, anchor,
+    });
+  }
 }
 
 function drawLanes(context: PdfContext, scene: SceneGraph): void {
