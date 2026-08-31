@@ -19,6 +19,7 @@ import {
 import { relativeTime } from './relativeTime';
 import { CONFIRM, EDITOR, LIBRARY, START } from './strings';
 import { Icon } from './icons';
+import { useModalFocus } from './useModalFocus';
 import styles from './Library.module.css';
 
 export function Library({ onClose, onOpen, onImported }: {
@@ -35,6 +36,10 @@ export function Library({ onClose, onOpen, onImported }: {
   const [error, setError] = useState<string | null>(null);
   const upload = useRef<HTMLInputElement>(null);
   const dialog = useRef<HTMLDialogElement>(null);
+  const overlay = useRef<HTMLDivElement>(null);
+  // Le navigateur est plein écran, donc dessiné en div : le piège à focus
+  // que `<dialog>` offrirait nativement est ici explicite.
+  useModalFocus(overlay, !deleting);
   const urls = useRef<string[]>([]);
 
   const refresh = useCallback(async () => {
@@ -91,7 +96,7 @@ export function Library({ onClose, onOpen, onImported }: {
     });
   };
 
-  return <div className={styles.overlay} role="dialog" aria-modal="true" aria-label={LIBRARY.title}
+  return <div ref={overlay} className={styles.overlay} role="dialog" aria-modal="true" aria-label={LIBRARY.title}
     data-dropping={dropping}
     onDragOver={(event) => { if (event.dataTransfer.types.includes('Files')) { event.preventDefault(); setDropping(true); } }}
     onDragLeave={() => setDropping(false)}

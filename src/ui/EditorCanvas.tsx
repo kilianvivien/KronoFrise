@@ -259,6 +259,15 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
     }}
     onContextMenu={(event) => { if (readOnly) return; const rect = host.current?.getBoundingClientRect(); const y = event.clientY - (rect?.top ?? 0) + (host.current?.scrollTop ?? 0); if (y >= scene.baselineY - 16) { event.preventDefault(); const x = event.clientX - (rect?.left ?? 0); setAxisMenu({ index: null, x, date: formatDate(snapDate(scale, x, false).date) }); } }}
     onPointerCancel={cancel} onLostPointerCapture={() => { if (gesture.current) cancel(); }}
+    onFocus={(event) => {
+      // Sans cela, Tab atteignait un élément mais ne le sélectionnait pas :
+      // au clavier, rien n'était déplaçable, dupliquable ni supprimable
+      // (DESIGN.md §7 — « Tab l'atteint »).
+      const target = event.target instanceof Element ? event.target : null;
+      const id = target?.closest('[data-item-id]')?.getAttribute('data-item-id');
+      const selection = editorStore.getState().selection;
+      if (id && (selection.length !== 1 || selection[0] !== id)) state.select([id]);
+    }}
     onDoubleClick={(event) => {
       const target = event.target instanceof Element ? event.target : null;
       const id = target?.closest('[data-item-id]')?.getAttribute('data-item-id');

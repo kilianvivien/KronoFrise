@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type JSX } from 'rea
 import { useStore } from 'zustand';
 import { addItems, deleteItems, setLane } from '../core/commands';
 import { axisCovering } from '../core/axis';
+import { formatDate } from '../core/dates';
 import { datePrecision, moveSelection, nudgeStep, selectedStart } from './canvasMath';
 import { csvItems } from '../core/importers';
 import { newId } from '../core/ids';
@@ -29,6 +30,24 @@ import './panels.css';
 
 function editable(target: EventTarget | null): boolean {
   return target instanceof Element && !!target.closest('input,textarea,select,[contenteditable=true],dialog');
+}
+/**
+ * Sélection sur laquelle agit le clavier.
+ *
+ * Une commande qui vide la sélection — une annulation, l'ajout d'une bande —
+ * laissait l'anneau de focus sur un élément que les flèches ne déplaçaient
+ * plus : l'anneau mentait. On rétablit donc la sélection depuis le focus réel.
+ */
+function keyboardSelection(): readonly string[] {
+  const current = editorStore.getState();
+  if (current.selection.length) return current.selection;
+  const active = document.activeElement;
+  const id = active instanceof Element ? active.closest('[data-item-id]')?.getAttribute('data-item-id') : null;
+  if (id !== null && id !== undefined && current.document.items.some((item) => item.id === id)) {
+    current.select([id]);
+    return [id];
+  }
+  return [];
 }
 export function Editor(): JSX.Element {
   const state = useStore(editorStore);
@@ -89,6 +108,17 @@ export function Editor(): JSX.Element {
     const nextScale = makeScale(editorStore.getState().document.axis, width, 0, next, insets);
     setPan(clampPan(nextScale, nextScale.timeToX(current.xToTime(width / 2)) - width / 2)); setZoom(next);
   }, [insets]);
+  // La barre d'état est un `role="status"` : nommer l'élément unique y fait
+  // annoncer sa date à chaque décalage aux flèches, sinon le clavier déplaçait
+  // en silence.
+  const selectedLabel = useMemo(() => {
+    if (state.selection.length !== 1) return null;
+    const item = state.document.items.find((candidate) => candidate.id === state.selection[0]);
+    if (!item) return null;
+    return item.kind === 'event'
+      ? EDITOR.eventAccessible(item.label, formatDate(item.date))
+      : EDITOR.periodAccessible(item.label, EDITOR.range(formatDate(item.start), formatDate(item.end)));
+  }, [state.selection, state.document.items]);
   const worksheet = mode === 'worksheet';
   const changeMode = (next: Mode) => { setMode(next); setTool('auto'); if (next !== 'worksheet') setAnswerKey(false); };
   const error = useCallback((cause: unknown) => {
@@ -122,23 +152,25 @@ export function Editor(): JSX.Element {
   // PLAN.md §3.2 : les flèches décalent la sélection d'une graduation, ⇧ de dix.
   // Le pas se lit dans la règle affichée, donc il suit le zoom et le segment.
   const nudge = useCallback((direction: -1 | 1, times: number) => {
+    const selection = keyboardSelection();
     const current = editorStore.getState();
-    const anchor = current.selection.map((id) => selectedStart(current.document, id)).find((date) => date !== undefined);
+    const anchor = selection.map((id) => selectedStart(current.document, id)).find((date) => date !== undefined);
     if (!anchor) return;
     const delta = nudgeStep(scaleRef.current, anchor) * times * direction;
-    current.dispatch(moveSelection(current.document, current.selection, delta, datePrecision(anchor)));
+    current.dispatch(moveSelection(current.document, selection, delta, datePrecision(anchor)));
   }, []);
   // SPEC? Le glissement vertical change de bande (PLAN.md §3.3.4) ; au clavier,
   // c'est ↑/↓ — sans équivalent, la sélection multi-bandes serait bloquée.
   const shiftLane = useCallback((direction: -1 | 1) => {
+    const selection = keyboardSelection();
     const current = editorStore.getState();
     const lanes = current.document.lanes;
-    const selected = current.document.items.filter((item) => current.selection.includes(item.id));
+    const selected = current.document.items.filter((item) => selection.includes(item.id));
     if (!selected.length || lanes.length < 2) return;
     const from = Math.min(...selected.map((item) => lanes.findIndex((lane) => lane.id === item.laneId)));
     const target = lanes[Math.max(0, Math.min(lanes.length - 1, from + direction))];
     if (!target || selected.every((item) => item.laneId === target.id)) return;
-    current.dispatch(setLane(current.selection, target.id));
+    current.dispatch(setLane(selection, target.id));
   }, []);
   // Coller un tableau (docs/format.md §8.2) ajoute des éléments à la frise
   // ouverte : c'est une commande, donc annulable, et rien n'est remplacé.
@@ -188,9 +220,9 @@ export function Editor(): JSX.Element {
       else if (key === 'delete' || key === 'backspace') { event.preventDefault(); if (modeRef.current === 'edit') remove(); }
       else if (!command && key === 'e' && modeRef.current === 'edit') setTool('event');
       else if (!command && key === 'p' && modeRef.current === 'edit') setTool('period');
-      else if (!command && (key === 'arrowleft' || key === 'arrowright') && modeRef.current === 'edit' && current.selection.length) {
+      else if (!command && (key === 'arrowleft' || key === 'arrowright') && modeRef.current === 'edit') {
         event.preventDefault(); nudge(key === 'arrowleft' ? -1 : 1, event.shiftKey ? 10 : 1);
-      } else if (!command && (key === 'arrowup' || key === 'arrowdown') && modeRef.current === 'edit' && current.selection.length) {
+      } else if (!command && (key === 'arrowup' || key === 'arrowdown') && modeRef.current === 'edit') {
         event.preventDefault(); shiftLane(key === 'arrowup' ? -1 : 1);
       }
     };
@@ -252,7 +284,7 @@ export function Editor(): JSX.Element {
     <footer className={styles.footer}>
       <span className={styles.status} role="status">
         {state.selection.length
-          ? <><Icon name="navigate" />{EDITOR.selected(state.selection.length)}</>
+          ? <><Icon name="navigate" />{selectedLabel ?? EDITOR.selected(state.selection.length)}</>
           : state.savedRevision === state.revision
             ? <><Icon name="check" />{EDITOR.saved}</>
             : <><span className={styles.pulse} aria-hidden="true" />{EDITOR.saving}</>}

@@ -119,12 +119,29 @@ function clampByte(v: number): number {
   return Math.min(255, Math.max(0, Math.round(v)));
 }
 
-/** Contrast-safe text for fully saturated fills (sRGB relative luminance). */
-export function contrastText(background: string): string {
-  const [r, g, b] = toRgb(background).map((value) => {
+/** Luminance relative sRGB (WCAG 2.1). */
+function luminance(hex: string): number {
+  const [r, g, b] = toRgb(hex).map((value) => {
     const channel = value / 255;
     return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
   });
-  const luminance = .2126 * r! + .7152 * g! + .0722 * b!;
-  return (luminance + .05) / .05 >= 1.05 / (luminance + .05) ? '#000000' : WHITE;
+  return .2126 * r! + .7152 * g! + .0722 * b!;
+}
+
+/**
+ * Rapport de contraste WCAG entre deux couleurs opaques.
+ *
+ * DESIGN.md §7 exige que toutes les paires `ink(base)` sur `tint(base)`
+ * passent 4,5:1 « et de ne pas ajouter d'entrée à la palette sans le
+ * vérifier » : `palette.test.ts` en fait une assertion, pas une intention.
+ */
+export function contrastRatio(a: string, b: string): number {
+  const la = luminance(a), lb = luminance(b);
+  return (Math.max(la, lb) + .05) / (Math.min(la, lb) + .05);
+}
+
+/** Contrast-safe text for fully saturated fills (sRGB relative luminance). */
+export function contrastText(background: string): string {
+  const light = luminance(background);
+  return (light + .05) / .05 >= 1.05 / (light + .05) ? '#000000' : WHITE;
 }

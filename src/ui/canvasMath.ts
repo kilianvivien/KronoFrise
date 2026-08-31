@@ -47,7 +47,7 @@ function shifted(date: KDate, delta: number, precision: DatePrecision): KDate {
   }
   return { ...date, ...dateAtTime(toFractionalYear(date) + delta, 'day') };
 }
-export function moveSelection(doc: KronoDocument, ids: string[], delta: number, precision: DatePrecision): Command {
+export function moveSelection(doc: KronoDocument, ids: readonly string[], delta: number, precision: DatePrecision): Command {
   return { name: 'updateItems', label: 'moveSelection', patches: doc.items.filter((item) => ids.includes(item.id)).flatMap<{ itemId: string; patch: ItemPatch }>((item) => {
     if (item.kind === 'event') return [{ itemId: item.id, patch: { date: shifted(item.date, delta, precision) } }];
     const start = shifted(item.start, delta, precision), end = shifted(item.end, delta, precision);
