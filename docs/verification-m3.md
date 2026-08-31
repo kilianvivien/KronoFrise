@@ -68,3 +68,28 @@ Build de production sur `:4173`, séparé du document utilisateur.
   synthétiques (`DragEvent`, `ClipboardEvent`) faute de presse-papiers réel
   dans l'automatisation ; le chemin de code est celui de l'utilisateur.
 - Aucun essai sur matériel tactile, ni impression papier réelle.
+
+## Passe d'interface — 31 août 2026
+
+Demande de Kilian : « quelque chose de beau et facile à utiliser, avec de
+belles icônes ».
+
+- **331 tests** réussis, lint et build propres.
+- L'inspecteur applique enfin la rangée de DESIGN.md §3 (grille, libellé aligné
+  à droite) ; titres de section en capitales discrètes ; formes de période en
+  contrôle segmenté d'icônes ; thème choisi sur aperçus ; remplissages en
+  vignettes compactes ; couleurs à 20 px comme le prévoit §6.
+- Le plan gagne recherche à l'icône, bandes pliables, zone de dépôt visible et
+  un vide qui explique quoi faire. Les actions de document (nouvelle frise,
+  exemples) quittent la barre latérale pour le navigateur de frises.
+- Le canevas vide devient une invitation, avec les raccourcis en pastilles.
+- Les confirmations s'effacent seules au bout de 5 s ; les erreurs restent.
+- Coller un tableau étend l'axe si les éléments tombent en dehors, dans la
+  même annulation — vérifié dans le navigateur (axe 1926-2026 → 1908-2026).
+- Contrôles au clavier : anneau de focus vérifié (`0 0 0 3px --focus-ring`),
+  infobulle sur chaque commande en icône, y compris dans les panneaux.
+- Vérifié en clair **et** en sombre, sans erreur console : éditeur, plan,
+  inspecteur (document / bande / élément / sélection multiple), fiche élève,
+  présentation, navigateur de frises, boîte d'export, page web exportée.
+- Les couleurs de repli de la page web exportée sont désormais résolues depuis
+  `tokens.css` : plus aucun hexadécimal recopié hors des fichiers de jetons.
