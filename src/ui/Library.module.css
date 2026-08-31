@@ -93,7 +93,9 @@
 .exampleRow button:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ---- mouvement (DESIGN.md §8) ---- */
-.overlay { composes: appearFade from global; }
+.overlay { composes: appear from global; }
+.overlay::backdrop { transition: opacity var(--motion-ui) var(--ease-ui); opacity: 1; }
+@starting-style { .overlay::backdrop { opacity: 0; } }
 .preview, .newTile, .actions button, .exampleRow button, .secondary, .close, .danger {
   transition:
     color var(--motion-ui) var(--ease-ui),
@@ -102,7 +104,13 @@
     opacity var(--motion-ui) var(--ease-ui);
 }
 /* La zone de dépôt s'allume dès que le fichier survole la fenêtre. */
-.overlay[data-dropping=true], .overlay { transition: background-color var(--motion-ui) var(--ease-ui), box-shadow var(--motion-ui) var(--ease-ui); }
+.overlay {
+  transition:
+    opacity var(--motion-ui) var(--ease-ui),
+    transform var(--motion-ui) var(--ease-ui),
+    background-color var(--motion-ui) var(--ease-ui),
+    box-shadow var(--motion-ui) var(--ease-ui);
+}
 
 @media (max-width: 600px) {
   .overlay { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
