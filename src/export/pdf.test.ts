@@ -10,6 +10,7 @@ import { maskAll } from '../core/pedagogy';
 import { exportPdf } from './pdf';
 import { roundedRectPath, toPdfText, translatePath } from './pdfScene';
 import { pageDimensions } from './paper';
+import { GRADIENT_BANDS, gradientLayers } from '../renderer/shapes';
 import { inflateSync } from 'node:zlib';
 
 /**
@@ -151,6 +152,32 @@ describe('export PDF', () => {
     expect(toPdfText('1ᵉʳ janvier')).toBe('1ᵉʳ janvier');
     expect(toPdfText('12\u202F000')).toBe('12\u00A0000');
   });
+
+  it('rend un dégradé en seize bandes, l’écart annoncé par la boîte d’export', async () => {
+    // PLAN.md M4 (ajout 3) : le SVG reçoit un vrai `linearGradient`, le PDF
+    // n'ayant pas de primitive équivalente l'approche en bandes. La différence
+    // est spécifiée — ce test la fige — et annoncée dans la boîte d'export.
+    const doc = structuredClone(revolution);
+    for (const item of doc.items) if (item.kind === 'period') item.fillStyle = 'gradient';
+    // Une accolade n'a aucune surface fermée : elle ne reçoit pas de dégradé.
+    const filled = doc.items.filter((item) => item.kind === 'period' && item.shape !== 'bracket').length;
+    expect(filled).toBeGreaterThan(0);
+
+    const bytes = await exportPdf(doc, A4);
+    const content = streamsOf(bytes);
+    // Chaque couche est un remplissage de couleur : on compte les opérateurs
+    // `rg` (couleur non tracée) et on vérifie qu'il y en a au moins seize par
+    // période dégradée de plus qu'avec un remplissage uni.
+    const plain = streamsOf(await exportPdf(revolution, A4));
+    const fills = (text: string) => (text.match(/\brg\b/g) ?? []).length;
+    // Chaque période dégradée remplace son unique aplat par seize couches.
+    expect(fills(content) - fills(plain)).toBeGreaterThanOrEqual(filled * (GRADIENT_BANDS - 1));
+
+    // La silhouette reste celle de la forme : la couche du dessous est la
+    // vraie barre, pas un rectangle qui déborderait de ses coins.
+    const layers = gradientLayers();
+    expect(layers[0]!.full).toBe(true);
+  }, 20_000);
 
   it('décale une tuile de motif sans la déformer', () => {
     expect(translatePath('M0 4H8', 10, 20)).toBe('M 10 24H 18');

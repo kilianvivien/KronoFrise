@@ -47,7 +47,7 @@ export interface ItemImage {
   src: string;
 }
 
-export const FILL_STYLES = ['tint', 'solid', 'none', 'hatch', 'crosshatch', 'dots', 'lines', 'grid'] as const;
+export const FILL_STYLES = ['tint', 'solid', 'none', 'hatch', 'crosshatch', 'dots', 'lines', 'grid', 'gradient'] as const;
 export type FillStyle = typeof FILL_STYLES[number];
 
 export interface ItemBase {

@@ -566,3 +566,35 @@ images → 1 après la transition.
 CSS ne sait pas interpoler ; il faudrait que chaque groupe soit positionné par
 `transform`. C'est une reprise du rendu — partagé avec les exports — qui mérite
 son propre changement plutôt qu'un ajout à celui-ci.
+
+### 13.11 Dégradé : deux décisions que la spécification laissait ouvertes
+
+PLAN.md M4 (ajout 3) demande un neuvième `fillStyle`, `gradient`, « la couleur
+de l'élément qui s'estompe le long de la barre », avec un contrat explicite :
+vrai `linearGradient` en SVG, approximation en 16 bandes en PDF, **différence
+annoncée dans la boîte d'export**. Deux points restaient à trancher.
+
+**Où s'arrête le dégradé.** Un écart fixé dans l'absolu — « du remplissage du
+thème jusqu'à 35 % de la couleur pleine » — inversait le dégradé sur *Frise
+officielle*, dont le remplissage est déjà franc, et rendait le libellé illisible
+sur deux couleurs : les deux arrêts encadraient la luminance moyenne, si bien
+qu'aucune encre, ni claire ni foncée, ne passait aux deux bouts.
+
+Retenu : on garde **l'encre du thème**, déjà validée sur son remplissage, et
+l'on pousse le second arrêt vers la couleur pleine *aussi loin que la
+lisibilité le permet* (au plus 45 %). Le dégradé est donc franc sur un thème à
+remplissage clair, discret là où le thème colore déjà fort — et lisible dans
+les deux cas par construction, non par vérification après coup.
+
+**Comment le PDF l'approche.** pdf-lib n'expose pas de nuancier, et il ne
+permet pas non plus de découper sur une forme : `drawSvgPath` referme son
+propre état graphique et emporte la découpe avec lui. L'approximation est donc
+un **empilement** : la forme entière dans la teinte la plus soutenue, puis des
+copies de plus en plus courtes et claires par-dessus. La silhouette vient de la
+couche du dessous, coins arrondis et pointe de flèche compris ; les couches
+intermédiaires ont un bord droit franc (`leftRoundedPath`), sans quoi chaque
+jointure laisserait un feston clair. Les couches sont une fonction pure et
+partagée (`gradientLayers`), vérifiée par test sur le flux du PDF réel.
+
+Les accolades restent exclues : elles n'ont aucune surface fermée
+(docs/spec-gaps.md §13, remplissages).

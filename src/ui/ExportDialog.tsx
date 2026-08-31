@@ -35,6 +35,7 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
   onDone: (message: string) => void;
 }): JSX.Element {
   const doc = useStore(editorStore, (state) => state.document);
+  const hasGradient = doc.items.some((item) => item.fillStyle === 'gradient');
   const dialog = useRef<HTMLDialogElement>(null);
   const [format, setFormat] = useState<Format>('pdf');
   const [size, setSize] = useState<PageSize>('a4');
@@ -127,6 +128,9 @@ export function ExportDialog({ worksheet, onClose, onDone }: {
       </>}
 
       {format === 'html' && <p className="note"><Icon name="web" />{EXPORT.htmlHint}</p>}
+      {/* PLAN.md M4 (ajout 3) : l'écart entre le dégradé de l'écran et les
+          bandes du PDF doit être *annoncé*, pas découvert à l'impression. */}
+      {format === 'pdf' && hasGradient && <p className="note"><Icon name="bar" />{EXPORT.gradientHint}</p>}
       {worksheet && <p className="note"><Icon name="mask" />{EXPORT.worksheetHint}</p>}
       <p className="summary" role="status">{format === 'pdf'
         ? EXPORT.pages(sheet.pages.length * (answerKey && worksheet && !exercise ? 2 : 1) + (exercise ? 1 : 0))

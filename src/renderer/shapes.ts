@@ -114,3 +114,55 @@ const TILES: Record<string, PatternTile> = {
 export function patternTile(style: FillStyle | undefined): PatternTile | undefined {
   return style === undefined ? undefined : TILES[style];
 }
+
+/* ---- dégradé (PLAN.md M4, ajout 3) ---- */
+
+/**
+ * Nombre de bandes de l'approximation PDF.
+ *
+ * Le SVG reçoit un vrai `linearGradient` ; le PDF n'a pas de primitive de
+ * dégradé accessible depuis pdf-lib, et le rend donc en **16 bandes de la même
+ * géométrie**, découpées sur la forme exacte. L'écart est spécifié — il figure
+ * dans la boîte d'export — plutôt que découvert à l'impression.
+ */
+export const GRADIENT_BANDS = 16;
+
+/**
+ * Les couches de l'approximation, de la plus large à la plus étroite.
+ *
+ * Le PDF ne sait pas découper sur une forme sans reconstruire son chemin
+ * (`drawSvgPath` referme son propre état graphique). L'approximation est donc
+ * un **empilement** : on peint d'abord la forme entière dans la teinte la plus
+ * soutenue, puis des copies de plus en plus courtes par-dessus, de plus en
+ * plus claires. La tranche visible entre deux couches est exactement une
+ * bande du dégradé, et la silhouette reste celle de la forme réelle — c'est
+ * la couche du dessous qui la donne.
+ *
+ * Fonction pure et partagée : l'exporteur la dessine, le test la vérifie, et
+ * personne ne recalcule des seizièmes dans son coin.
+ */
+export function gradientLayers(count = GRADIENT_BANDS): { width: number; mix: number; full: boolean }[] {
+  return Array.from({ length: count }, (_value, index) => {
+    const layer = count - index;
+    return {
+      /** fraction de la largeur totale couverte par cette couche */
+      width: layer / count,
+      /** position dans le dégradé, prise au milieu de la tranche visible */
+      mix: (layer - 0.5) / count,
+      /** la couche du dessous porte la vraie forme (coins, pointe de flèche) */
+      full: layer === count,
+    };
+  });
+}
+
+/**
+ * Rectangle arrondi **à gauche seulement** — les couches intermédiaires du
+ * dégradé. Leur bord droit doit être franc : arrondi, il laisserait un feston
+ * clair à chaque jointure de bande.
+ */
+export function leftRoundedPath(x: number, y: number, width: number, height: number, radius: number): string {
+  const r = Math.max(0, Math.min(radius, width, height / 2));
+  return `M ${x + r} ${y} H ${x + width} V ${y + height} H ${x + r}`
+    + ` A ${r} ${r} 0 0 1 ${x} ${y + height - r}`
+    + ` V ${y + r} A ${r} ${r} 0 0 1 ${x + r} ${y} Z`;
+}

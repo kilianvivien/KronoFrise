@@ -158,6 +158,7 @@ export const EXPORT = {
   worksheetHint: 'La fiche élève est exportée telle qu’elle s’affiche, masques compris.',
   html: 'Page web interactive',
   htmlHint: 'Un fichier .html autonome : la frise s’y explore à la souris et au clavier, sans connexion.',
+  gradientHint: 'Le PDF n’a pas de dégradé : les remplissages dégradés y sont rendus en seize bandes, à la même place. Le SVG et le PNG gardent le dégradé continu.',
   action: 'Exporter', cancel: 'Annuler', done: 'Fichier exporté',
   assembly: (index: number, total: number): string => `page ${index} / ${total}`,
   failed: 'L’export a échoué. Réessayez, ou enregistrez un fichier .krono pour ne rien perdre.',
@@ -190,6 +191,7 @@ export const APPEARANCE = {
 export const FILLS = {
   title: 'Remplissage', tint: 'Léger', solid: 'Plein', none: 'Sans fond',
   hatch: 'Hachures', crosshatch: 'Croisillons', dots: 'Points', lines: 'Lignes', grid: 'Quadrillage',
+  gradient: 'Dégradé',
   bracketHint: 'Les accolades n’ont pas de surface à remplir. Choisissez une barre ou une flèche pour afficher le motif.',
   mixed: 'Plusieurs remplissages : choisissez un style pour l’appliquer à la sélection.',
 } as const;

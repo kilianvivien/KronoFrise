@@ -15,17 +15,18 @@ import {
   BASELINE_WIDTH, CANVAS_PADDING, EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP,
 } from '../layout/metrics';
 import type { SceneEvent, SceneGraph, ScenePeriod } from '../layout/scene';
-import { fillPaint } from '../renderer/FillPattern';
+import { fillPaint, gradientPaint } from '../renderer/FillPattern';
 import {
   arrowPath, BAR_RADIUS, bracketPath, CARD_RADIUS, CHIP_PADDING_X, CHIP_RADIUS,
   chipDateBaseline, chipLabelBaseline, clampTickLabelX, CONNECTOR_OPACITY, coupureStrokes,
-  LANE_COLOR_OPACITY, LANE_NAME_BASELINE, MASK_BASELINE_DROP, patternTile,
+  ARROW_HEAD, gradientLayers, LANE_COLOR_OPACITY, LANE_NAME_BASELINE, leftRoundedPath, MASK_BASELINE_DROP, patternTile,
   PERIOD_LABEL_PADDING, STRIPE_OPACITY, tickAnchor,
 } from '../renderer/shapes';
 import { themeColors } from '../renderer/themeColors';
 import { FS_CAPTION, FS_UI } from '../renderer/style';
 import type { Theme } from '../themes';
 import { toRgb01 } from '../ui/tokenValues';
+import { mix } from '../shared/palette';
 
 /** Repère : la scène est en pixels, l'origine en haut à gauche ; le PDF non. */
 export interface Frame {
@@ -186,6 +187,42 @@ function drawPattern(context: PdfContext, box: { x: number; y: number; width: nu
   }
 }
 
+/**
+ * Dégradé approché en bandes — PLAN.md M4 (ajout 3).
+ *
+ * pdf-lib n'expose pas de nuancier (« shading ») : le dégradé continu du SVG y
+ * devient `GRADIENT_BANDS` aplats. On ne peut pas non plus découper sur la
+ * forme — `drawSvgPath` referme son propre état graphique et emporte la
+ * découpe avec lui. L'approximation est donc un **empilement** : la forme
+ * entière dans la teinte la plus soutenue, puis des copies de plus en plus
+ * courtes et claires par-dessus (`gradientLayers`). La silhouette vient de la
+ * couche du dessous, coins arrondis et pointe de flèche compris.
+ *
+ * L'écart avec l'écran est une quantification, pas une autre géométrie — et il
+ * est annoncé dans la boîte d'export, jamais découvert à l'impression.
+ */
+function drawGradient(
+  context: PdfContext,
+  fullPath: string,
+  box: { x: number; y: number; width: number; height: number },
+  from: string,
+  to: string,
+  options: { radius: number; inset: number },
+): void {
+  // Les couches intermédiaires s'arrêtent avant la pointe d'une flèche ou
+  // l'arrondi d'une barre : au-delà, un bord franc sortirait de la forme.
+  const usable = Math.max(box.width - options.inset, 1);
+  for (const layer of gradientLayers()) {
+    const shade = mix(from, to, layer.mix);
+    if (layer.full) {
+      drawPath(context, fullPath, { fill: shade });
+      continue;
+    }
+    const width = usable * layer.width;
+    drawPath(context, leftRoundedPath(box.x, box.y, width, box.height, options.radius), { fill: shade });
+  }
+}
+
 /** Décale un chemin de tuile : les tuiles n'utilisent que M/L/H/V absolus. */
 export function translatePath(path: string, dx: number, dy: number): string {
   return path.replace(/([MLHV])\s*(-?[\d.]+)(?:\s+(-?[\d.]+))?/gi, (_match, command: string, a: string, b?: string) => {
@@ -253,8 +290,18 @@ function drawPeriod(context: PdfContext, period: ScenePeriod): void {
       ? arrowPath(period.x0, period.y, width, period.height)
       : roundedRectPath(period.x0, period.y, width, period.height, BAR_RADIUS);
     const patterned = period.fillStyle !== undefined && patternTile(period.fillStyle) !== undefined;
+    const gradient = period.fillStyle === 'gradient' && !masked;
+    if (gradient) {
+      const { from, to } = gradientPaint(period.color, theme);
+      drawGradient(context, path, { x: period.x0, y: period.y, width, height: period.height }, from, to, {
+        radius: BAR_RADIUS,
+        inset: period.shape === 'arrow' ? ARROW_HEAD : BAR_RADIUS,
+      });
+    }
     drawPath(context, path, {
-      ...(patterned || fill === 'transparent' ? { fill: masked ? theme.paper : themeColors(period.color, theme).fill } : { fill }),
+      ...(gradient ? {} : patterned || fill === 'transparent'
+        ? { fill: masked ? theme.paper : themeColors(period.color, theme).fill }
+        : { fill }),
       stroke, lineWidth: 1, ...(dash ? { dash } : {}),
     });
     if (patterned && !masked) {
@@ -294,11 +341,24 @@ function drawEvent(context: PdfContext, event: SceneEvent): void {
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
 
   const patterned = event.fillStyle !== undefined && patternTile(event.fillStyle) !== undefined;
+  const gradient = event.fillStyle === 'gradient' && !masked;
+  const chipRadius = hasImage ? CARD_RADIUS : CHIP_RADIUS;
+  if (gradient) {
+    const { from, to } = gradientPaint(event.color, theme);
+    drawGradient(
+      context,
+      roundedRectPath(event.chip.x, event.chip.y, event.chip.width, event.chip.height, chipRadius),
+      { x: event.chip.x, y: event.chip.y, width: event.chip.width, height: event.chip.height },
+      from, to, { radius: chipRadius, inset: chipRadius },
+    );
+  }
   drawRect(context, event.chip.x, event.chip.y, event.chip.width, event.chip.height, {
-    ...(patterned || fill === 'transparent' ? { fill: masked ? theme.paper : themeColors(event.color, theme).fill } : { fill }),
+    ...(gradient ? {} : patterned || fill === 'transparent'
+      ? { fill: masked ? theme.paper : themeColors(event.color, theme).fill }
+      : { fill }),
     stroke: masked ? 'var(--text-tertiary)' : base,
     lineWidth: 1,
-    radius: hasImage ? CARD_RADIUS : CHIP_RADIUS,
+    radius: chipRadius,
     ...(masked ? { dash: [3, 3] } : {}),
   });
   if (patterned && !masked) {
