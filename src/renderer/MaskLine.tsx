@@ -5,9 +5,7 @@
  * texte réel, si bien que le corrigé et la fiche ont la même géométrie.
  */
 import type { JSX } from 'react';
-
-/** Décalage sous la ligne de base du texte, pour écrire au-dessus du trait. */
-const BASELINE_DROP = 3;
+import { MASK_BASELINE_DROP as BASELINE_DROP } from './shapes';
 
 export function MaskLine({ x, y, width }: { x: number; y: number; width: number }): JSX.Element {
   return (

@@ -7,7 +7,7 @@ import { FIXTURES } from '../core/fixtures';
 import { editorStore } from '../store/editor';
 import { openFile, saveFile } from '../store/fileIO';
 import { startPersistence } from '../store/persistence';
-import { CONFIRM, DOC, EDITOR, LIBRARY, M2, START, TOOLBAR, WORKSHEET } from './strings';
+import { CONFIRM, DOC, EDITOR, EXPORT, LIBRARY, M2, START, TOOLBAR, WORKSHEET } from './strings';
 import { EditorCanvas, type Tool } from './EditorCanvas';
 import { useThumbnail } from './useThumbnail';
 import styles from './Editor.module.css';
@@ -21,6 +21,7 @@ import { Inspector } from './Inspector';
 import type { Mode } from './mode';
 import { Presentation } from './Presentation';
 import { Library } from './Library';
+import { ExportDialog } from './ExportDialog';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
 import './panels.css';
@@ -34,6 +35,7 @@ export function Editor(): JSX.Element {
   const [mode, setMode] = useState<Mode>('edit');
   const [answerKey, setAnswerKey] = useState(false);
   const [library, setLibrary] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
   const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(true);
   const [laneId, setLaneId] = useState<string | null>(null);
@@ -111,6 +113,7 @@ export function Editor(): JSX.Element {
       else if (command && key === 'a') { event.preventDefault(); current.select(current.document.items.map((item) => item.id)); }
       else if (command && key === 's') { event.preventDefault(); void save(); }
       else if (command && key === 'o') { event.preventDefault(); void open(); }
+      else if (command && key === 'e') { event.preventDefault(); setExporting(true); }
       else if (command && key === '1') { event.preventDefault(); setSidebar((value) => !value); }
       else if (command && key === '2') { event.preventDefault(); setInspector((value) => !value); }
       else if (key === 'delete' || key === 'backspace') { event.preventDefault(); if (modeRef.current === 'edit') remove(); }
@@ -162,6 +165,7 @@ export function Editor(): JSX.Element {
       <IconButton icon="library" label={LIBRARY.open} pressed={library} disabled={!state.ready} onClick={() => setLibrary(!library)} />
       <IconButton icon="open" label={EDITOR.open} hint="⌘O" disabled={!state.ready} onClick={() => { void open(); }} />
       <IconButton icon="save" label={EDITOR.save} hint="⌘S" disabled={!state.ready} onClick={() => { void save(); }} />
+      <IconButton icon="export" label={EXPORT.open} hint="⌘E" disabled={!state.ready} onClick={() => setExporting(true)} />
       <span className={styles.separator} />
       <IconButton icon="inspector" label={EDITOR.inspectorToggle} hint="⌘2" pressed={inspector} atEnd onClick={() => setInspector(!inspector)} />
     </header>
@@ -190,6 +194,7 @@ export function Editor(): JSX.Element {
       <IconButton icon="duplicate" label={EDITOR.duplicate} hint="⌘D" above disabled={!state.selection.length || worksheet} onClick={duplicate} />
       <IconButton icon="trash" label={CONFIRM.delete} hint="⌫" above atEnd disabled={!state.selection.length || worksheet} onClick={remove} />
     </footer>
+    {exporting && <ExportDialog worksheet={worksheet && !answerKey} onClose={() => setExporting(false)} onDone={setNotice} />}
     {library && <Library onClose={() => setLibrary(false)} onOpen={(replace) => {
       void preserveCurrent().then((safe) => { if (safe) return replace().then(fit); });
     }} />}

@@ -10,15 +10,7 @@ import { fillPaint, FillPattern } from './FillPattern';
 import { MaskLine } from './MaskLine';
 import { themeColors } from './themeColors';
 import { maskedChipStyle, periodDatesStyle, periodLabelStyle } from './style';
-
-const BAR_RADIUS = 4;
-/** Longueur du fondu d'un bord flou (DESIGN.md §4). */
-const FUZZY_LENGTH = 24;
-/** Retour vers le bas aux extrémités d'une accolade. */
-const BRACKET_DROP = 6;
-/** Pointe d'une période « flèche ». */
-const ARROW_HEAD = 10;
-const LABEL_PADDING = 8;
+import { arrowPath, BAR_RADIUS, bracketPath, FUZZY_LENGTH, PERIOD_LABEL_PADDING as LABEL_PADDING } from './shapes';
 
 export function PeriodNode({ period, theme = MANUEL_SCOLAIRE }: { period: ScenePeriod; theme?: Theme }): JSX.Element {
   const patternId = `period-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
@@ -112,7 +104,7 @@ function Bracket({ period, base }: { period: ScenePeriod; base: string }): JSX.E
   const top = period.y;
   return (
     <path
-      d={`M ${period.x0} ${top + BRACKET_DROP} V ${top} H ${period.x1} V ${top + BRACKET_DROP}`}
+      d={bracketPath(period.x0, period.x1, top)}
       fill="none"
       stroke={base}
       strokeWidth={1.5}
@@ -160,9 +152,4 @@ function Labels({ period, text, masked }: { period: ScenePeriod; text: string; m
       ))}
     </>
   );
-}
-
-function arrowPath(x: number, y: number, width: number, height: number): string {
-  const body = Math.max(width - ARROW_HEAD, 1);
-  return `M ${x} ${y} H ${x + body} L ${x + width} ${y + height / 2} L ${x + body} ${y + height} H ${x} Z`;
 }

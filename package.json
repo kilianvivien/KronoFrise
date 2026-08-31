@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "typecheck": "tsc -b --noEmit false --emitDeclarationOnly false --pretty",
     "lint": "eslint .",
-    "fixtures:emit": "vite-node scripts/emit-fixtures.ts"
+    "fixtures:emit": "vite-node scripts/emit-fixtures.ts",
+    "samples": "vite-node scripts/export-samples.ts"
   },
   "dependencies": {
     "@use-gesture/react": "^10.3.1",

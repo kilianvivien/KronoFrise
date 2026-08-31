@@ -9,9 +9,7 @@ import { CANVAS_PADDING } from '../layout/metrics';
 import type { SceneGraph, SceneLane } from '../layout/scene';
 import type { Theme } from '../themes/index';
 import { laneBoundaryStyle, laneNameStyle } from './style';
-
-const STRIPE_OPACITY = 0.35;
-const LANE_NAME_BASELINE = 12;
+import { LANE_COLOR_OPACITY, LANE_NAME_BASELINE, STRIPE_OPACITY } from './shapes';
 
 export function Lanes({ scene, theme }: { scene: SceneGraph; theme: Theme }): JSX.Element {
   return (
@@ -43,7 +41,7 @@ function LaneBand({
             width={Math.max(segment.x1 - segment.x0, 0)}
             height={lane.height}
             fill={lane.color ? themeColors(lane.color, theme).base : theme.paperLine}
-            opacity={lane.color ? (theme.id === 'journal' ? 0 : .07) : STRIPE_OPACITY}
+            opacity={lane.color ? (theme.id === 'journal' ? 0 : LANE_COLOR_OPACITY) : STRIPE_OPACITY}
           />
         ))}
 

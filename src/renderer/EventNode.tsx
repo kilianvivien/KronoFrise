@@ -12,14 +12,11 @@ import { MANUEL_SCOLAIRE, type Theme } from '../themes';
 import { fillPaint, FillPattern } from './FillPattern';
 import { themeColors } from './themeColors';
 import { MaskLine } from './MaskLine';
+import {
+  CARD_RADIUS, CHIP_PADDING_X, CHIP_RADIUS, CIRCA_DASH, CONNECTOR_OPACITY,
+  chipDateBaseline, chipLabelBaseline,
+} from './shapes';
 import { chipDateStyle, chipTextStyle, maskedChipStyle } from './style';
-
-const CHIP_RADIUS = 5;
-const CARD_RADIUS = 8;
-const CHIP_PADDING_X = 8;
-const CONNECTOR_OPACITY = 0.5;
-/** Trait 2-4 pour les dates approximatives (DESIGN.md §4). */
-const CIRCA_DASH = '2 4';
 
 export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEvent; theme?: Theme }): JSX.Element {
   const patternId = `event-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
@@ -78,11 +75,11 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
       )}
 
       {event.maskLabel === true ? (
-        <MaskLine x={textLeft} y={event.chip.y + (event.showDate ? 15 : event.chip.height / 2 + 4)} width={event.labelWidth} />
+        <MaskLine x={textLeft} y={chipLabelBaseline(event.chip.y, event.chip.height, event.showDate)} width={event.labelWidth} />
       ) : (
         <text
           x={textLeft}
-          y={event.chip.y + (event.showDate ? 15 : event.chip.height / 2 + 4)}
+          y={chipLabelBaseline(event.chip.y, event.chip.height, event.showDate)}
           style={chipTextStyle(text)}
         >
           {event.label}
@@ -90,9 +87,9 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
       )}
 
       {event.showDate && (event.maskDate === true ? (
-        <MaskLine x={textLeft} y={event.chip.y + 29} width={event.dateWidth} />
+        <MaskLine x={textLeft} y={chipDateBaseline(event.chip.y)} width={event.dateWidth} />
       ) : (
-        <text x={textLeft} y={event.chip.y + 29} style={{ ...chipDateStyle(text), ...(!masked && event.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
+        <text x={textLeft} y={chipDateBaseline(event.chip.y)} style={{ ...chipDateStyle(text), ...(!masked && event.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
           {event.dateLabel}
         </text>
       ))}

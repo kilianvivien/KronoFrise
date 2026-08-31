@@ -7,6 +7,7 @@
  * image sans dépendre d'une feuille externe (docs/format.md §9).
  */
 import type { CSSProperties } from 'react';
+import { MASK_DASH } from './shapes';
 
 export const FONT_UI = 'var(--font-ui)';
 export const FS_UI = 13;
@@ -39,7 +40,7 @@ export const tickLabelStyle: CSSProperties = {
 /** Élément masqué (fiche élève) — DESIGN.md §5 : papier, bord 1 px en tirets. */
 export const maskedChipStyle = {
   stroke: 'var(--text-tertiary)',
-  strokeDasharray: '3 3',
+  strokeDasharray: MASK_DASH,
 } as const;
 
 export const coupureStyle: CSSProperties = {

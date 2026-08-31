@@ -11,13 +11,7 @@ import {
 } from '../layout/metrics';
 import type { SceneGraph } from '../layout/scene';
 import { baselineStyle, coupureStyle, tickLabelStyle, tickMajorStyle, tickMinorStyle } from './style';
-
-/** Inclinaison du glyphe de coupure : 20° depuis la verticale. */
-const COUPURE_SLANT = Math.tan((20 * Math.PI) / 180);
-/** Le glyphe déborde de 8 px de part et d'autre de la ligne de base. */
-const COUPURE_OVERHANG = 8;
-/** Écart entre les deux traits du glyphe. */
-const COUPURE_SPACING = 5;
+import { clampTickLabelX, coupureStrokes, tickAnchor } from './shapes';
 
 export function Ruler({ scene }: { scene: SceneGraph }): JSX.Element {
   const y = scene.baselineY;
@@ -51,10 +45,10 @@ export function Ruler({ scene }: { scene: SceneGraph }): JSX.Element {
         .map((tick) => (
           <text
             key={`l-${tick.segmentIndex}-${tick.t}`}
-            x={clampLabelX(tick.x, scene.width)}
+            x={clampTickLabelX(tick.x, scene.width)}
             y={y + TICK_MAJOR_HEIGHT + TICK_LABEL_GAP}
             dominantBaseline="hanging"
-            style={{ ...tickLabelStyle, textAnchor: anchorFor(tick.x, scene.width) }}
+            style={{ ...tickLabelStyle, textAnchor: tickAnchor(tick.x, scene.width) }}
           >
             {tick.label}
           </text>
@@ -67,39 +61,12 @@ export function Ruler({ scene }: { scene: SceneGraph }): JSX.Element {
   );
 }
 
-/**
- * Un libellé posé en bord de canevas se cale contre le bord au lieu d'être
- * coupé en deux : sans cela, la date de début d'un segment très comprimé
- * (« 3 000 000 av. J.-C. ») serait invisible.
- */
-const EDGE_ZONE = 48;
-
-function anchorFor(x: number, width: number): 'start' | 'middle' | 'end' {
-  if (x < EDGE_ZONE) return 'start';
-  if (x > width - EDGE_ZONE) return 'end';
-  return 'middle';
-}
-
-function clampLabelX(x: number, width: number): number {
-  if (x < EDGE_ZONE) return Math.max(x, 2);
-  if (x > width - EDGE_ZONE) return Math.min(x, width - 2);
-  return x;
-}
-
 /** Le glyphe ⫽ : deux traits parallèles inclinés, à cheval sur la ligne. */
 function Coupure({ x, y }: { x: number; y: number }): JSX.Element {
-  const dx = COUPURE_OVERHANG * COUPURE_SLANT;
   return (
     <g>
-      {[-COUPURE_SPACING / 2, COUPURE_SPACING / 2].map((offset) => (
-        <line
-          key={offset}
-          x1={x + offset - dx}
-          y1={y + COUPURE_OVERHANG}
-          x2={x + offset + dx}
-          y2={y - COUPURE_OVERHANG}
-          style={coupureStyle}
-        />
+      {coupureStrokes(x, y).map((stroke) => (
+        <line key={stroke.x1} x1={stroke.x1} y1={stroke.y1} x2={stroke.x2} y2={stroke.y2} style={coupureStyle} />
       ))}
     </g>
   );

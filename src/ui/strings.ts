@@ -122,6 +122,25 @@ export const LIBRARY = {
   noThumbnail: 'Aperçu en préparation',
 } as const;
 
+/** Export — PLAN.md §3.6, docs/format.md §9. */
+export const EXPORT = {
+  title: 'Exporter la frise',
+  open: 'Exporter…',
+  format: 'Format', pdf: 'PDF (vectoriel)', svg: 'SVG', png: 'PNG',
+  pageSize: 'Format de page', a4: 'A4', a3: 'A3',
+  orientation: 'Orientation', portrait: 'Portrait', landscape: 'Paysage',
+  wall: 'Frise murale (plusieurs pages à assembler)',
+  wallHint: 'La frise garde sa taille de lecture et se répartit sur des pages qui se recouvrent de 1 cm.',
+  pages: (count: number): string => count === 1 ? '1 page' : `${count} pages`,
+  resolution: 'Résolution', transparent: 'Fond transparent',
+  answerKey: 'Exporter le corrigé (sans masques)',
+  worksheetHint: 'La fiche élève est exportée telle qu’elle s’affiche, masques compris.',
+  action: 'Exporter', cancel: 'Annuler', done: 'Fichier exporté',
+  assembly: (index: number, total: number): string => `page ${index} / ${total}`,
+  failed: 'L’export a échoué. Réessayez, ou enregistrez un fichier .krono pour ne rien perdre.',
+  working: 'Export en cours…',
+} as const;
+
 export const APPEARANCE = {
   title: 'Apparence de l’interface', label: 'Interface',
   terracotta: 'Terre cuite', light: 'Clair', dark: 'Sombre', system: 'Système',

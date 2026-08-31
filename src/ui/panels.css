@@ -62,3 +62,14 @@
 .worksheetActions, .worksheetChoices { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; padding: 0; border: 0; }
 .worksheetChoices legend { font-size: var(--fs-caption); color: var(--text-secondary); margin-bottom: 6px; }
 .worksheetActions button, .worksheetChoices button { text-align: left; }
+
+/* Boîte d'export (PLAN.md §3.6) : mêmes contrôles que l'inspecteur. */
+.exportForm { width: 380px; max-width: 100%; }
+.exportForm fieldset { display: flex; gap: 6px; margin: 0 0 14px; padding: 0; border: 0; }
+.exportForm legend { width: 100%; margin-bottom: 6px; font-size: var(--fs-caption); color: var(--text-secondary); }
+.exportForm button { min-height: 28px; padding: 4px 12px; color: var(--text-primary); background: var(--field-bg); border: 1px solid var(--hairline); border-radius: var(--radius-control); cursor: pointer; }
+.exportForm button:hover { background: var(--chrome-hover); }
+.exportForm button[aria-pressed=true] { color: var(--accent); border-color: var(--accent); background: var(--accent-tint); }
+.exportForm p { margin: 0 0 12px; font-size: var(--fs-caption); color: var(--text-secondary); }
+.exportForm .field input[type=range] { padding: 0; }
+.exportError { color: var(--danger); }
