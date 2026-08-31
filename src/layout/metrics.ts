@@ -52,5 +52,8 @@ export const EVENT_CHIP_HEIGHT_WITH_DATE = 35;
 export const EVENT_CARD_HEIGHT = 48;
 export const EVENT_IMAGE_SIZE = 40;
 
+/** Ligne à compléter d'un élément masqué : au moins 48 px (DESIGN.md §5). */
+export const MASK_LINE_MIN_WIDTH = 48;
+
 /** Hauteur de la zone réservée à l'axe et à ses libellés, sous les bandes. */
 export const AXIS_BAND_HEIGHT = 40;

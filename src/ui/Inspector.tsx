@@ -9,15 +9,24 @@ import { AxisEditor } from './AxisEditor';
 import { Check, Colors, Field, commit, dateInput, reportError } from './fields';
 import { importImage } from './images';
 import { FillPicker } from './FillPicker';
-import { FILLS, M2 } from './strings';
+import { FILLS, M2, TOOLBAR } from './strings';
+import type { Mode } from './mode';
+import { Worksheet } from './Worksheet';
 
-export function Inspector({ laneId, onLane, fit }: { laneId: string | null; onLane: (id: string | null) => void; fit: () => void }): JSX.Element {
+export function Inspector({ laneId, onLane, fit, mode = 'edit', answerKey = false, onAnswerKey = () => {} }: {
+  laneId: string | null; onLane: (id: string | null) => void; fit: () => void;
+  mode?: Mode; answerKey?: boolean; onAnswerKey?: (value: boolean) => void;
+}): JSX.Element {
   const state = useStore(editorStore), doc = state.document;
   const items = doc.items.filter((item) => state.selection.includes(item.id));
   const lane = !items.length ? doc.lanes.find((lane) => lane.id === laneId) : undefined;
   const item = items.length === 1 ? items[0] : undefined;
   const upload = useRef<HTMLInputElement>(null);
   const patch = (patch: ItemPatch) => commit({ name: 'updateItems', label: 'inspectItems', patches: items.map((item) => ({ itemId: item.id, patch })) });
+  if (mode === 'worksheet') return <div className="inspectorContent">
+    <nav className="panelTabs"><span>{TOOLBAR.modeWorksheet}</span></nav>
+    <Worksheet answerKey={answerKey} onAnswerKey={onAnswerKey} />
+  </div>;
   return <div className="inspectorContent">
     <nav className="panelTabs"><button aria-pressed={!items.length && !lane} onClick={() => { state.select([]); onLane(null); }}>{M2.document}</button><span>{lane ? M2.lane : items.length ? M2.item : ''}</span></nav>
     {lane ? <section className="panelSection" key={lane.id}>

@@ -3,12 +3,13 @@
  * si la largeur le permet, sinon à droite ; bords flous en dégradé.
  */
 import { useId, type JSX } from 'react';
-import { EDITOR } from '../ui/strings';
+import { EDITOR, WORKSHEET } from '../ui/strings';
 import type { ScenePeriod } from '../layout/scene';
 import { MANUEL_SCOLAIRE, type Theme } from '../themes';
 import { fillPaint, FillPattern } from './FillPattern';
+import { MaskLine } from './MaskLine';
 import { themeColors } from './themeColors';
-import { periodDatesStyle, periodLabelStyle } from './style';
+import { maskedChipStyle, periodDatesStyle, periodLabelStyle } from './style';
 
 const BAR_RADIUS = 4;
 /** Longueur du fondu d'un bord flou (DESIGN.md §4). */
@@ -21,23 +22,31 @@ const LABEL_PADDING = 8;
 
 export function PeriodNode({ period, theme = MANUEL_SCOLAIRE }: { period: ScenePeriod; theme?: Theme }): JSX.Element {
   const patternId = `period-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
-  const { base, fill, text } = fillPaint(period.color, theme, period.fillStyle, patternId);
-  const labelText = period.shape === 'bracket' || !period.labelInside ? themeColors(period.color, theme).text : text;
-  const label = EDITOR.periodAccessible(period.label, period.datesLabel);
+  const paint = fillPaint(period.color, theme, period.fillStyle, patternId);
+  // Fiche élève (DESIGN.md §5) : barre en papier bordée de tirets.
+  const masked = period.maskLabel === true || period.maskDate === true;
+  const { base, fill, text } = masked
+    ? { base: paint.base, fill: 'var(--paper)', text: themeColors(period.color, theme).text }
+    : paint;
+  const labelText = masked || period.shape === 'bracket' || !period.labelInside ? themeColors(period.color, theme).text : text;
+  const label = EDITOR.periodAccessible(
+    period.maskLabel === true ? WORKSHEET.blank : period.label,
+    period.maskDate === true ? WORKSHEET.blank : period.datesLabel,
+  );
   return (
     <g data-item-id={period.itemId} role="button" aria-label={label} tabIndex={0}>
       {period.shape !== 'bracket' && <FillPattern id={patternId} style={period.fillStyle} color={period.color} theme={theme} />}
       {period.shape === 'bracket' ? (
         <Bracket period={period} base={base} />
       ) : (
-        <Bar period={period} base={base} fill={fill} />
+        <Bar period={period} base={base} fill={fill} masked={masked} />
       )}
-      <Labels period={period} text={labelText} />
+      <Labels period={period} text={labelText} masked={masked} />
     </g>
   );
 }
 
-function Bar({ period, base, fill }: { period: ScenePeriod; base: string; fill: string }): JSX.Element {
+function Bar({ period, base, fill, masked }: { period: ScenePeriod; base: string; fill: string; masked: boolean }): JSX.Element {
   const width = Math.max(period.x1 - period.x0, 1);
   const maskId = `fuzzy-${period.itemId}`;
   const needsMask = period.fuzzyStart || period.fuzzyEnd;
@@ -46,8 +55,8 @@ function Bar({ period, base, fill }: { period: ScenePeriod; base: string; fill: 
       <path
         d={arrowPath(period.x0, period.y, width, period.height)}
         fill={fill}
-        stroke={base}
         strokeWidth={1}
+        {...(masked ? maskedChipStyle : { stroke: base })}
         {...(needsMask ? { mask: `url(#${maskId})` } : {})}
       />
     ) : (
@@ -58,8 +67,8 @@ function Bar({ period, base, fill }: { period: ScenePeriod; base: string; fill: 
         height={period.height}
         rx={BAR_RADIUS}
         fill={fill}
-        stroke={base}
         strokeWidth={1}
+        {...(masked ? maskedChipStyle : { stroke: base })}
         {...(needsMask ? { mask: `url(#${maskId})` } : {})}
       />
     );
@@ -112,32 +121,43 @@ function Bracket({ period, base }: { period: ScenePeriod; base: string }): JSX.E
   );
 }
 
-function Labels({ period, text }: { period: ScenePeriod; text: string }): JSX.Element {
+function Labels({ period, text, masked }: { period: ScenePeriod; text: string; masked: boolean }): JSX.Element {
   const centerY = period.y + period.height / 2 + 4;
   if (period.shape === 'bracket') {
-    return (
+    const left = (period.x0 + period.x1 - period.labelWidth) / 2;
+    return period.maskLabel === true ? (
+      <MaskLine x={left} y={period.y - 4} width={period.labelWidth} />
+    ) : (
       <text x={(period.x0 + period.x1) / 2} y={period.y - 4} style={periodLabelStyle(text)}>
         {period.label}
       </text>
     );
   }
+  // Le libellé est centré : la ligne à compléter part donc de son bord gauche.
+  const labelLeft = period.labelInside ? period.labelX - period.labelWidth / 2 : period.labelX;
   return (
     <>
-      <text
-        x={period.labelX}
-        y={centerY}
-        style={{
-          ...periodLabelStyle(text),
-          ...(period.labelInside ? {} : { textAnchor: 'start' as const }),
-        }}
-      >
-        {period.label}
-      </text>
-      {period.labelInside && period.showDates && (
-        <text x={period.x1 - LABEL_PADDING} y={centerY} style={{ ...periodDatesStyle(text), ...(period.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
-          {period.datesLabel}
+      {period.maskLabel === true ? (
+        <MaskLine x={labelLeft} y={centerY} width={period.labelWidth} />
+      ) : (
+        <text
+          x={period.labelX}
+          y={centerY}
+          style={{
+            ...periodLabelStyle(text),
+            ...(period.labelInside ? {} : { textAnchor: 'start' as const }),
+          }}
+        >
+          {period.label}
         </text>
       )}
+      {period.labelInside && period.showDates && (period.maskDate === true ? (
+        <MaskLine x={period.x1 - LABEL_PADDING - period.datesWidth} y={centerY} width={period.datesWidth} />
+      ) : (
+        <text x={period.x1 - LABEL_PADDING} y={centerY} style={{ ...periodDatesStyle(text), ...(!masked && period.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
+          {period.datesLabel}
+        </text>
+      ))}
     </>
   );
 }

@@ -73,3 +73,9 @@
   .button { padding-inline: 8px; }
   .status { min-width: 140px; }
 }
+
+/* Commutateur de mode (DESIGN.md §3 : contrôle segmenté, 28px). */
+.segmented { display: flex; gap: 2px; padding: 2px; height: 28px; background: var(--chrome-bg-inset); border-radius: var(--radius-control); flex-shrink: 0; }
+.segment { height: 24px; padding: 0 10px; border: 0; border-radius: calc(var(--radius-control) - 1px); background: transparent; color: var(--text-secondary); font-weight: 500; white-space: nowrap; cursor: pointer; }
+.segment:hover { color: var(--text-primary); }
+.segment[aria-pressed=true] { background: var(--field-bg); color: var(--text-primary); box-shadow: var(--shadow-panel); }

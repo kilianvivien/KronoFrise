@@ -36,6 +36,12 @@ export const tickLabelStyle: CSSProperties = {
   textAnchor: 'middle',
 };
 
+/** Élément masqué (fiche élève) — DESIGN.md §5 : papier, bord 1 px en tirets. */
+export const maskedChipStyle = {
+  stroke: 'var(--text-tertiary)',
+  strokeDasharray: '3 3',
+} as const;
+
 export const coupureStyle: CSSProperties = {
   stroke: 'var(--text-secondary)',
   strokeWidth: 1.5,

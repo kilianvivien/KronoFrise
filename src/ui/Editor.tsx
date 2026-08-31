@@ -7,7 +7,7 @@ import { FIXTURES } from '../core/fixtures';
 import { editorStore } from '../store/editor';
 import { openFile, saveFile } from '../store/fileIO';
 import { startPersistence } from '../store/persistence';
-import { CONFIRM, DOC, EDITOR, M2, START, TOOLBAR } from './strings';
+import { CONFIRM, DOC, EDITOR, M2, START, TOOLBAR, WORKSHEET } from './strings';
 import { EditorCanvas, type Tool } from './EditorCanvas';
 import { useThumbnail } from './useThumbnail';
 import styles from './Editor.module.css';
@@ -17,6 +17,7 @@ import { makeScale } from '../layout/scale';
 import { clampPan } from './camera';
 import { AppearancePicker } from './AppearancePicker';
 import { Inspector } from './Inspector';
+import type { Mode } from './mode';
 import { Outline } from './Outline';
 import { Minimap } from './Minimap';
 import './panels.css';
@@ -27,6 +28,8 @@ function editable(target: EventTarget | null): boolean {
 export function Editor(): JSX.Element {
   const state = useStore(editorStore);
   const [tool, setTool] = useState<Tool>('auto');
+  const [mode, setMode] = useState<Mode>('edit');
+  const [answerKey, setAnswerKey] = useState(false);
   const [zoom, setZoom] = useState(1), [pan, setPan] = useState(0);
   const [sidebar, setSidebar] = useState(true), [inspector, setInspector] = useState(true);
   const [laneId, setLaneId] = useState<string | null>(null);
@@ -41,8 +44,10 @@ export function Editor(): JSX.Element {
   const exportedRevision = useRef(-1);
   const flush = useRef<() => Promise<void>>(async () => {});
   const titleInput = useRef<HTMLInputElement>(null);
+  const modeRef = useRef<Mode>('edit');
   const finishingTitle = useRef(false);
   useThumbnail(state.document, state.ready, state.revision);
+  modeRef.current = mode;
 
   useEffect(() => {
     const persistence = startPersistence(editorStore); flush.current = persistence.flush;
@@ -59,6 +64,8 @@ export function Editor(): JSX.Element {
   useEffect(() => { if (deleting.length) dialog.current?.showModal(); else dialog.current?.close(); }, [deleting]);
 
   const fit = () => { setZoom(1); setPan(0); };
+  const worksheet = mode === 'worksheet';
+  const changeMode = (next: Mode) => { setMode(next); setTool('auto'); if (next !== 'worksheet') setAnswerKey(false); };
   const error = useCallback((cause: unknown) => {
     editorStore.setState({ error: cause instanceof Error ? cause.message : EDITOR.fileError });
   }, []);
@@ -96,15 +103,15 @@ export function Editor(): JSX.Element {
       if (key === 'escape') { current.select([]); setTool('auto'); return; }
       if (current.preview) return;
       if (command && key === 'z') { event.preventDefault(); if (event.shiftKey) current.redo(); else current.undo(); }
-      else if (command && key === 'd') { event.preventDefault(); duplicate(); }
+      else if (command && key === 'd') { event.preventDefault(); if (modeRef.current === 'edit') duplicate(); }
       else if (command && key === 'a') { event.preventDefault(); current.select(current.document.items.map((item) => item.id)); }
       else if (command && key === 's') { event.preventDefault(); void save(); }
       else if (command && key === 'o') { event.preventDefault(); void open(); }
       else if (command && key === '1') { event.preventDefault(); setSidebar((value) => !value); }
       else if (command && key === '2') { event.preventDefault(); setInspector((value) => !value); }
-      else if (key === 'delete' || key === 'backspace') { event.preventDefault(); remove(); }
-      else if (!command && key === 'e') setTool('event');
-      else if (!command && key === 'p') setTool('period');
+      else if (key === 'delete' || key === 'backspace') { event.preventDefault(); if (modeRef.current === 'edit') remove(); }
+      else if (!command && key === 'e' && modeRef.current === 'edit') setTool('event');
+      else if (!command && key === 'p' && modeRef.current === 'edit') setTool('period');
     };
     window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey);
   }, [duplicate, open, remove, save]);
@@ -131,13 +138,17 @@ export function Editor(): JSX.Element {
       <button className={styles.icon} aria-label={TOOLBAR.redo} title={`${TOOLBAR.redo} (⇧⌘Z)`} disabled={!state.history.future.length || !!state.preview} onClick={state.redo}><Icon name="redo" /></button>
       <span className={styles.separator} />
       <button className={styles.button} aria-label={M2.navigate} aria-pressed={tool === 'auto'} onClick={() => setTool('auto')}>{M2.navigation}</button>
-      <button className={styles.button} disabled={!state.ready} aria-pressed={tool === 'event'} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')}>{TOOLBAR.addEvent}</button>
-      <button className={styles.button} disabled={!state.ready} aria-pressed={tool === 'period'} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')}>{TOOLBAR.addPeriod}</button>
+      <button className={styles.button} disabled={!state.ready || worksheet} aria-pressed={tool === 'event'} onClick={() => setTool(tool === 'event' ? 'auto' : 'event')}>{TOOLBAR.addEvent}</button>
+      <button className={styles.button} disabled={!state.ready || worksheet} aria-pressed={tool === 'period'} onClick={() => setTool(tool === 'period' ? 'auto' : 'period')}>{TOOLBAR.addPeriod}</button>
       <span className={styles.separator} />
       <button className={styles.icon} aria-label={TOOLBAR.zoomOut} disabled={zoom <= 1} onClick={() => stepZoom(1 / 1.5)}><Icon name="minus" /></button>
       <button className={styles.zoom} title={TOOLBAR.zoomFit} onClick={fit}>{EDITOR.zoomPercent(zoom)}</button>
       <button className={styles.icon} aria-label={TOOLBAR.zoomIn} disabled={zoom >= 5000} onClick={() => stepZoom(1.5)}><Icon name="plus" /></button>
       <span className={styles.spacer} />
+      <div className={styles.segmented} role="group" aria-label={WORKSHEET.mode}>
+        {([['edit', TOOLBAR.modeEdit], ['worksheet', TOOLBAR.modeWorksheet]] as const).map(([value, label]) =>
+          <button key={value} className={styles.segment} aria-pressed={mode === value} disabled={!state.ready} onClick={() => changeMode(value)}>{label}</button>)}
+      </div>
       <button className={styles.button} disabled={!state.ready} onClick={() => { void open(); }}>{EDITOR.open}</button>
       <button className={styles.button} disabled={!state.ready} onClick={() => { void save(); }}>{EDITOR.save}</button>
       <button className={styles.icon} aria-label={EDITOR.inspectorToggle} aria-pressed={inspector} onClick={() => setInspector(!inspector)}><Icon name="inspector" /></button>
@@ -157,15 +168,15 @@ export function Editor(): JSX.Element {
       {sidebar && <div className="sidebarResize" role="separator" aria-label={M2.resizeSidebar} aria-orientation="vertical" aria-valuemin={200} aria-valuemax={320} aria-valuenow={sidebarWidth} tabIndex={0}
         onKeyDown={(e) => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); setSidebarWidth(Math.max(200, Math.min(320, sidebarWidth + (e.key === 'ArrowLeft' ? -10 : 10)))); } }}
         onPointerDown={(e) => e.currentTarget.setPointerCapture(e.pointerId)} onPointerMove={(e) => { if (e.currentTarget.hasPointerCapture(e.pointerId)) setSidebarWidth(Math.max(200, Math.min(320, e.clientX))); }} onPointerUp={(e) => e.currentTarget.releasePointerCapture(e.pointerId)} />}
-      <main className={styles.main}>{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} /><Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
-      <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><Inspector laneId={laneId} onLane={setLaneId} fit={fit} /></aside>
+      <main className={styles.main}>{state.ready ? <><EditorCanvas insets={insets} key={state.document.id} tool={tool} setTool={setTool} zoom={zoom} setZoom={setZoom} pan={pan} setPan={setPan} onWidth={setCanvasWidth} focusItem={focusItem} worksheet={worksheet && !answerKey} readOnly={worksheet} /><Minimap insets={insets} width={canvasWidth} zoom={zoom} pan={pan} setPan={setPan} /></> : <p>{EDITOR.loading}</p>}</main>
+      <aside className={styles.inspector} data-open={inspector} aria-hidden={!inspector} inert={!inspector}><Inspector laneId={laneId} onLane={setLaneId} fit={fit} mode={mode} answerKey={answerKey} onAnswerKey={setAnswerKey} /></aside>
     </div>
     <footer className={styles.footer}>
       <span className={styles.status} role="status">{state.selection.length ? EDITOR.selected(state.selection.length) : state.savedRevision === state.revision ? EDITOR.saved : EDITOR.saving}</span>
-      <span className={styles.hint}>{EDITOR.hint}</span>
+      <span className={styles.hint}>{worksheet ? WORKSHEET.hint : EDITOR.hint}</span>
       <AppearancePicker />
-      <button className={styles.icon} aria-label={EDITOR.duplicate} title={`${EDITOR.duplicate} (⌘D)`} disabled={!state.selection.length} onClick={duplicate}><Icon name="duplicate" /></button>
-      <button className={styles.icon} aria-label={CONFIRM.delete} disabled={!state.selection.length} onClick={remove}><Icon name="trash" /></button>
+      <button className={styles.icon} aria-label={EDITOR.duplicate} title={`${EDITOR.duplicate} (⌘D)`} disabled={!state.selection.length || worksheet} onClick={duplicate}><Icon name="duplicate" /></button>
+      <button className={styles.icon} aria-label={CONFIRM.delete} disabled={!state.selection.length || worksheet} onClick={remove}><Icon name="trash" /></button>
     </footer>
     {(state.error || notice) && <div className={styles.notification} role={state.error ? 'alert' : 'status'}>{state.error || notice}<button className={styles.button} onClick={() => { editorStore.setState({ error: null }); setNotice(null); }}>{EDITOR.close}</button></div>}
     <dialog ref={dialog} className={styles.dialog} onCancel={() => setDeleting([])} aria-labelledby="delete-title">

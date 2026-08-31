@@ -8,12 +8,14 @@
  * glissement (< 5 ms pour 500 éléments, cf. layout.bench.test.ts).
  */
 import { formatDate, formatYear, toFractionalYear } from '../core/dates';
-import { itemStart } from '../core/document';
-import type { EventItem, Item, KronoDocument, Lane, PeriodItem } from '../core/types';
+import { itemStart, maskOf } from '../core/document';
+import { hides } from '../core/pedagogy';
+import type { EventItem, Item, KronoDocument, Lane, MaskKind, PeriodItem } from '../core/types';
 import { approximateMeasurer, cachedMeasurer, type Measurer } from './measure';
 import {
   AXIS_BAND_HEIGHT,
   CANVAS_PADDING,
+  MASK_LINE_MIN_WIDTH,
   EVENT_CARD_HEIGHT,
   EVENT_CHIP_HEIGHT,
   EVENT_CHIP_HEIGHT_WITH_DATE,
@@ -39,6 +41,12 @@ export interface LayoutOptions {
   measurer?: Measurer;
   /** hauteur disponible ; la scène peut la dépasser (défilement vertical) */
   height?: number;
+  /**
+   * Mode fiche élève : les masques de `doc.pedagogy` deviennent des lignes à
+   * compléter (docs/format.md §5). Le corrigé, c'est la même scène sans ce
+   * drapeau.
+   */
+  worksheet?: boolean;
 }
 
 /** Taille de police des libellés sur le canevas (DESIGN.md §2 : --fs-ui). */
@@ -58,13 +66,14 @@ const BRACKET_LABEL_HEIGHT = 20;
 
 export function layout(doc: KronoDocument, scale: Scale, options: LayoutOptions = {}): SceneGraph {
   const measurer = cachedMeasurer(options.measurer ?? approximateMeasurer);
+  const masks = options.worksheet === true ? maskLookup(doc) : undefined;
   const lanes: SceneLane[] = [];
   const events: SceneEvent[] = [];
   const periods: ScenePeriod[] = [];
 
   // 1) Empiler chaque bande et mesurer la hauteur qu'elle réclame.
   const placedLanes = doc.lanes.map((lane) => {
-    const placed = lane.collapsed ? { events: [], periods: [], rows: 0, rowHeight: ROW_HEIGHT } : layoutLane(doc, lane, scale, measurer);
+    const placed = lane.collapsed ? { events: [], periods: [], rows: 0, rowHeight: ROW_HEIGHT } : layoutLane(doc, lane, scale, measurer, masks);
     const contentHeight = placed.rows * (placed.rowHeight + ROW_GAP);
     return {
       lane,
@@ -146,6 +155,9 @@ interface PlacedEvent {
   row: number;
   showDate: boolean;
   dateLabel: string;
+  labelWidth: number;
+  dateWidth: number;
+  mask?: MaskKind;
 }
 
 interface PlacedPeriod {
@@ -155,6 +167,7 @@ interface PlacedPeriod {
   row: number;
   labelWidth: number;
   datesWidth: number;
+  mask?: MaskKind;
 }
 
 interface LaneLayout {
@@ -171,7 +184,23 @@ interface Box {
   row: number;
 }
 
-function layoutLane(doc: KronoDocument, lane: Lane, scale: Scale, measurer: Measurer): LaneLayout {
+/** Masques du document, indexés par élément — seulement en fiche élève. */
+function maskLookup(doc: KronoDocument): Map<string, MaskKind> {
+  const masks = new Map<string, MaskKind>();
+  for (const item of doc.items) {
+    const hide = maskOf(doc, item.id);
+    if (hide !== undefined) masks.set(item.id, hide);
+  }
+  return masks;
+}
+
+/** Le masque n'apparaît dans la scène que s'il existe (`exactOptionalPropertyTypes`). */
+function maskOf_(masks: Map<string, MaskKind> | undefined, itemId: string): { mask?: MaskKind } {
+  const mask = masks?.get(itemId);
+  return mask === undefined ? {} : { mask };
+}
+
+function layoutLane(doc: KronoDocument, lane: Lane, scale: Scale, measurer: Measurer, masks?: Map<string, MaskKind>): LaneLayout {
   const items = doc.items
     .filter((item) => item.laneId === lane.id)
     .sort(byStart);
@@ -184,7 +213,7 @@ function layoutLane(doc: KronoDocument, lane: Lane, scale: Scale, measurer: Meas
 
   // Les éléments épinglés d'abord : ils sont des obstacles, pas des candidats.
   for (const item of [...items].sort(pinnedFirst)) {
-    const box = boxOf(item, scale, measurer);
+    const box = boxOf(item, scale, measurer, masks?.get(item.id));
     const row = item.pinnedRow ?? firstFreeRow(occupied, box.left, box.right);
     occupied.push({ left: box.left, right: box.right, row });
     rows = Math.max(rows, row + 1);
@@ -199,6 +228,9 @@ function layoutLane(doc: KronoDocument, lane: Lane, scale: Scale, measurer: Meas
         row,
         showDate: box.showDate,
         dateLabel: box.dateLabel,
+        labelWidth: box.labelWidth,
+        dateWidth: box.datesWidth,
+        ...maskOf_(masks, item.id),
       });
     } else {
       periods.push({
@@ -208,6 +240,7 @@ function layoutLane(doc: KronoDocument, lane: Lane, scale: Scale, measurer: Meas
         row,
         labelWidth: box.labelWidth,
         datesWidth: box.datesWidth,
+        ...maskOf_(masks, item.id),
       });
     }
   }
@@ -242,15 +275,23 @@ interface ItemBox {
   dateLabel: string;
 }
 
-function boxOf(item: Item, scale: Scale, measurer: Measurer): ItemBox {
+/**
+ * Une ligne à compléter mesure au moins 48 px : la boîte s'élargit donc pour
+ * un libellé court masqué, sinon l'élève n'aurait pas la place d'écrire.
+ */
+function maskedWidth(width: number, masked: boolean): number {
+  return masked ? Math.max(width, MASK_LINE_MIN_WIDTH) : width;
+}
+
+function boxOf(item: Item, scale: Scale, measurer: Measurer, mask?: MaskKind): ItemBox {
   if (item.kind === 'event') {
     const x = scale.timeToX(toFractionalYear(item.date));
     const dateLabel = formatDate(item.date, { monthStyle: 'long' });
-    const textWidth = measurer.measure(item.label, LABEL_FONT_SIZE, 500);
+    const textWidth = maskedWidth(measurer.measure(item.label, LABEL_FONT_SIZE, 500), hides(mask, 'label'));
     const time = toFractionalYear(item.date);
     const density = (scale.segments.find((segment) => time >= segment.from && time <= segment.to) ?? scale.segments[0])?.pxPerYear ?? 0;
     const showDate = chooseStep(density) <= MAX_YEAR_STEP_FOR_DATES;
-    const dateWidth = showDate ? measurer.measure(dateLabel, CAPTION_FONT_SIZE) : 0;
+    const dateWidth = showDate ? maskedWidth(measurer.measure(dateLabel, CAPTION_FONT_SIZE), hides(mask, 'date')) : 0;
     const hasImage = item.image !== undefined;
     const width =
       Math.max(textWidth, dateWidth) +
@@ -270,18 +311,18 @@ function boxOf(item: Item, scale: Scale, measurer: Measurer): ItemBox {
       height,
       anchorX: x,
       labelWidth: textWidth,
-      datesWidth: 0,
+      datesWidth: dateWidth,
       showDate,
       dateLabel,
     };
   }
   const x0 = scale.timeToX(toFractionalYear(item.start));
   const x1 = scale.timeToX(toFractionalYear(item.end), 'left');
-  const labelWidth = measurer.measure(item.label, LABEL_FONT_SIZE, 600);
+  const labelWidth = maskedWidth(measurer.measure(item.label, LABEL_FONT_SIZE, 600), hides(mask, 'label'));
   // Un libellé qui ne tient pas dans la barre se pose à sa droite : il occupe
   // alors de la place, sinon il chevaucherait l'élément suivant.
   const outsideLabel = x1 - x0 >= labelWidth + PERIOD_LABEL_PADDING ? 0 : labelWidth + ROW_GAP;
-  const datesWidth = measurer.measure(periodDates(item), CAPTION_FONT_SIZE);
+  const datesWidth = maskedWidth(measurer.measure(periodDates(item), CAPTION_FONT_SIZE), hides(mask, 'date'));
   return {
     left: item.shape === 'bracket' ? Math.min(x0, (x0 + x1 - labelWidth) / 2) - ITEM_GAP / 2 : x0,
     // Deux périodes qui se touchent (Antiquité / Moyen Âge) restent sur la
@@ -341,6 +382,10 @@ function finishEvent(placed: PlacedEvent, anchorY: number, rowHeight: number): S
     },
     row: placed.row,
     showDate: placed.showDate,
+    labelWidth: placed.labelWidth,
+    dateWidth: placed.dateWidth,
+    ...(hides(placed.mask, 'label') ? { maskLabel: true } : {}),
+    ...(hides(placed.mask, 'date') ? { maskDate: true } : {}),
   };
   if (item.image !== undefined) event.imageSrc = item.image.src;
   return event;
@@ -380,5 +425,9 @@ function finishPeriod(placed: PlacedPeriod, anchorY: number, rowHeight: number):
     showDates,
     fuzzyStart: item.fuzzyStart === true,
     fuzzyEnd: item.fuzzyEnd === true,
+    labelWidth: placed.labelWidth,
+    datesWidth: placed.datesWidth,
+    ...(hides(placed.mask, 'label') ? { maskLabel: true } : {}),
+    ...(hides(placed.mask, 'date') ? { maskDate: true } : {}),
   };
 }

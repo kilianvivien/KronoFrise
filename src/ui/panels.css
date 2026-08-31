@@ -57,3 +57,8 @@
 .outline .outlineItem[aria-pressed=true] small { color: var(--text-secondary); }
 .check input { accent-color: var(--accent); width: 14px; height: 14px; margin: 0; }
 .inspectorContent, .outline { line-height: 1.45; }
+
+/* Fiche élève : actions de masquage et choix par élément (PLAN.md §3.5). */
+.worksheetActions, .worksheetChoices { display: flex; flex-direction: column; gap: 6px; margin: 0 0 12px; padding: 0; border: 0; }
+.worksheetChoices legend { font-size: var(--fs-caption); color: var(--text-secondary); margin-bottom: 6px; }
+.worksheetActions button, .worksheetChoices button { text-align: left; }

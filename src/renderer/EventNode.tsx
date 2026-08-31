@@ -5,12 +5,14 @@
  * vectorisé (DESIGN.md §7).
  */
 import { useId, type JSX } from 'react';
-import { EDITOR } from '../ui/strings';
+import { EDITOR, WORKSHEET } from '../ui/strings';
 import { EVENT_DOT_SIZE, EVENT_IMAGE_SIZE, ROW_GAP } from '../layout/metrics';
 import type { SceneEvent } from '../layout/scene';
 import { MANUEL_SCOLAIRE, type Theme } from '../themes';
 import { fillPaint, FillPattern } from './FillPattern';
-import { chipDateStyle, chipTextStyle } from './style';
+import { themeColors } from './themeColors';
+import { MaskLine } from './MaskLine';
+import { chipDateStyle, chipTextStyle, maskedChipStyle } from './style';
 
 const CHIP_RADIUS = 5;
 const CARD_RADIUS = 8;
@@ -21,11 +23,21 @@ const CIRCA_DASH = '2 4';
 
 export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEvent; theme?: Theme }): JSX.Element {
   const patternId = `event-fill-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`;
-  const { base, fill, text } = fillPaint(event.color, theme, event.fillStyle, patternId);
+  const paint = fillPaint(event.color, theme, event.fillStyle, patternId);
+  // Fiche élève (DESIGN.md §5) : la puce redevient du papier bordé de tirets,
+  // et le texte caché laisse une ligne à compléter.
+  const masked = event.maskLabel === true || event.maskDate === true;
+  const { base, fill, text } = masked
+    ? { base: paint.base, fill: 'var(--paper)', text: themeColors(event.color, theme).text }
+    : paint;
   const hasImage = event.imageSrc !== undefined;
   const chipBottom = event.chip.y + event.chip.height;
   const textLeft = event.chip.x + CHIP_PADDING_X + (hasImage ? EVENT_IMAGE_SIZE + ROW_GAP : 0);
-  const label = EDITOR.eventAccessible(event.label, event.dateLabel);
+  // Le nom accessible suit le masque : la fiche ne souffle pas la réponse.
+  const label = EDITOR.eventAccessible(
+    event.maskLabel === true ? WORKSHEET.blank : event.label,
+    event.maskDate === true ? WORKSHEET.blank : event.dateLabel,
+  );
 
   return (
     <g data-item-id={event.itemId} role="button" aria-label={label} tabIndex={0}>
@@ -48,8 +60,8 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
         height={event.chip.height}
         rx={hasImage ? CARD_RADIUS : CHIP_RADIUS}
         fill={fill}
-        stroke={base}
         strokeWidth={1}
+        {...(masked ? maskedChipStyle : { stroke: base })}
       />
 
       {hasImage && (
@@ -65,19 +77,25 @@ export function EventNode({ event, theme = MANUEL_SCOLAIRE }: { event: SceneEven
         />
       )}
 
-      <text
-        x={textLeft}
-        y={event.chip.y + (event.showDate ? 15 : event.chip.height / 2 + 4)}
-        style={chipTextStyle(text)}
-      >
-        {event.label}
-      </text>
-
-      {event.showDate && (
-        <text x={textLeft} y={event.chip.y + 29} style={{ ...chipDateStyle(text), ...(event.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
-          {event.dateLabel}
+      {event.maskLabel === true ? (
+        <MaskLine x={textLeft} y={event.chip.y + (event.showDate ? 15 : event.chip.height / 2 + 4)} width={event.labelWidth} />
+      ) : (
+        <text
+          x={textLeft}
+          y={event.chip.y + (event.showDate ? 15 : event.chip.height / 2 + 4)}
+          style={chipTextStyle(text)}
+        >
+          {event.label}
         </text>
       )}
+
+      {event.showDate && (event.maskDate === true ? (
+        <MaskLine x={textLeft} y={event.chip.y + 29} width={event.dateWidth} />
+      ) : (
+        <text x={textLeft} y={event.chip.y + 29} style={{ ...chipDateStyle(text), ...(!masked && event.fillStyle === 'solid' ? { opacity: 1 } : {}) }}>
+          {event.dateLabel}
+        </text>
+      ))}
 
       {/* La pastille passe après le connecteur pour le masquer proprement. */}
       <circle

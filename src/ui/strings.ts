@@ -60,6 +60,29 @@ export const M2 = {
   selectLane: 'Modifier cette bande',
 } as const;
 
+/** Mode fiche élève — PLAN.md §3.5, docs/format.md §5. */
+export const WORKSHEET = {
+  blank: 'à compléter',
+  masking: 'Masques',
+  maskLabels: 'Masquer tous les libellés',
+  maskDates: 'Masquer toutes les dates',
+  maskHalf: 'Masquer la moitié au hasard',
+  showAll: 'Tout afficher',
+  answerKey: 'Afficher le corrigé',
+  answerKeyHint: 'Le corrigé montre la frise complète ; vos masques sont conservés.',
+  hide: 'Masquer',
+  hideNothing: 'Rien',
+  hideLabel: 'Le libellé',
+  hideDate: 'La date',
+  hideBoth: 'Le libellé et la date',
+  hint: 'Choisissez un élément de la frise pour masquer son libellé ou sa date.',
+  counted: (masked: number, total: number): string =>
+    masked === 0
+      ? `Aucun élément masqué sur ${total}.`
+      : `${masked} élément${masked > 1 ? 's' : ''} masqué${masked > 1 ? 's' : ''} sur ${total}.`,
+  mode: 'Mode de la frise',
+} as const;
+
 export const APPEARANCE = {
   title: 'Apparence de l’interface', label: 'Interface',
   terracotta: 'Terre cuite', light: 'Clair', dark: 'Sombre', system: 'Système',

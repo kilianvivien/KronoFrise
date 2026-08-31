@@ -24,7 +24,14 @@ import styles from './Editor.module.css';
 
 import { backgroundIntent, createsEvent, type Tool } from './gesturePolicy';
 export type { Tool } from './gesturePolicy';
-interface Props { insets: ScaleInsets; onWidth: (width: number) => void; focusItem: { id: string; serial: number } | null; tool: Tool; setTool: (tool: Tool) => void; zoom: number; setZoom: (zoom: number) => void; pan: number; setPan: (pan: number) => void }
+interface Props {
+  insets: ScaleInsets; onWidth: (width: number) => void; focusItem: { id: string; serial: number } | null;
+  tool: Tool; setTool: (tool: Tool) => void; zoom: number; setZoom: (zoom: number) => void; pan: number; setPan: (pan: number) => void;
+  /** fiche élève : les masques deviennent des lignes à compléter */
+  worksheet?: boolean;
+  /** fiche élève : on choisit les masques, on ne déplace rien */
+  readOnly?: boolean;
+}
 interface Point { x: number; y: number }
 interface Gesture {
   pointerId: number; start: Point; current: Point; moved: boolean;
@@ -34,7 +41,7 @@ interface Gesture {
 }
 interface Editing { id: string; value: string; created?: Item }
 
-export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidth, focusItem, insets }: Props): JSX.Element {
+export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidth, focusItem, insets, worksheet = false, readOnly = false }: Props): JSX.Element {
   const state = useStore(editorStore);
   const doc = state.preview ?? state.document;
   const theme = themeById(doc.themeId);
@@ -53,7 +60,7 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
   const input = useRef<HTMLInputElement>(null);
   const finishingEdit = useRef(false);
   const scale = useMemo(() => makeScale(doc.axis, size.width, pan, zoom, insets), [doc.axis, size.width, pan, zoom, insets]);
-  const scene = useMemo(() => layout(doc, scale, { measurer: canvasMeasurer, height: size.height }), [doc, scale, size.height]);
+  const scene = useMemo(() => layout(doc, scale, { measurer: canvasMeasurer, height: size.height, worksheet }), [doc, scale, size.height, worksheet]);
   const sceneBoxes = useMemo(() => [
     ...scene.events.map((event) => ({ id: event.itemId, ...event.chip })),
     ...scene.periods.map((period) => ({ id: period.itemId, x: period.x0, y: period.y, width: period.x1 - period.x0, height: period.height })),
@@ -162,12 +169,12 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
     const laneId = scene.lanes.find((lane) => start.y >= lane.y && start.y <= lane.anchorY)?.id ?? doc.lanes[0]?.id;
     if (!laneId) return;
     let ids = state.selection;
-    let kind: Gesture['kind'] = backgroundIntent(tool, event.shiftKey, space, event.button);
+    let kind: Gesture['kind'] = readOnly ? (event.shiftKey ? 'marquee' : 'pan') : backgroundIntent(tool, event.shiftKey, space, event.button);
     if (space || event.button === 1) kind = 'pan';
     else if (id) {
       ids = event.shiftKey ? (ids.includes(id) ? ids.filter((value) => value !== id) : [...ids, id]) : ids.includes(id) ? ids : [id];
       state.select(ids);
-      kind = edge === 'start' ? 'resize-start' : edge === 'end' ? 'resize-end' : 'move';
+      kind = readOnly ? 'pan' : edge === 'start' ? 'resize-start' : edge === 'end' ? 'resize-end' : 'move';
     } else if (event.shiftKey) kind = 'marquee';
     else state.select([]);
     const date = snapDate(scale, start.x, event.altKey).date;
@@ -244,22 +251,23 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
       event.preventDefault();
       const target = event.target instanceof Element ? event.target : null;
       const id = target?.closest('[data-item-id]')?.getAttribute('data-item-id');
+      if (readOnly) return;
       const item = doc.items.find((item) => item.id === id && item.kind === 'event'), file = event.dataTransfer.files[0];
       const documentId = doc.id;
       if (item && file) void importImage(file).then((image) => { const current = editorStore.getState(); if (current.document.id === documentId && current.document.items.some((i) => i.id === item.id)) commit({ name: 'updateItems', label: 'setImage', patches: [{ itemId: item.id, patch: { image } }] }); }).catch(reportError);
     }}
-    onContextMenu={(event) => { const rect = host.current?.getBoundingClientRect(); const y = event.clientY - (rect?.top ?? 0) + (host.current?.scrollTop ?? 0); if (y >= scene.baselineY - 16) { event.preventDefault(); const x = event.clientX - (rect?.left ?? 0); setAxisMenu({ index: null, x, date: formatDate(snapDate(scale, x, false).date) }); } }}
+    onContextMenu={(event) => { if (readOnly) return; const rect = host.current?.getBoundingClientRect(); const y = event.clientY - (rect?.top ?? 0) + (host.current?.scrollTop ?? 0); if (y >= scene.baselineY - 16) { event.preventDefault(); const x = event.clientX - (rect?.left ?? 0); setAxisMenu({ index: null, x, date: formatDate(snapDate(scale, x, false).date) }); } }}
     onPointerCancel={cancel} onLostPointerCapture={() => { if (gesture.current) cancel(); }}
     onDoubleClick={(event) => {
       const target = event.target instanceof Element ? event.target : null;
       const id = target?.closest('[data-item-id]')?.getAttribute('data-item-id');
       const item = doc.items.find((item) => item.id === id);
-      if (item) setEditing({ id: item.id, value: item.label });
+      if (item && !readOnly) setEditing({ id: item.id, value: item.label });
     }}
     onKeyDown={(event) => {
       const target = event.target instanceof Element ? event.target : null;
       const id = target?.closest('[data-item-id]')?.getAttribute('data-item-id');
-      if (id && (event.key === 'Enter' || event.key === 'F2')) {
+      if (id && !readOnly && (event.key === 'Enter' || event.key === 'F2')) {
         const item = doc.items.find((item) => item.id === id);
         if (item) { event.preventDefault(); event.stopPropagation(); state.select([id]); setEditing({ id, value: item.label }); }
       }
@@ -274,7 +282,7 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
       </g>)}
       {marquee && <rect className={styles.marquee} x={Math.min(marquee.start.x, marquee.end.x)} y={Math.min(marquee.start.y, marquee.end.y)} width={Math.abs(marquee.end.x - marquee.start.x)} height={Math.abs(marquee.end.y - marquee.start.y)} />}
       {tooltip?.guide !== null && tooltip && <line className={styles.guide} x1={tooltip.guide} x2={tooltip.guide} y1={0} y2={scene.height} />}
-      <AxisHandles axis={doc.axis} scale={scale} y={scene.baselineY} edit={(index, x) => setAxisMenu({ index, x, date: formatDate(doc.axis.segments[index]!.until) })} />
+      {!readOnly && <AxisHandles axis={doc.axis} scale={scale} y={scene.baselineY} edit={(index, x) => setAxisMenu({ index, x, date: formatDate(doc.axis.segments[index]!.until) })} />}
     </Frise>
     {!doc.items.length && <p className={styles.empty} style={{ color: resolveToken(theme.rulerInk) }}>{CANVAS.emptyHint}</p>}
     {editing && editBox && <input ref={input} className={styles.inline} aria-label={EDITOR.label}
@@ -282,7 +290,7 @@ export function EditorCanvas({ tool, setTool, zoom, setZoom, pan, setPan, onWidt
       value={editing.value} onChange={(event) => setEditing({ ...editing, value: event.target.value })}
       onPointerDown={(event) => event.stopPropagation()} onBlur={() => finishEdit(true)}
       onKeyDown={(event) => { event.stopPropagation(); if (event.key === 'Enter' || event.key === 'Escape') { event.preventDefault(); finishEdit(event.key === 'Enter'); } }} />}
-    {doc.axis.segments.length === 1 && <div className={styles.axisBounds} style={{ top: scene.height - 30, color: resolveToken(theme.rulerInk) }}>
+    {doc.axis.segments.length === 1 && !readOnly && <div className={styles.axisBounds} style={{ top: scene.height - 30, color: resolveToken(theme.rulerInk) }}>
       {(['start', 'end'] as const).map((edge) => axisEdit?.edge === edge ?
         <input key={edge} ref={axisInput} aria-label={edge === 'start' ? EDITOR.axisStart : EDITOR.axisEnd} value={axisEdit.value}
           onChange={(event) => setAxisEdit({ edge, value: event.target.value })} onPointerDown={(event) => event.stopPropagation()}

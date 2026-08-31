@@ -48,6 +48,12 @@ export interface SceneEvent {
   imageSrc?: string;
   /** la date tient sur une deuxième ligne (masquée quand on dézoome) */
   showDate: boolean;
+  /** largeur du texte, pour tracer la ligne à compléter (DESIGN.md §5) */
+  labelWidth: number;
+  dateWidth: number;
+  /** fiche élève : le libellé est remplacé par une ligne vide */
+  maskLabel?: boolean;
+  maskDate?: boolean;
 }
 
 export interface ScenePeriod {
@@ -70,6 +76,10 @@ export interface ScenePeriod {
   showDates: boolean;
   fuzzyStart: boolean;
   fuzzyEnd: boolean;
+  labelWidth: number;
+  datesWidth: number;
+  maskLabel?: boolean;
+  maskDate?: boolean;
 }
 
 export interface SceneCoupure {
