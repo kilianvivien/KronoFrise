@@ -55,6 +55,9 @@ self.addEventListener('fetch', (event) => {
   if (request.method !== 'GET') return;
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // Les sondes d'analyse de Vercel sont servies sous `/_vercel/` sans
+  // empreinte de version : les mettre en cache figerait un script obsolète.
+  if (url.pathname.startsWith('/_vercel/')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(

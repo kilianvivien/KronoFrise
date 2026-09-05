@@ -1,5 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { Analytics } from '@vercel/analytics/react';
 import './ui/base.css';
 import { DevApp } from './ui/DevApp';
 import { Editor } from './ui/Editor';
@@ -18,5 +19,6 @@ if (container === null) throw new Error('Élément racine introuvable.');
 createRoot(container).render(
   <StrictMode>
     {new URLSearchParams(window.location.search).has('fixtures') ? <DevApp /> : <Editor />}
+    <Analytics />
   </StrictMode>,
 );
